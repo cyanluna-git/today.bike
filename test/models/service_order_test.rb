@@ -279,6 +279,68 @@ class ServiceOrderTest < ActiveSupport::TestCase
     assert_includes customer.service_orders, service_orders(:completed_order)
   end
 
+  # --- next_status / previous_status ---
+
+  test "next_status returns diagnosis for received" do
+    @service_order.status = "received"
+    assert_equal "diagnosis", @service_order.next_status
+  end
+
+  test "next_status returns in_progress for diagnosis" do
+    @service_order.status = "diagnosis"
+    assert_equal "in_progress", @service_order.next_status
+  end
+
+  test "next_status returns completed for in_progress" do
+    @service_order.status = "in_progress"
+    assert_equal "completed", @service_order.next_status
+  end
+
+  test "next_status returns delivered for completed" do
+    @service_order.status = "completed"
+    assert_equal "delivered", @service_order.next_status
+  end
+
+  test "next_status returns nil for delivered" do
+    @service_order.status = "delivered"
+    assert_nil @service_order.next_status
+  end
+
+  test "previous_status returns nil for received" do
+    @service_order.status = "received"
+    assert_nil @service_order.previous_status
+  end
+
+  test "previous_status returns received for diagnosis" do
+    @service_order.status = "diagnosis"
+    assert_equal "received", @service_order.previous_status
+  end
+
+  test "previous_status returns diagnosis for in_progress" do
+    @service_order.status = "in_progress"
+    assert_equal "diagnosis", @service_order.previous_status
+  end
+
+  test "can_advance? returns true when not at last status" do
+    @service_order.status = "received"
+    assert @service_order.can_advance?
+  end
+
+  test "can_advance? returns false for delivered" do
+    @service_order.status = "delivered"
+    assert_not @service_order.can_advance?
+  end
+
+  test "can_go_back? returns false for received" do
+    @service_order.status = "received"
+    assert_not @service_order.can_go_back?
+  end
+
+  test "can_go_back? returns true when not at first status" do
+    @service_order.status = "diagnosis"
+    assert @service_order.can_go_back?
+  end
+
   # --- Fixtures loaded correctly ---
 
   test "fixtures are loaded" do

@@ -18,6 +18,9 @@ Rails.application.routes.draw do
       collection do
         get :kanban
       end
+      member do
+        patch :update_status
+      end
     end
   end
 

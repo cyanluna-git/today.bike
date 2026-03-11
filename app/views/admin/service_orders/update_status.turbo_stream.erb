@@ -1,0 +1,27 @@
+<%# Remove card from old column %>
+<%= turbo_stream.remove dom_id(@service_order, :kanban) %>
+
+<%# Append card to new column (remove empty state first if present) %>
+<%= turbo_stream.remove "kanban_empty_#{@new_status}" %>
+
+<%= turbo_stream.append "kanban_column_#{@new_status}" do %>
+  <%= render partial: "admin/service_orders/kanban_card", locals: { order: @service_order } %>
+<% end %>
+
+<%# Update column counts %>
+<%= turbo_stream.update "kanban_column_count_#{@old_status}" do %>
+  <%= ServiceOrder.where(status: @old_status).count %>
+<% end %>
+
+<%= turbo_stream.update "kanban_column_count_#{@new_status}" do %>
+  <%= ServiceOrder.where(status: @new_status).count %>
+<% end %>
+
+<%# Show empty state in old column if it's now empty %>
+<% if ServiceOrder.where(status: @old_status).count == 0 %>
+  <%= turbo_stream.append "kanban_column_#{@old_status}" do %>
+    <div id="kanban_empty_<%= @old_status %>" class="flex items-center justify-center h-full min-h-[180px]">
+      <p class="text-sm text-gray-400">No orders</p>
+    </div>
+  <% end %>
+<% end %>

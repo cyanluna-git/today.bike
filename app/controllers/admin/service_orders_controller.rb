@@ -1,6 +1,6 @@
 module Admin
   class ServiceOrdersController < BaseController
-    before_action :set_service_order, only: %i[show edit update destroy]
+    before_action :set_service_order, only: %i[show edit update destroy update_status]
 
     def index
       service_orders = ServiceOrder.includes(bicycle: :customer).order(created_at: :desc)
@@ -53,6 +53,26 @@ module Admin
     def destroy
       @service_order.destroy
       redirect_to admin_service_orders_path, notice: "Service order was successfully deleted."
+    end
+
+    def update_status
+      @old_status = @service_order.status
+      new_status = params[:status]
+
+      unless ServiceOrder::STATUS_ORDER.include?(new_status)
+        head :unprocessable_entity
+        return
+      end
+
+      if @service_order.update(status: new_status)
+        @new_status = new_status
+        respond_to do |format|
+          format.turbo_stream
+          format.html { redirect_to kanban_admin_service_orders_path, notice: "Status updated." }
+        end
+      else
+        head :unprocessable_entity
+      end
     end
 
     private

@@ -1,0 +1,77 @@
+<%
+  service_type_colors = {
+    "overhaul" => "bg-red-100 text-red-700",
+    "repair" => "bg-orange-100 text-orange-700",
+    "parts" => "bg-cyan-100 text-cyan-700",
+    "upgrade" => "bg-violet-100 text-violet-700",
+    "fitting" => "bg-emerald-100 text-emerald-700",
+    "frame_change" => "bg-pink-100 text-pink-700"
+  }
+
+  status_labels = {
+    "received" => "접수",
+    "diagnosis" => "진단",
+    "in_progress" => "작업중",
+    "completed" => "완료",
+    "delivered" => "출고"
+  }
+%>
+
+<div id="<%= dom_id(order, :kanban) %>" class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 hover:shadow-md transition" data-testid="kanban-card">
+  <%# Order header with link %>
+  <%= link_to admin_service_order_path(order), class: "block group" do %>
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-xs font-mono font-semibold text-gray-900 group-hover:text-indigo-600 transition"><%= order.order_number %></span>
+      <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= service_type_colors[order.service_type] || 'bg-gray-100 text-gray-700' %>">
+        <%= order.service_type.titleize %>
+      </span>
+    </div>
+
+    <%# Customer name %>
+    <div class="flex items-center gap-1.5 mb-1">
+      <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+      <span class="text-sm text-gray-700 truncate"><%= order.customer.name %></span>
+    </div>
+
+    <%# Bicycle info %>
+    <div class="flex items-center gap-1.5">
+      <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+      <span class="text-sm text-gray-500 truncate"><%= order.bicycle.brand %> <%= order.bicycle.model_label %></span>
+    </div>
+  <% end %>
+
+  <%# Status change buttons %>
+  <div class="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
+    <% if order.can_go_back? %>
+      <%= button_to update_status_admin_service_order_path(order, status: order.previous_status),
+            method: :patch,
+            class: "inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition",
+            data: { testid: "kanban-prev-btn", turbo: true } do %>
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <%= status_labels[order.previous_status] %>
+      <% end %>
+    <% else %>
+      <span></span>
+    <% end %>
+
+    <% if order.can_advance? %>
+      <%= button_to update_status_admin_service_order_path(order, status: order.next_status),
+            method: :patch,
+            class: "inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 transition",
+            data: { testid: "kanban-next-btn", turbo: true } do %>
+        <%= status_labels[order.next_status] %>
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      <% end %>
+    <% else %>
+      <span></span>
+    <% end %>
+  </div>
+</div>

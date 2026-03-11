@@ -571,4 +571,141 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
     get admin_service_orders_path
     assert_select "a[href='#{kanban_admin_service_orders_path}']", text: /칸반보드/
   end
+
+  # --- Kanban: Status Change UI ---
+
+  test "kanban cards have next status button" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    # overhaul_order is "received", should have a "next" button to "진단"
+    assert_select "[data-testid='kanban-next-btn']", minimum: 1
+  end
+
+  test "kanban cards have previous status button when applicable" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    # repair_order is "in_progress", should have a "prev" button
+    assert_select "[data-testid='kanban-prev-btn']", minimum: 1
+  end
+
+  test "kanban first status card has no previous button" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    # overhaul_order is "received" (first status) - its card should not have prev btn
+    assert_select "#kanban_service_order_#{@service_order.id} [data-testid='kanban-prev-btn']", count: 0
+  end
+
+  test "kanban last status card has no next button" do
+    sign_in @admin_user
+    delivered = service_orders(:delivered_order)
+    get kanban_admin_service_orders_path
+    assert_select "#kanban_service_order_#{delivered.id} [data-testid='kanban-next-btn']", count: 0
+  end
+
+  # --- update_status action ---
+
+  test "update_status requires authentication" do
+    patch update_status_admin_service_order_path(@service_order), params: { status: "diagnosis" }
+    assert_redirected_to new_admin_user_session_path
+  end
+
+  test "update_status advances status via turbo stream" do
+    sign_in @admin_user
+    assert_equal "received", @service_order.status
+
+    patch update_status_admin_service_order_path(@service_order),
+          params: { status: "diagnosis" },
+          as: :turbo_stream
+
+    assert_response :ok
+    assert_equal "diagnosis", @service_order.reload.status
+  end
+
+  test "update_status creates service_progress record" do
+    sign_in @admin_user
+
+    assert_difference "ServiceProgress.count", 1 do
+      patch update_status_admin_service_order_path(@service_order),
+            params: { status: "diagnosis" },
+            as: :turbo_stream
+    end
+
+    progress = @service_order.service_progresses.last
+    assert_equal "received", progress.from_status
+    assert_equal "diagnosis", progress.to_status
+  end
+
+  test "update_status can go back to previous status" do
+    sign_in @admin_user
+    repair = service_orders(:repair_order)
+    assert_equal "in_progress", repair.status
+
+    patch update_status_admin_service_order_path(repair),
+          params: { status: "diagnosis" },
+          as: :turbo_stream
+
+    assert_response :ok
+    assert_equal "diagnosis", repair.reload.status
+  end
+
+  test "update_status rejects invalid status" do
+    sign_in @admin_user
+
+    patch update_status_admin_service_order_path(@service_order),
+          params: { status: "invalid_status" },
+          as: :turbo_stream
+
+    assert_response :unprocessable_entity
+    assert_equal "received", @service_order.reload.status
+  end
+
+  test "update_status returns turbo stream with remove and append" do
+    sign_in @admin_user
+
+    patch update_status_admin_service_order_path(@service_order),
+          params: { status: "diagnosis" },
+          as: :turbo_stream
+
+    assert_response :ok
+    assert_match "turbo-stream", response.body
+    # Should remove from old column
+    assert_match 'action="remove"', response.body
+    # Should append to new column
+    assert_match 'action="append"', response.body
+    assert_match "kanban_column_diagnosis", response.body
+    # Should update counts
+    assert_match 'action="update"', response.body
+    assert_match "kanban_column_count_received", response.body
+    assert_match "kanban_column_count_diagnosis", response.body
+  end
+
+  test "update_status falls back to redirect for HTML requests" do
+    sign_in @admin_user
+
+    patch update_status_admin_service_order_path(@service_order),
+          params: { status: "diagnosis" }
+
+    assert_redirected_to kanban_admin_service_orders_path
+    assert_equal "diagnosis", @service_order.reload.status
+  end
+
+  test "kanban column bodies have turbo stream target IDs" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_select "#kanban_column_received"
+    assert_select "#kanban_column_diagnosis"
+    assert_select "#kanban_column_in_progress"
+    assert_select "#kanban_column_completed"
+    assert_select "#kanban_column_delivered"
+  end
+
+  test "kanban column counts have turbo stream target IDs" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_select "#kanban_column_count_received"
+    assert_select "#kanban_column_count_diagnosis"
+    assert_select "#kanban_column_count_in_progress"
+    assert_select "#kanban_column_count_completed"
+    assert_select "#kanban_column_count_delivered"
+  end
 end

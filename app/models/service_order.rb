@@ -34,6 +34,28 @@ class ServiceOrder < ApplicationRecord
   validates :estimated_cost, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :final_cost, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
+  STATUS_ORDER = %w[received diagnosis in_progress completed delivered].freeze
+
+  def next_status
+    current_index = STATUS_ORDER.index(status)
+    return nil if current_index.nil? || current_index >= STATUS_ORDER.length - 1
+    STATUS_ORDER[current_index + 1]
+  end
+
+  def previous_status
+    current_index = STATUS_ORDER.index(status)
+    return nil if current_index.nil? || current_index <= 0
+    STATUS_ORDER[current_index - 1]
+  end
+
+  def can_advance?
+    next_status.present?
+  end
+
+  def can_go_back?
+    previous_status.present?
+  end
+
   private
 
   def generate_order_number
