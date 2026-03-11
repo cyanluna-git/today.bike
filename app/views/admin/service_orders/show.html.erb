@@ -20,99 +20,72 @@
     </div>
   </div>
 
-  <div class="bg-white shadow rounded-lg overflow-hidden">
-    <dl class="divide-y divide-gray-200">
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Order Number</dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @service_order.order_number %></dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Customer</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
-          <%= link_to @service_order.customer.name, admin_customer_path(@service_order.customer), class: "text-indigo-600 hover:text-indigo-900 transition" %>
-        </dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Bicycle</dt>
-        <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
-          <%= link_to "#{@service_order.bicycle.brand} #{@service_order.bicycle.model_label}", admin_bicycle_path(@service_order.bicycle), class: "text-indigo-600 hover:text-indigo-900 transition" %>
-        </dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Service Type</dt>
-        <dd class="mt-1 sm:col-span-2 sm:mt-0">
-          <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800"><%= @service_order.service_type.titleize %></span>
-        </dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Status</dt>
-        <dd class="mt-1 sm:col-span-2 sm:mt-0">
-          <% case @service_order.status %>
-          <% when "received" %>
-            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">Received</span>
-          <% when "diagnosis" %>
-            <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">Diagnosis</span>
-          <% when "in_progress" %>
-            <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">In Progress</span>
-          <% when "completed" %>
-            <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Completed</span>
-          <% when "delivered" %>
-            <span class="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800">Delivered</span>
-          <% end %>
-        </dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Received At</dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @service_order.received_at.strftime("%Y-%m-%d %H:%M") %></dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Expected Completion</dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @service_order.expected_completion&.strftime("%Y-%m-%d") || "—" %></dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Completed At</dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @service_order.completed_at&.strftime("%Y-%m-%d %H:%M") || "—" %></dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Delivered At</dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @service_order.delivered_at&.strftime("%Y-%m-%d %H:%M") || "—" %></dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Estimated Cost</dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-          <% if @service_order.estimated_cost %>
-            <%= number_to_currency(@service_order.estimated_cost, unit: "₩", format: "%u%n", precision: 0) %>
-          <% else %>
-            —
-          <% end %>
-        </dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Final Cost</dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-          <% if @service_order.final_cost %>
-            <%= number_to_currency(@service_order.final_cost, unit: "₩", format: "%u%n", precision: 0) %>
-          <% else %>
-            —
-          <% end %>
-        </dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Diagnosis Note</dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 whitespace-pre-wrap"><%= @service_order.diagnosis_note.presence || "—" %></dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Work Note</dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 whitespace-pre-wrap"><%= @service_order.work_note.presence || "—" %></dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Created at</dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @service_order.created_at.strftime("%Y-%m-%d %H:%M") %></dd>
-      </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-gray-500">Updated at</dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @service_order.updated_at.strftime("%Y-%m-%d %H:%M") %></dd>
-      </div>
-    </dl>
+  <%# Tab Navigation %>
+  <div data-controller="tabs" data-tabs-default-tab-value="basic_info">
+    <div class="border-b border-gray-200 mb-6">
+      <nav class="-mb-px flex space-x-8" aria-label="Service order tabs">
+        <button type="button"
+                data-tabs-target="tab"
+                data-tab-name="basic_info"
+                data-action="click->tabs#switch"
+                aria-selected="true"
+                class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium border-indigo-500 text-indigo-600">
+          기본정보
+        </button>
+        <button type="button"
+                data-tabs-target="tab"
+                data-tab-name="progress"
+                data-action="click->tabs#switch"
+                aria-selected="false"
+                class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700">
+          진행상황
+        </button>
+        <button type="button"
+                data-tabs-target="tab"
+                data-tab-name="photos"
+                data-action="click->tabs#switch"
+                aria-selected="false"
+                class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700">
+          정비사진
+        </button>
+        <button type="button"
+                data-tabs-target="tab"
+                data-tab-name="parts"
+                data-action="click->tabs#switch"
+                aria-selected="false"
+                class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700">
+          부품교체
+        </button>
+        <button type="button"
+                data-tabs-target="tab"
+                data-tab-name="repairs"
+                data-action="click->tabs#switch"
+                aria-selected="false"
+                class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700">
+          수리내역
+        </button>
+      </nav>
+    </div>
+
+    <%# Tab Panels %>
+    <turbo-frame id="service_order_tab_basic_info" data-tabs-target="panel" data-tab-name="basic_info">
+      <%= render "admin/service_orders/tab_basic_info", service_order: @service_order %>
+    </turbo-frame>
+
+    <turbo-frame id="service_order_tab_progress" data-tabs-target="panel" data-tab-name="progress" class="hidden">
+      <%= render "admin/service_orders/tab_progress", service_order: @service_order %>
+    </turbo-frame>
+
+    <turbo-frame id="service_order_tab_photos" data-tabs-target="panel" data-tab-name="photos" class="hidden">
+      <%= render "admin/service_orders/tab_photos", service_order: @service_order %>
+    </turbo-frame>
+
+    <turbo-frame id="service_order_tab_parts" data-tabs-target="panel" data-tab-name="parts" class="hidden">
+      <%= render "admin/service_orders/tab_parts", service_order: @service_order %>
+    </turbo-frame>
+
+    <turbo-frame id="service_order_tab_repairs" data-tabs-target="panel" data-tab-name="repairs" class="hidden">
+      <%= render "admin/service_orders/tab_repairs", service_order: @service_order %>
+    </turbo-frame>
   </div>
 </div>
