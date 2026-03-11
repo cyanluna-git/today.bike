@@ -1,0 +1,77 @@
+<%= form_with(model: [:admin, service_order], class: "space-y-6") do |form| %>
+  <% if service_order.errors.any? %>
+    <div class="rounded-md bg-red-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">
+            <%= pluralize(service_order.errors.count, "error") %> prohibited this service order from being saved:
+          </h3>
+          <ul class="mt-2 list-disc list-inside text-sm text-red-700">
+            <% service_order.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="bg-white shadow rounded-lg p-6 space-y-6">
+    <div>
+      <%= form.label :bicycle_id, "Bicycle", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.select :bicycle_id,
+            Bicycle.includes(:customer).order(:brand, :model_label).map { |b| ["#{b.brand} #{b.model_label} (#{b.customer.name})", b.id] },
+            { prompt: "Select a bicycle" },
+            class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", required: true %>
+    </div>
+
+    <div>
+      <%= form.label :service_type, "Service Type", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.select :service_type, ServiceOrder.service_types.map { |k, v| [k.titleize, v] }, {}, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <% if service_order.persisted? %>
+      <div>
+        <%= form.label :status, class: "block text-sm font-medium text-gray-700" %>
+        <%= form.select :status, ServiceOrder.statuses.map { |k, v| [k.titleize, v] }, {}, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :expected_completion, "Expected Completion", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.date_field :expected_completion, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div>
+      <%= form.label :estimated_cost, "Estimated Cost (₩)", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.number_field :estimated_cost, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", min: 0, step: 1000 %>
+    </div>
+
+    <% if service_order.persisted? %>
+      <div>
+        <%= form.label :final_cost, "Final Cost (₩)", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.number_field :final_cost, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", min: 0, step: 1000 %>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :diagnosis_note, "Diagnosis Note", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.text_area :diagnosis_note, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+
+    <div>
+      <%= form.label :work_note, "Work Note", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.text_area :work_note, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-end gap-3">
+    <%= link_to "Cancel", (service_order.persisted? ? admin_service_order_path(service_order) : admin_service_orders_path), class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" %>
+    <%= form.submit class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition cursor-pointer" %>
+  </div>
+<% end %>

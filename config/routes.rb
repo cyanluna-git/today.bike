@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       end
       resources :bicycle_specs, only: %i[new create edit update destroy]
     end
+    resources :service_orders
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
