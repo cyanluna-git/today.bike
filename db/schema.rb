@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_11_214446) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_11_215650) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -90,8 +90,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_214446) do
     t.index ["phone"], name: "index_customers_on_phone", unique: true
   end
 
+  create_table "service_orders", force: :cascade do |t|
+    t.integer "bicycle_id", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "delivered_at"
+    t.text "diagnosis_note"
+    t.decimal "estimated_cost", precision: 10
+    t.date "expected_completion"
+    t.decimal "final_cost", precision: 10
+    t.string "order_number", null: false
+    t.datetime "received_at", null: false
+    t.string "service_type", null: false
+    t.string "status", default: "received", null: false
+    t.datetime "updated_at", null: false
+    t.text "work_note"
+    t.index ["bicycle_id"], name: "index_service_orders_on_bicycle_id"
+    t.index ["order_number"], name: "index_service_orders_on_order_number", unique: true
+    t.index ["service_type"], name: "index_service_orders_on_service_type"
+    t.index ["status"], name: "index_service_orders_on_status"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bicycle_specs", "bicycles"
   add_foreign_key "bicycles", "customers"
+  add_foreign_key "service_orders", "bicycles"
 end

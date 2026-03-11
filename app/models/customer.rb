@@ -1,6 +1,7 @@
 class Customer < ApplicationRecord
   # Associations
   has_many :bicycles, dependent: :destroy
+  has_many :service_orders, through: :bicycles
 
   # Scopes
   scope :search, ->(query) {

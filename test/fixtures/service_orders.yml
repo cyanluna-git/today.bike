@@ -1,0 +1,52 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+overhaul_order:
+  order_number: TB-2026-0001
+  bicycle: road_bike
+  service_type: overhaul
+  status: received
+  received_at: <%= Time.zone.parse("2026-03-01 10:00:00") %>
+  expected_completion: 2026-03-08
+  diagnosis_note: 전체 오버홀 필요
+  work_note:
+  estimated_cost: 350000
+  final_cost:
+
+repair_order:
+  order_number: TB-2026-0002
+  bicycle: gravel_bike
+  service_type: repair
+  status: in_progress
+  received_at: <%= Time.zone.parse("2026-03-05 14:30:00") %>
+  expected_completion: 2026-03-10
+  diagnosis_note: 리어 디레일러 행거 교정
+  work_note: 작업 중
+  estimated_cost: 50000
+  final_cost:
+
+completed_order:
+  order_number: TB-2026-0003
+  bicycle: road_bike
+  service_type: parts
+  status: completed
+  received_at: <%= Time.zone.parse("2026-02-20 09:00:00") %>
+  expected_completion: 2026-02-25
+  completed_at: <%= Time.zone.parse("2026-02-24 16:00:00") %>
+  diagnosis_note: 체인 및 카세트 교체
+  work_note: 시마노 울테그라 체인/카세트로 교체 완료
+  estimated_cost: 120000
+  final_cost: 115000
+
+delivered_order:
+  order_number: TB-2025-0001
+  bicycle: sold_bike
+  service_type: upgrade
+  status: delivered
+  received_at: <%= Time.zone.parse("2025-12-01 11:00:00") %>
+  expected_completion: 2025-12-10
+  completed_at: <%= Time.zone.parse("2025-12-08 15:00:00") %>
+  delivered_at: <%= Time.zone.parse("2025-12-09 10:00:00") %>
+  diagnosis_note: 휠셋 업그레이드
+  work_note: 카본 휠셋으로 교체 완료
+  estimated_cost: 2000000
+  final_cost: 1950000

@@ -2,6 +2,7 @@ class Bicycle < ApplicationRecord
   # Associations
   belongs_to :customer
   has_many :bicycle_specs, dependent: :destroy
+  has_many :service_orders, dependent: :destroy
   has_many_attached :photos
 
   # Enums
