@@ -72,6 +72,88 @@ class Admin::CustomersControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{new_admin_customer_path}']", text: /New Customer/
   end
 
+  # --- Search ---
+
+  test "index has search form" do
+    sign_in @admin_user
+    get admin_customers_path
+    assert_select "input[name='query']"
+  end
+
+  test "search by name returns matching customers" do
+    sign_in @admin_user
+    get admin_customers_path, params: { query: "김철수" }
+    assert_response :ok
+    assert_select "td", text: "김철수"
+    assert_select "td", text: "이영희", count: 0
+  end
+
+  test "search by partial name returns matching customers" do
+    sign_in @admin_user
+    get admin_customers_path, params: { query: "김" }
+    assert_response :ok
+    assert_select "td", text: "김철수"
+  end
+
+  test "search by phone returns matching customers" do
+    sign_in @admin_user
+    get admin_customers_path, params: { query: "1234" }
+    assert_response :ok
+    assert_select "td", text: "김철수"
+  end
+
+  test "search with no match shows empty state" do
+    sign_in @admin_user
+    get admin_customers_path, params: { query: "존재하지않는이름" }
+    assert_response :ok
+    assert_select "td[colspan='5']"
+  end
+
+  test "search with blank query returns all customers" do
+    sign_in @admin_user
+    get admin_customers_path, params: { query: "" }
+    assert_response :ok
+    assert_select "td", text: "김철수"
+    assert_select "td", text: "이영희"
+  end
+
+  # --- Turbo Frame ---
+
+  test "index wraps table in turbo frame" do
+    sign_in @admin_user
+    get admin_customers_path
+    assert_select "turbo-frame#customers_table"
+  end
+
+  test "search form targets customers_table turbo frame" do
+    sign_in @admin_user
+    get admin_customers_path
+    assert_select "form[data-turbo-frame='customers_table']"
+  end
+
+  # --- Pagination ---
+
+  test "index paginates customers" do
+    sign_in @admin_user
+    # Create enough customers to trigger pagination (default 20 per page)
+    22.times do |i|
+      Customer.create!(name: "Test Customer #{i}", phone: "010-#{format('%04d', i)}-9999")
+    end
+    get admin_customers_path
+    assert_response :ok
+    # With 24 total (2 fixtures + 22 created), should have pagination
+    assert_select "nav[aria-label='Pagination']"
+  end
+
+  test "index page 2 returns second page of customers" do
+    sign_in @admin_user
+    22.times do |i|
+      Customer.create!(name: "Test Customer #{i}", phone: "010-#{format('%04d', i)}-9999")
+    end
+    get admin_customers_path, params: { page: 2 }
+    assert_response :ok
+  end
+
   # --- Show ---
 
   test "show renders successfully" do

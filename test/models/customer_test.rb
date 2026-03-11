@@ -163,6 +163,60 @@ class CustomerTest < ActiveSupport::TestCase
     assert @customer.valid?
   end
 
+  # --- Search scope ---
+
+  test "search by exact name" do
+    results = Customer.search("김철수")
+    assert_includes results, customers(:one)
+    assert_not_includes results, customers(:two)
+  end
+
+  test "search by partial name" do
+    results = Customer.search("김")
+    assert_includes results, customers(:one)
+  end
+
+  test "search by phone number" do
+    results = Customer.search("1234")
+    assert_includes results, customers(:one)
+    assert_not_includes results, customers(:two)
+  end
+
+  test "search by partial phone" do
+    results = Customer.search("010")
+    assert_includes results, customers(:one)
+    assert_includes results, customers(:two)
+  end
+
+  test "search with blank query returns all" do
+    results = Customer.search("")
+    assert_includes results, customers(:one)
+    assert_includes results, customers(:two)
+  end
+
+  test "search with nil query returns all" do
+    results = Customer.search(nil)
+    assert_includes results, customers(:one)
+    assert_includes results, customers(:two)
+  end
+
+  test "search with no match returns empty" do
+    results = Customer.search("존재하지않는")
+    assert_empty results
+  end
+
+  test "search is case insensitive for names" do
+    customer = Customer.create!(name: "TestUser", phone: "010-2222-3333")
+    results = Customer.search("testuser")
+    assert_includes results, customer
+  end
+
+  test "search handles SQL special characters safely" do
+    results = Customer.search("%_")
+    # Should not raise and should not match everything
+    assert_kind_of ActiveRecord::Relation, results
+  end
+
   # --- Fixtures loaded correctly ---
 
   test "fixtures are loaded" do

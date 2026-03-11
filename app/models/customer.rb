@@ -1,4 +1,10 @@
 class Customer < ApplicationRecord
+  # Scopes
+  scope :search, ->(query) {
+    return all if query.blank?
+    where("name LIKE :q OR phone LIKE :q", q: "%#{sanitize_sql_like(query)}%")
+  }
+
   # Validations
   validates :name, presence: true
   validates :phone, presence: true,

@@ -3,7 +3,8 @@ module Admin
     before_action :set_customer, only: %i[show edit update destroy]
 
     def index
-      @customers = Customer.order(created_at: :desc)
+      customers = Customer.search(params[:query]).order(created_at: :desc)
+      @pagy, @customers = pagy(customers)
     end
 
     def show
