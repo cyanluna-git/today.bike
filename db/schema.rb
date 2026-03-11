@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_11_213937) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_11_214446) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -51,6 +51,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_213937) do
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   end
 
+  create_table "bicycle_specs", force: :cascade do |t|
+    t.integer "bicycle_id", null: false
+    t.string "brand", null: false
+    t.string "component", null: false
+    t.string "component_model", null: false
+    t.datetime "created_at", null: false
+    t.text "spec_detail"
+    t.datetime "updated_at", null: false
+    t.index ["bicycle_id", "component"], name: "index_bicycle_specs_on_bicycle_id_and_component"
+    t.index ["bicycle_id"], name: "index_bicycle_specs_on_bicycle_id"
+  end
+
   create_table "bicycles", force: :cascade do |t|
     t.string "bike_type", default: "road", null: false
     t.string "brand", null: false
@@ -80,5 +92,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_213937) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "bicycle_specs", "bicycles"
   add_foreign_key "bicycles", "customers"
 end

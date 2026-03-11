@@ -1,0 +1,5 @@
+<%= turbo_stream.update "new_bicycle_spec", "" %>
+<%= turbo_stream.remove "no_specs_row" %>
+<%= turbo_stream.append "bicycle_specs" do %>
+  <%= render @bicycle_spec %>
+<% end %>

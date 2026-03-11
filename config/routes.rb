@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       member do
         delete "photos/:photo_id", action: :purge_photo, as: :purge_photo
       end
+      resources :bicycle_specs, only: %i[new create edit update destroy]
     end
   end
 

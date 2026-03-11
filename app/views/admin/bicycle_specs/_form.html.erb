@@ -1,0 +1,52 @@
+<%= form_with(model: [:admin, bicycle, bicycle_spec], class: "contents") do |form| %>
+  <tr class="bg-indigo-50">
+    <td class="px-4 py-2">
+      <%= form.select :component,
+            BicycleSpec::COMPONENTS.map { |c| [c.titleize, c] },
+            { include_blank: "Select component" },
+            class: "w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm",
+            required: true %>
+      <% if bicycle_spec.errors[:component].any? %>
+        <p class="mt-1 text-xs text-red-600"><%= bicycle_spec.errors[:component].first %></p>
+      <% end %>
+    </td>
+    <td class="px-4 py-2">
+      <%= form.text_field :brand,
+            class: "w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm",
+            placeholder: "Brand",
+            required: true %>
+      <% if bicycle_spec.errors[:brand].any? %>
+        <p class="mt-1 text-xs text-red-600"><%= bicycle_spec.errors[:brand].first %></p>
+      <% end %>
+    </td>
+    <td class="px-4 py-2">
+      <%= form.text_field :component_model,
+            class: "w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm",
+            placeholder: "Model name",
+            required: true %>
+      <% if bicycle_spec.errors[:component_model].any? %>
+        <p class="mt-1 text-xs text-red-600"><%= bicycle_spec.errors[:component_model].first %></p>
+      <% end %>
+    </td>
+    <td class="px-4 py-2">
+      <%= form.text_field :spec_detail,
+            class: "w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm",
+            placeholder: "Details (optional)" %>
+    </td>
+    <td class="px-4 py-2 text-right whitespace-nowrap">
+      <%= form.submit bicycle_spec.persisted? ? "Update" : "Add",
+            class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition cursor-pointer" %>
+      <% if bicycle_spec.persisted? %>
+        <%= link_to "Cancel",
+              admin_bicycle_path(bicycle),
+              class: "ml-2 text-sm text-gray-500 hover:text-gray-700",
+              data: { turbo_frame: dom_id(bicycle_spec) } %>
+      <% else %>
+        <%= link_to "Cancel",
+              admin_bicycle_path(bicycle),
+              class: "ml-2 text-sm text-gray-500 hover:text-gray-700",
+              data: { turbo_frame: "new_bicycle_spec" } %>
+      <% end %>
+    </td>
+  </tr>
+<% end %>

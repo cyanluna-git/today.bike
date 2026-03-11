@@ -56,7 +56,7 @@ module Admin
     private
 
     def set_bicycle
-      @bicycle = Bicycle.find(params[:id])
+      @bicycle = Bicycle.includes(:bicycle_specs).find(params[:id])
     end
 
     def bicycle_params

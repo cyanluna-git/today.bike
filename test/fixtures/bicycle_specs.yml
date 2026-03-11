@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+frame_spec:
+  bicycle: road_bike
+  component: frame
+  brand: Specialized
+  component_model: Tarmac SL7 Expert
+  spec_detail: "Size 54, Carbon"
+
+wheelset_spec:
+  bicycle: road_bike
+  component: wheelset
+  brand: Roval
+  component_model: Rapide CLX
+  spec_detail: "Disc brake, tubeless ready"
+
+groupset_spec:
+  bicycle: road_bike
+  component: groupset
+  brand: Shimano
+  component_model: Ultegra Di2 R8170
+  spec_detail: "12-speed electronic"
+
+saddle_spec:
+  bicycle: gravel_bike
+  component: saddle
+  brand: Fizik
+  component_model: Argo Vento R1
+  spec_detail: "140mm width"

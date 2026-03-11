@@ -1,0 +1,5 @@
+<%= turbo_stream.update "new_bicycle_spec" do %>
+  <%= turbo_frame_tag "new_bicycle_spec" do %>
+    <%= render "form", bicycle: @bicycle, bicycle_spec: @bicycle_spec %>
+  <% end %>
+<% end %>

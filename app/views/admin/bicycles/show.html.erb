@@ -78,6 +78,9 @@
     </dl>
   </div>
 
+  <%# Component Specs %>
+  <%= render "admin/bicycle_specs/specs_list", bicycle: @bicycle %>
+
   <%# Photo Gallery %>
   <% if @bicycle.photos.attached? %>
     <div class="mt-8">

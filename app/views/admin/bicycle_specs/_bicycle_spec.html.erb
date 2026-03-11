@@ -1,0 +1,19 @@
+<%= turbo_frame_tag dom_id(bicycle_spec) do %>
+  <tr class="hover:bg-gray-50" id="<%= dom_id(bicycle_spec) %>">
+    <td class="px-4 py-3 text-sm text-gray-900"><%= bicycle_spec.component.titleize %></td>
+    <td class="px-4 py-3 text-sm text-gray-900"><%= bicycle_spec.brand %></td>
+    <td class="px-4 py-3 text-sm text-gray-900"><%= bicycle_spec.component_model %></td>
+    <td class="px-4 py-3 text-sm text-gray-500"><%= bicycle_spec.spec_detail.presence || "—" %></td>
+    <td class="px-4 py-3 text-sm text-right whitespace-nowrap">
+      <%= link_to "Edit",
+            edit_admin_bicycle_bicycle_spec_path(bicycle_spec.bicycle, bicycle_spec),
+            class: "text-indigo-600 hover:text-indigo-900 mr-3",
+            data: { turbo_frame: dom_id(bicycle_spec) } %>
+      <%= button_to "Delete",
+            admin_bicycle_bicycle_spec_path(bicycle_spec.bicycle, bicycle_spec),
+            method: :delete,
+            class: "text-red-600 hover:text-red-900",
+            form: { data: { turbo_confirm: "Delete this spec?" } } %>
+    </td>
+  </tr>
+<% end %>
