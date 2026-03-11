@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+brake_repair:
+  service_order: overhaul_order
+  symptom: 브레이크 제동력 저하
+  diagnosis: 브레이크 패드 마모, 로터 오염
+  treatment: 패드 교체 및 로터 클리닝
+  repair_category: brake
+  labor_minutes: 30
+
+shift_repair:
+  service_order: overhaul_order
+  symptom: 뒷변속 소음 및 미스
+  diagnosis: 케이블 장력 부족, 행거 미세 휨
+  treatment: 행거 교정 후 변속 재조정
+  repair_category: shift
+  labor_minutes: 45
+
+wheel_repair:
+  service_order: repair_order
+  symptom: 앞바퀴 좌우 떨림
+  diagnosis: 스포크 텐션 불균형
+  treatment: 휠 트루잉 작업
+  repair_category: wheel
+  labor_minutes: 60

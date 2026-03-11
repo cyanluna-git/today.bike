@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_000004) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -90,6 +90,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_000002) do
     t.index ["phone"], name: "index_customers_on_phone", unique: true
   end
 
+  create_table "parts_replacements", force: :cascade do |t|
+    t.string "component", null: false
+    t.decimal "cost", precision: 10
+    t.datetime "created_at", null: false
+    t.string "new_brand", null: false
+    t.string "new_model", null: false
+    t.string "old_brand"
+    t.string "old_model"
+    t.text "reason"
+    t.integer "service_order_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["component"], name: "index_parts_replacements_on_component"
+    t.index ["service_order_id"], name: "index_parts_replacements_on_service_order_id"
+  end
+
+  create_table "repair_logs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "diagnosis"
+    t.integer "labor_minutes"
+    t.string "repair_category", null: false
+    t.integer "service_order_id", null: false
+    t.text "symptom", null: false
+    t.text "treatment"
+    t.datetime "updated_at", null: false
+    t.index ["repair_category"], name: "index_repair_logs_on_repair_category"
+    t.index ["service_order_id"], name: "index_repair_logs_on_service_order_id"
+  end
+
   create_table "service_orders", force: :cascade do |t|
     t.integer "bicycle_id", null: false
     t.datetime "completed_at"
@@ -138,6 +166,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_000002) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bicycle_specs", "bicycles"
   add_foreign_key "bicycles", "customers"
+  add_foreign_key "parts_replacements", "service_orders"
+  add_foreign_key "repair_logs", "service_orders"
   add_foreign_key "service_orders", "bicycles"
   add_foreign_key "service_photos", "service_orders"
   add_foreign_key "service_progresses", "service_orders"

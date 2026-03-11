@@ -1,0 +1,3 @@
+<%= turbo_stream.replace @parts_replacement do %>
+  <%= render "admin/parts_replacements/form", service_order: @service_order, parts_replacement: @parts_replacement %>
+<% end %>

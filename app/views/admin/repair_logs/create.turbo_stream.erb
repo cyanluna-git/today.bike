@@ -1,0 +1,11 @@
+<%= turbo_stream.prepend "repair_logs_list" do %>
+  <%= render "admin/repair_logs/repair_log", repair_log: @repair_log %>
+<% end %>
+
+<%= turbo_stream.replace "repair_log_form" do %>
+  <%= render "admin/repair_logs/form", service_order: @service_order, repair_log: RepairLog.new %>
+<% end %>
+
+<%= turbo_stream.replace "repair_logs_empty" do %>
+  <template id="repair_logs_empty"></template>
+<% end %>

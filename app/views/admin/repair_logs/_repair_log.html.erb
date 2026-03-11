@@ -1,0 +1,61 @@
+<%= turbo_frame_tag repair_log do %>
+  <div id="<%= dom_id(repair_log) %>" class="border border-gray-200 rounded-lg p-4 bg-white">
+    <div class="flex items-start justify-between">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+            <%= repair_log.category_label %>
+          </span>
+          <% if repair_log.labor_minutes.present? %>
+            <span class="text-xs text-gray-500">
+              <svg class="inline w-3.5 h-3.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <%= repair_log.labor_minutes %>분
+            </span>
+          <% end %>
+        </div>
+
+        <div class="space-y-1.5 text-sm">
+          <div>
+            <span class="font-medium text-gray-700">증상:</span>
+            <span class="text-gray-900 whitespace-pre-wrap"><%= repair_log.symptom %></span>
+          </div>
+          <% if repair_log.diagnosis.present? %>
+            <div>
+              <span class="font-medium text-gray-700">진단:</span>
+              <span class="text-gray-900 whitespace-pre-wrap"><%= repair_log.diagnosis %></span>
+            </div>
+          <% end %>
+          <% if repair_log.treatment.present? %>
+            <div>
+              <span class="font-medium text-gray-700">처치:</span>
+              <span class="text-gray-900 whitespace-pre-wrap"><%= repair_log.treatment %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1 ml-4 shrink-0">
+        <%= link_to edit_admin_service_order_repair_log_path(repair_log.service_order, repair_log),
+              class: "inline-flex items-center rounded-md p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-gray-100 transition",
+              data: { turbo_frame: dom_id(repair_log) } do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        <% end %>
+        <%= button_to admin_service_order_repair_log_path(repair_log.service_order, repair_log),
+              method: :delete,
+              class: "inline-flex items-center rounded-md p-1.5 text-gray-400 hover:text-red-600 hover:bg-gray-100 transition",
+              form: { data: { turbo_confirm: "이 수리내역을 삭제하시겠습니까?" } } do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        <% end %>
+      </div>
+    </div>
+    <div class="mt-2 text-xs text-gray-400">
+      <%= repair_log.created_at.strftime("%Y-%m-%d %H:%M") %>
+    </div>
+  </div>
+<% end %>

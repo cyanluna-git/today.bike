@@ -1,0 +1,61 @@
+<%= turbo_frame_tag(repair_log.persisted? ? repair_log : "repair_log_form") do %>
+  <div class="border border-indigo-200 rounded-lg p-4 bg-indigo-50/50">
+    <%= form_with model: [Admin, service_order, repair_log],
+                  url: repair_log.persisted? ? admin_service_order_repair_log_path(service_order, repair_log) : admin_service_order_repair_logs_path(service_order),
+                  class: "space-y-4" do |f| %>
+
+      <% if repair_log.errors.any? %>
+        <div class="rounded-md bg-red-50 p-3">
+          <ul class="text-sm text-red-700 list-disc list-inside">
+            <% repair_log.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="<%= f.field_id(:repair_category) %>" class="block text-sm font-medium text-gray-700 mb-1">수리 분류 <span class="text-red-500">*</span></label>
+          <%= f.select :repair_category,
+                RepairLog.repair_categories.keys.map { |k| [RepairLog::CATEGORY_LABELS[k], k] },
+                { include_blank: "선택하세요", selected: repair_log.repair_category },
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+        </div>
+        <div>
+          <label for="<%= f.field_id(:labor_minutes) %>" class="block text-sm font-medium text-gray-700 mb-1">작업 시간 (분)</label>
+          <%= f.number_field :labor_minutes, min: 0, step: 1, placeholder: "예: 30",
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+        </div>
+      </div>
+
+      <div>
+        <label for="<%= f.field_id(:symptom) %>" class="block text-sm font-medium text-gray-700 mb-1">증상 <span class="text-red-500">*</span></label>
+        <%= f.text_area :symptom, rows: 2, placeholder: "고객이 호소하는 증상을 기록합니다...",
+              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+      </div>
+
+      <div>
+        <label for="<%= f.field_id(:diagnosis) %>" class="block text-sm font-medium text-gray-700 mb-1">진단</label>
+        <%= f.text_area :diagnosis, rows: 2, placeholder: "정비사의 진단 내용...",
+              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+      </div>
+
+      <div>
+        <label for="<%= f.field_id(:treatment) %>" class="block text-sm font-medium text-gray-700 mb-1">처치</label>
+        <%= f.text_area :treatment, rows: 2, placeholder: "수행한 수리/정비 내용...",
+              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <% if repair_log.persisted? %>
+          <%= link_to "취소", admin_service_order_repair_log_path(service_order, repair_log),
+                class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition",
+                data: { turbo_frame: dom_id(repair_log) } %>
+        <% end %>
+        <%= f.submit repair_log.persisted? ? "수정" : "추가",
+              class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

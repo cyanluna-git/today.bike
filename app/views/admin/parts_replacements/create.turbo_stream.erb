@@ -1,0 +1,11 @@
+<%= turbo_stream.prepend "parts_replacements_list" do %>
+  <%= render "admin/parts_replacements/parts_replacement", parts_replacement: @parts_replacement %>
+<% end %>
+
+<%= turbo_stream.replace "parts_replacement_form" do %>
+  <%= render "admin/parts_replacements/form", service_order: @service_order, parts_replacement: PartsReplacement.new %>
+<% end %>
+
+<%= turbo_stream.replace "parts_replacements_empty" do %>
+  <template id="parts_replacements_empty"></template>
+<% end %>

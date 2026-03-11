@@ -1,0 +1,88 @@
+<%= turbo_frame_tag(parts_replacement.persisted? ? parts_replacement : "parts_replacement_form") do %>
+  <div class="border border-emerald-200 rounded-lg p-4 bg-emerald-50/50">
+    <%= form_with model: [Admin, service_order, parts_replacement],
+                  url: parts_replacement.persisted? ? admin_service_order_parts_replacement_path(service_order, parts_replacement) : admin_service_order_parts_replacements_path(service_order),
+                  class: "space-y-4" do |f| %>
+
+      <% if parts_replacement.errors.any? %>
+        <div class="rounded-md bg-red-50 p-3">
+          <ul class="text-sm text-red-700 list-disc list-inside">
+            <% parts_replacement.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <label for="<%= f.field_id(:component) %>" class="block text-sm font-medium text-gray-700 mb-1">부품 종류 <span class="text-red-500">*</span></label>
+        <%= f.select :component,
+              BicycleSpec::COMPONENTS.map { |c| [PartsReplacement::COMPONENT_LABELS[c] || c.titleize, c] },
+              { include_blank: "선택하세요", selected: parts_replacement.component },
+              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+      </div>
+
+      <%# Before (old part) %>
+      <fieldset class="border border-gray-200 rounded-md p-3">
+        <legend class="text-sm font-medium text-gray-500 px-1">교체 전 (기존 부품)</legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="<%= f.field_id(:old_brand) %>" class="block text-sm font-medium text-gray-700 mb-1">브랜드</label>
+            <%= f.text_field :old_brand, placeholder: "예: Shimano",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+          <div>
+            <label for="<%= f.field_id(:old_model) %>" class="block text-sm font-medium text-gray-700 mb-1">모델</label>
+            <%= f.text_field :old_model, placeholder: "예: Ultegra R8000",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+        </div>
+      </fieldset>
+
+      <%# After (new part) %>
+      <fieldset class="border border-indigo-200 rounded-md p-3">
+        <legend class="text-sm font-medium text-indigo-600 px-1">교체 후 (신규 부품)</legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="<%= f.field_id(:new_brand) %>" class="block text-sm font-medium text-gray-700 mb-1">브랜드 <span class="text-red-500">*</span></label>
+            <%= f.text_field :new_brand, placeholder: "예: Shimano",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+          <div>
+            <label for="<%= f.field_id(:new_model) %>" class="block text-sm font-medium text-gray-700 mb-1">모델 <span class="text-red-500">*</span></label>
+            <%= f.text_field :new_model, placeholder: "예: Ultegra R8100",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="<%= f.field_id(:reason) %>" class="block text-sm font-medium text-gray-700 mb-1">교체 사유</label>
+          <%= f.text_area :reason, rows: 2, placeholder: "교체 사유를 기록합니다...",
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+        </div>
+        <div>
+          <label for="<%= f.field_id(:cost) %>" class="block text-sm font-medium text-gray-700 mb-1">비용 (원)</label>
+          <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <span class="text-gray-500 text-sm">&yen;</span>
+            </div>
+            <%= f.number_field :cost, min: 0, step: 1000, placeholder: "0",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm pl-7" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <% if parts_replacement.persisted? %>
+          <%= link_to "취소", admin_service_order_parts_replacement_path(service_order, parts_replacement),
+                class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition",
+                data: { turbo_frame: dom_id(parts_replacement) } %>
+        <% end %>
+        <%= f.submit parts_replacement.persisted? ? "수정" : "추가",
+              class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

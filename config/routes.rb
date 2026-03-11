@@ -22,6 +22,8 @@ Rails.application.routes.draw do
         patch :update_status
       end
       resources :service_photos, only: %i[create destroy]
+      resources :repair_logs, only: %i[create edit update destroy]
+      resources :parts_replacements, only: %i[create edit update destroy]
     end
   end
 

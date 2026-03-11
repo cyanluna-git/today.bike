@@ -4,6 +4,8 @@ class ServiceOrder < ApplicationRecord
   has_one :customer, through: :bicycle
   has_many :service_progresses, dependent: :destroy
   has_many :service_photos, dependent: :destroy
+  has_many :repair_logs, dependent: :destroy
+  has_many :parts_replacements, dependent: :destroy
 
   # Enums
   enum :service_type, {

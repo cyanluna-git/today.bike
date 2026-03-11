@@ -1,9 +1,24 @@
-<div class="bg-white shadow rounded-lg overflow-hidden">
-  <div class="px-6 py-12 text-center">
-    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.71-3.143A1.125 1.125 0 014.5 11.035V7.965a1.125 1.125 0 011.21-.992l5.71 3.143m0 0l5.71-3.143a1.125 1.125 0 011.21.992v3.07a1.125 1.125 0 01-1.21.992l-5.71 3.143z" />
-    </svg>
-    <h3 class="mt-2 text-sm font-semibold text-gray-900">부품교체</h3>
-    <p class="mt-1 text-sm text-gray-500">Coming soon. Parts replacement records will be available here.</p>
+<div class="space-y-4">
+  <%# New parts replacement form %>
+  <%= render "admin/parts_replacements/form", service_order: service_order, parts_replacement: PartsReplacement.new %>
+
+  <%# Parts replacements list %>
+  <div id="parts_replacements_list" class="space-y-3">
+    <% replacements = service_order.parts_replacements.ordered %>
+    <% if replacements.any? %>
+      <% replacements.each do |parts_replacement| %>
+        <%= render "admin/parts_replacements/parts_replacement", parts_replacement: parts_replacement %>
+      <% end %>
+    <% else %>
+      <div id="parts_replacements_empty" class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-6 py-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.71-3.143A1.125 1.125 0 014.5 11.035V7.965a1.125 1.125 0 011.21-.992l5.71 3.143m0 0l5.71-3.143a1.125 1.125 0 011.21.992v3.07a1.125 1.125 0 01-1.21.992l-5.71 3.143z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-semibold text-gray-900">부품교체 내역 없음</h3>
+          <p class="mt-1 text-sm text-gray-500">위 폼을 사용하여 부품교체 내역을 추가하세요.</p>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>

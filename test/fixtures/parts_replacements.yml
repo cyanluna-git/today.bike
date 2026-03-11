@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+chain_replacement:
+  service_order: completed_order
+  component: chain
+  old_brand: Shimano
+  old_model: CN-HG701
+  new_brand: Shimano
+  new_model: CN-HG901
+  reason: 체인 늘어남 (0.75% 이상)
+  cost: 45000
+
+cassette_replacement:
+  service_order: completed_order
+  component: cassette
+  old_brand: Shimano
+  old_model: CS-R8000 11-28T
+  new_brand: Shimano
+  new_model: CS-R8100 11-30T
+  reason: 카세트 마모
+  cost: 70000
+
+tire_replacement:
+  service_order: repair_order
+  component: tire
+  old_brand: Continental
+  old_model: GP5000 25c
+  new_brand: Continental
+  new_model: GP5000 S TR 28c
+  reason: 사이드월 손상
+  cost: 85000
