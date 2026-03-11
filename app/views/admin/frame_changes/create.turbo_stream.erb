@@ -1,0 +1,11 @@
+<%= turbo_stream.prepend "frame_changes_list" do %>
+  <%= render "admin/frame_changes/frame_change", frame_change: @frame_change %>
+<% end %>
+
+<%= turbo_stream.replace "frame_change_form" do %>
+  <%= render "admin/frame_changes/form", service_order: @service_order, frame_change: FrameChange.new %>
+<% end %>
+
+<%= turbo_stream.replace "frame_changes_empty" do %>
+  <template id="frame_changes_empty"></template>
+<% end %>

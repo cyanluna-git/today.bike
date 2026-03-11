@@ -64,6 +64,22 @@
                 class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700">
           수리내역
         </button>
+        <button type="button"
+                data-tabs-target="tab"
+                data-tab-name="upgrades"
+                data-action="click->tabs#switch"
+                aria-selected="false"
+                class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700">
+          업그레이드
+        </button>
+        <button type="button"
+                data-tabs-target="tab"
+                data-tab-name="frame_changes"
+                data-action="click->tabs#switch"
+                aria-selected="false"
+                class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700">
+          기변
+        </button>
       </nav>
     </div>
 
@@ -86,6 +102,14 @@
 
     <turbo-frame id="service_order_tab_repairs" data-tabs-target="panel" data-tab-name="repairs" class="hidden">
       <%= render "admin/service_orders/tab_repairs", service_order: @service_order %>
+    </turbo-frame>
+
+    <turbo-frame id="service_order_tab_upgrades" data-tabs-target="panel" data-tab-name="upgrades" class="hidden">
+      <%= render "admin/service_orders/tab_upgrades", service_order: @service_order %>
+    </turbo-frame>
+
+    <turbo-frame id="service_order_tab_frame_changes" data-tabs-target="panel" data-tab-name="frame_changes" class="hidden">
+      <%= render "admin/service_orders/tab_frame_changes", service_order: @service_order %>
     </turbo-frame>
   </div>
 </div>

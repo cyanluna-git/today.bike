@@ -2,6 +2,9 @@ class PartsReplacement < ApplicationRecord
   # Associations
   belongs_to :service_order
 
+  # Callbacks
+  after_create :update_bicycle_spec
+
   # Validations
   validates :component, presence: true, inclusion: { in: BicycleSpec::COMPONENTS }
   validates :new_brand, presence: true
@@ -35,5 +38,16 @@ class PartsReplacement < ApplicationRecord
 
   def component_label
     COMPONENT_LABELS[component] || component&.titleize
+  end
+
+  private
+
+  def update_bicycle_spec
+    BicycleSpecUpdater.upsert_spec(
+      bicycle: service_order.bicycle,
+      component: component,
+      brand: new_brand,
+      component_model: new_model
+    )
   end
 end

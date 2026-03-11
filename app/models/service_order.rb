@@ -6,6 +6,9 @@ class ServiceOrder < ApplicationRecord
   has_many :service_photos, dependent: :destroy
   has_many :repair_logs, dependent: :destroy
   has_many :parts_replacements, dependent: :destroy
+  has_many :upgrades, dependent: :destroy
+  has_many :frame_changes, dependent: :destroy
+  has_many :fitting_records, dependent: :nullify
 
   # Enums
   enum :service_type, {

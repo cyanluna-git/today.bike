@@ -1,0 +1,3 @@
+<%= turbo_stream.replace @upgrade do %>
+  <%= render "admin/upgrades/form", service_order: @service_order, upgrade: @upgrade %>
+<% end %>

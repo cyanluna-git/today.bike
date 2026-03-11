@@ -1,0 +1,82 @@
+<%
+  diff = latest.diff_from(previous)
+  measurement_labels = {
+    saddle_height: "안장 높이",
+    saddle_setback: "안장 후퇴량",
+    saddle_tilt: "안장 기울기",
+    handlebar_width: "핸들바 폭",
+    handlebar_drop: "핸들바 드롭",
+    handlebar_reach: "핸들바 리치",
+    handlebar_stack: "핸들바 스택",
+    stem_length: "스템 길이",
+    stem_angle: "스템 각도",
+    stem_spacer: "스페이서",
+    crank_length: "크랭크 길이"
+  }
+  angle_fields = %i[saddle_tilt stem_angle]
+%>
+
+<div class="bg-white shadow rounded-lg overflow-hidden mb-8">
+  <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+    <h2 class="text-lg font-semibold text-gray-900">최근 피팅 비교</h2>
+    <p class="text-sm text-gray-500 mt-1">
+      <%= previous.recorded_at.strftime("%Y-%m-%d") %> vs <%= latest.recorded_at.strftime("%Y-%m-%d") %>
+    </p>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">측정항목</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            이전
+            <span class="block text-gray-400 normal-case font-normal"><%= previous.recorded_at.strftime("%Y-%m-%d") %></span>
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            최근
+            <span class="block text-gray-400 normal-case font-normal"><%= latest.recorded_at.strftime("%Y-%m-%d") %></span>
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">변화</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% FittingRecord::MEASUREMENT_FIELDS.each do |field| %>
+          <%
+            label = measurement_labels[field] || field.to_s.titleize
+            unit = angle_fields.include?(field) ? "&deg;" : " mm"
+            prev_val = previous.send(field)
+            curr_val = latest.send(field)
+            changed = diff.key?(field)
+            delta = diff.dig(field, :delta)
+          %>
+          <tr class="<%= 'bg-yellow-50' if changed %>">
+            <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900"><%= label %></td>
+            <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-700"><%= prev_val.present? ? "#{prev_val}#{unit}".html_safe : "—" %></td>
+            <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-700"><%= curr_val.present? ? "#{curr_val}#{unit}".html_safe : "—" %></td>
+            <td class="px-6 py-3 whitespace-nowrap text-sm font-medium">
+              <% if changed && delta %>
+                <% if delta > 0 %>
+                  <span class="text-blue-600">+<%= delta.abs %><%== unit %></span>
+                <% elsif delta < 0 %>
+                  <span class="text-red-600">-<%= delta.abs %><%== unit %></span>
+                <% else %>
+                  <span class="text-gray-400">0</span>
+                <% end %>
+              <% elsif changed %>
+                <span class="text-yellow-600">변경됨</span>
+              <% else %>
+                <span class="text-gray-300">—</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex gap-4">
+    <%= link_to "이전 기록 상세", admin_bicycle_fitting_record_path(bicycle, previous), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+    <%= link_to "최근 기록 상세", admin_bicycle_fitting_record_path(bicycle, latest), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+  </div>
+</div>

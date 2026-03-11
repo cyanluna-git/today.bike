@@ -1,0 +1,12 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+frame_change_one:
+  service_order: delivered_order
+  old_frame_brand: Pinarello
+  old_frame_model: Dogma F
+  new_frame_brand: Cervelo
+  new_frame_model: S5
+  new_frame_size: "54"
+  transferred_parts: '["wheelset","groupset","saddle","handlebar","seatpost","stem","bartape","pedal"]'
+  reason: 에어로 프레임으로 변경
+  cost: 5000000

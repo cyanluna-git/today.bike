@@ -1,0 +1,24 @@
+<div class="space-y-4">
+  <%# New upgrade form %>
+  <%= render "admin/upgrades/form", service_order: service_order, upgrade: Upgrade.new %>
+
+  <%# Upgrades list %>
+  <div id="upgrades_list" class="space-y-3">
+    <% upgrades = service_order.upgrades.ordered %>
+    <% if upgrades.any? %>
+      <% upgrades.each do |upgrade| %>
+        <%= render "admin/upgrades/upgrade", upgrade: upgrade %>
+      <% end %>
+    <% else %>
+      <div id="upgrades_empty" class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-6 py-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-semibold text-gray-900">업그레이드 내역 없음</h3>
+          <p class="mt-1 text-sm text-gray-500">위 폼을 사용하여 업그레이드 내역을 추가하세요.</p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -13,6 +13,7 @@ Rails.application.routes.draw do
         delete "photos/:photo_id", action: :purge_photo, as: :purge_photo
       end
       resources :bicycle_specs, only: %i[new create edit update destroy]
+      resources :fitting_records
     end
     resources :service_orders do
       collection do
@@ -24,6 +25,8 @@ Rails.application.routes.draw do
       resources :service_photos, only: %i[create destroy]
       resources :repair_logs, only: %i[create edit update destroy]
       resources :parts_replacements, only: %i[create edit update destroy]
+      resources :upgrades, only: %i[create edit update destroy]
+      resources :frame_changes, only: %i[create edit update destroy]
     end
   end
 

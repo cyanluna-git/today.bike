@@ -200,11 +200,11 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-controller='tabs']"
   end
 
-  test "show has tab navigation with five tabs" do
+  test "show has tab navigation with seven tabs" do
     sign_in @admin_user
     get admin_service_order_path(@service_order)
     assert_select "nav[aria-label='Service order tabs']"
-    assert_select "button[data-tabs-target='tab']", count: 5
+    assert_select "button[data-tabs-target='tab']", count: 7
   end
 
   test "show has Korean tab labels" do
@@ -215,6 +215,8 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
     assert_select "button[data-tab-name='photos']", text: "정비사진"
     assert_select "button[data-tab-name='parts']", text: "부품교체"
     assert_select "button[data-tab-name='repairs']", text: "수리내역"
+    assert_select "button[data-tab-name='upgrades']", text: "업그레이드"
+    assert_select "button[data-tab-name='frame_changes']", text: "기변"
   end
 
   test "show has turbo frames for each tab panel" do
@@ -225,6 +227,8 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
     assert_select "turbo-frame#service_order_tab_photos"
     assert_select "turbo-frame#service_order_tab_parts"
     assert_select "turbo-frame#service_order_tab_repairs"
+    assert_select "turbo-frame#service_order_tab_upgrades"
+    assert_select "turbo-frame#service_order_tab_frame_changes"
   end
 
   test "show basic_info tab contains service order details" do

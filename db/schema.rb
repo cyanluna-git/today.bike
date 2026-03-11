@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_000004) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_000007) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -90,6 +90,47 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_000004) do
     t.index ["phone"], name: "index_customers_on_phone", unique: true
   end
 
+  create_table "fitting_records", force: :cascade do |t|
+    t.integer "bicycle_id", null: false
+    t.text "cleat_left"
+    t.text "cleat_right"
+    t.decimal "crank_length", precision: 5, scale: 1
+    t.datetime "created_at", null: false
+    t.decimal "handlebar_drop", precision: 5, scale: 1
+    t.decimal "handlebar_reach", precision: 5, scale: 1
+    t.decimal "handlebar_stack", precision: 5, scale: 1
+    t.decimal "handlebar_width", precision: 5, scale: 1
+    t.text "notes"
+    t.datetime "recorded_at", null: false
+    t.string "saddle_brand"
+    t.decimal "saddle_height", precision: 5, scale: 1
+    t.string "saddle_model"
+    t.decimal "saddle_setback", precision: 5, scale: 1
+    t.decimal "saddle_tilt", precision: 5, scale: 1
+    t.integer "service_order_id"
+    t.decimal "stem_angle", precision: 5, scale: 1
+    t.decimal "stem_length", precision: 5, scale: 1
+    t.decimal "stem_spacer", precision: 5, scale: 1
+    t.datetime "updated_at", null: false
+    t.index ["bicycle_id"], name: "index_fitting_records_on_bicycle_id"
+    t.index ["service_order_id"], name: "index_fitting_records_on_service_order_id"
+  end
+
+  create_table "frame_changes", force: :cascade do |t|
+    t.decimal "cost", precision: 10
+    t.datetime "created_at", null: false
+    t.string "new_frame_brand", null: false
+    t.string "new_frame_model", null: false
+    t.string "new_frame_size"
+    t.string "old_frame_brand"
+    t.string "old_frame_model"
+    t.text "reason"
+    t.integer "service_order_id", null: false
+    t.text "transferred_parts"
+    t.datetime "updated_at", null: false
+    t.index ["service_order_id"], name: "index_frame_changes_on_service_order_id"
+  end
+
   create_table "parts_replacements", force: :cascade do |t|
     t.string "component", null: false
     t.decimal "cost", precision: 10
@@ -162,13 +203,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_000004) do
     t.index ["service_order_id"], name: "index_service_progresses_on_service_order_id"
   end
 
+  create_table "upgrades", force: :cascade do |t|
+    t.string "after_brand", null: false
+    t.string "after_model", null: false
+    t.string "before_brand"
+    t.string "before_model"
+    t.string "component", null: false
+    t.decimal "cost", precision: 10
+    t.datetime "created_at", null: false
+    t.integer "service_order_id", null: false
+    t.datetime "updated_at", null: false
+    t.string "upgrade_purpose", default: "other", null: false
+    t.index ["component"], name: "index_upgrades_on_component"
+    t.index ["service_order_id"], name: "index_upgrades_on_service_order_id"
+    t.index ["upgrade_purpose"], name: "index_upgrades_on_upgrade_purpose"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bicycle_specs", "bicycles"
   add_foreign_key "bicycles", "customers"
+  add_foreign_key "fitting_records", "bicycles"
+  add_foreign_key "fitting_records", "service_orders"
+  add_foreign_key "frame_changes", "service_orders"
   add_foreign_key "parts_replacements", "service_orders"
   add_foreign_key "repair_logs", "service_orders"
   add_foreign_key "service_orders", "bicycles"
   add_foreign_key "service_photos", "service_orders"
   add_foreign_key "service_progresses", "service_orders"
+  add_foreign_key "upgrades", "service_orders"
 end

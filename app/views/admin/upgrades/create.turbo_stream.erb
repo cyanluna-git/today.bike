@@ -1,0 +1,11 @@
+<%= turbo_stream.prepend "upgrades_list" do %>
+  <%= render "admin/upgrades/upgrade", upgrade: @upgrade %>
+<% end %>
+
+<%= turbo_stream.replace "upgrade_form" do %>
+  <%= render "admin/upgrades/form", service_order: @service_order, upgrade: Upgrade.new %>
+<% end %>
+
+<%= turbo_stream.replace "upgrades_empty" do %>
+  <template id="upgrades_empty"></template>
+<% end %>

@@ -1,0 +1,52 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+first_fitting:
+  bicycle: road_bike
+  service_order: overhaul_order
+  recorded_at: <%= Time.zone.parse("2026-02-01 10:00:00") %>
+  saddle_height: 720.0
+  saddle_setback: 50.0
+  saddle_tilt: -1.0
+  saddle_brand: Fizik
+  saddle_model: Arione R3
+  handlebar_width: 420.0
+  handlebar_drop: 125.0
+  handlebar_reach: 80.0
+  handlebar_stack: 0.0
+  stem_length: 110.0
+  stem_angle: -6.0
+  stem_spacer: 15.0
+  crank_length: 172.5
+  cleat_left: "중앙 정렬, 약간 외측"
+  cleat_right: "중앙 정렬"
+  notes: "초기 피팅"
+
+second_fitting:
+  bicycle: road_bike
+  recorded_at: <%= Time.zone.parse("2026-03-01 14:00:00") %>
+  saddle_height: 722.0
+  saddle_setback: 48.0
+  saddle_tilt: -1.5
+  saddle_brand: Fizik
+  saddle_model: Arione R3
+  handlebar_width: 420.0
+  handlebar_drop: 125.0
+  handlebar_reach: 80.0
+  handlebar_stack: 0.0
+  stem_length: 100.0
+  stem_angle: -6.0
+  stem_spacer: 20.0
+  crank_length: 172.5
+  cleat_left: "중앙 정렬, 약간 외측"
+  cleat_right: "중앙 정렬, 약간 내측"
+  notes: "스템 길이 조정"
+
+gravel_fitting:
+  bicycle: gravel_bike
+  recorded_at: <%= Time.zone.parse("2026-03-05 11:00:00") %>
+  saddle_height: 700.0
+  saddle_setback: 55.0
+  handlebar_width: 440.0
+  stem_length: 90.0
+  stem_angle: -6.0
+  crank_length: 170.0

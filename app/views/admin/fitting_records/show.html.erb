@@ -1,0 +1,163 @@
+<% content_for(:title, "피팅기록 - #{@bicycle.brand} #{@bicycle.model_label} - Admin - Today Bike") %>
+
+<div class="w-full">
+  <div class="mb-6">
+    <%= link_to admin_bicycle_fitting_records_path(@bicycle), class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      피팅기록 목록
+    <% end %>
+  </div>
+
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">피팅기록</h1>
+      <p class="text-sm text-gray-500 mt-1"><%= @bicycle.brand %> <%= @bicycle.model_label %> &mdash; <%= @fitting_record.recorded_at.strftime("%Y-%m-%d %H:%M") %></p>
+      <% if @fitting_record.service_order %>
+        <p class="text-sm text-gray-500 mt-1">서비스오더: <%= link_to @fitting_record.service_order.order_number, admin_service_order_path(@fitting_record.service_order), class: "text-indigo-600 hover:text-indigo-900" %></p>
+      <% end %>
+    </div>
+    <div class="flex items-center gap-3">
+      <%= link_to "수정", edit_admin_bicycle_fitting_record_path(@bicycle, @fitting_record), class: "inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" %>
+      <%= button_to "삭제", admin_bicycle_fitting_record_path(@bicycle, @fitting_record), method: :delete,
+            class: "inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 transition",
+            form: { data: { turbo_confirm: "이 피팅기록을 삭제하시겠습니까?" } } %>
+    </div>
+  </div>
+
+  <%# Saddle %>
+  <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+    <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+      <h2 class="text-sm font-semibold text-gray-900">안장 (Saddle)</h2>
+    </div>
+    <dl class="divide-y divide-gray-200">
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">높이</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.saddle_height.present? ? "#{@fitting_record.saddle_height} mm" : "—" %></dd>
+      </div>
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">후퇴량</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.saddle_setback.present? ? "#{@fitting_record.saddle_setback} mm" : "—" %></dd>
+      </div>
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">기울기</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.saddle_tilt.present? ? "#{@fitting_record.saddle_tilt}&deg;".html_safe : "—" %></dd>
+      </div>
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">브랜드</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.saddle_brand.presence || "—" %></dd>
+      </div>
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">모델</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.saddle_model.presence || "—" %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <%# Handlebar %>
+  <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+    <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+      <h2 class="text-sm font-semibold text-gray-900">핸들바 (Handlebar)</h2>
+    </div>
+    <dl class="divide-y divide-gray-200">
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">폭</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.handlebar_width.present? ? "#{@fitting_record.handlebar_width} mm" : "—" %></dd>
+      </div>
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">드롭</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.handlebar_drop.present? ? "#{@fitting_record.handlebar_drop} mm" : "—" %></dd>
+      </div>
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">리치</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.handlebar_reach.present? ? "#{@fitting_record.handlebar_reach} mm" : "—" %></dd>
+      </div>
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">스택</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.handlebar_stack.present? ? "#{@fitting_record.handlebar_stack} mm" : "—" %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <%# Stem %>
+  <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+    <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+      <h2 class="text-sm font-semibold text-gray-900">스템 (Stem)</h2>
+    </div>
+    <dl class="divide-y divide-gray-200">
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">길이</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.stem_length.present? ? "#{@fitting_record.stem_length} mm" : "—" %></dd>
+      </div>
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">각도</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.stem_angle.present? ? "#{@fitting_record.stem_angle}&deg;".html_safe : "—" %></dd>
+      </div>
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">스페이서</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.stem_spacer.present? ? "#{@fitting_record.stem_spacer} mm" : "—" %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <%# Crank %>
+  <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+    <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+      <h2 class="text-sm font-semibold text-gray-900">크랭크 (Crank)</h2>
+    </div>
+    <dl class="divide-y divide-gray-200">
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">길이</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @fitting_record.crank_length.present? ? "#{@fitting_record.crank_length} mm" : "—" %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <%# Cleat %>
+  <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+    <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+      <h2 class="text-sm font-semibold text-gray-900">클릿 (Cleat)</h2>
+    </div>
+    <dl class="divide-y divide-gray-200">
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">왼발</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 whitespace-pre-line"><%= @fitting_record.cleat_left.presence || "—" %></dd>
+      </div>
+      <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">오른발</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0 whitespace-pre-line"><%= @fitting_record.cleat_right.presence || "—" %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <%# Notes %>
+  <% if @fitting_record.notes.present? %>
+    <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+      <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+        <h2 class="text-sm font-semibold text-gray-900">메모</h2>
+      </div>
+      <div class="px-6 py-4">
+        <p class="text-sm text-gray-900 whitespace-pre-line"><%= @fitting_record.notes %></p>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Photos %>
+  <% if @fitting_record.photos.attached? %>
+    <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+      <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+        <h2 class="text-sm font-semibold text-gray-900">사진</h2>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <% @fitting_record.photos.each do |photo| %>
+            <a href="<%= url_for(photo) %>" target="_blank">
+              <%= image_tag photo.variant(resize_to_limit: [300, 300]), class: "w-full h-40 object-cover rounded-lg shadow-sm hover:shadow-md transition" %>
+            </a>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,90 @@
+<%= turbo_frame_tag(upgrade.persisted? ? upgrade : "upgrade_form") do %>
+  <div class="border border-purple-200 rounded-lg p-4 bg-purple-50/50">
+    <%= form_with model: [Admin, service_order, upgrade],
+                  url: upgrade.persisted? ? admin_service_order_upgrade_path(service_order, upgrade) : admin_service_order_upgrades_path(service_order),
+                  class: "space-y-4" do |f| %>
+
+      <% if upgrade.errors.any? %>
+        <div class="rounded-md bg-red-50 p-3">
+          <ul class="text-sm text-red-700 list-disc list-inside">
+            <% upgrade.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="<%= f.field_id(:component) %>" class="block text-sm font-medium text-gray-700 mb-1">부품 종류 <span class="text-red-500">*</span></label>
+          <%= f.select :component,
+                BicycleSpec::COMPONENTS.map { |c| [Upgrade::COMPONENT_LABELS[c] || c.titleize, c] },
+                { include_blank: "선택하세요", selected: upgrade.component },
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+        </div>
+        <div>
+          <label for="<%= f.field_id(:upgrade_purpose) %>" class="block text-sm font-medium text-gray-700 mb-1">업그레이드 목적 <span class="text-red-500">*</span></label>
+          <%= f.select :upgrade_purpose,
+                Upgrade.upgrade_purposes.keys.map { |k| [Upgrade::PURPOSE_LABELS[k], k] },
+                { include_blank: "선택하세요", selected: upgrade.upgrade_purpose },
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+        </div>
+      </div>
+
+      <%# Before (old spec) %>
+      <fieldset class="border border-gray-200 rounded-md p-3">
+        <legend class="text-sm font-medium text-gray-500 px-1">업그레이드 전 (기존 부품)</legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="<%= f.field_id(:before_brand) %>" class="block text-sm font-medium text-gray-700 mb-1">브랜드</label>
+            <%= f.text_field :before_brand, placeholder: "예: Shimano",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+          <div>
+            <label for="<%= f.field_id(:before_model) %>" class="block text-sm font-medium text-gray-700 mb-1">모델</label>
+            <%= f.text_field :before_model, placeholder: "예: Ultegra R8000",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+        </div>
+      </fieldset>
+
+      <%# After (new spec) %>
+      <fieldset class="border border-purple-200 rounded-md p-3">
+        <legend class="text-sm font-medium text-purple-600 px-1">업그레이드 후 (신규 부품)</legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="<%= f.field_id(:after_brand) %>" class="block text-sm font-medium text-gray-700 mb-1">브랜드 <span class="text-red-500">*</span></label>
+            <%= f.text_field :after_brand, placeholder: "예: Shimano",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+          <div>
+            <label for="<%= f.field_id(:after_model) %>" class="block text-sm font-medium text-gray-700 mb-1">모델 <span class="text-red-500">*</span></label>
+            <%= f.text_field :after_model, placeholder: "예: Dura-Ace R9200",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+        </div>
+      </fieldset>
+
+      <div>
+        <label for="<%= f.field_id(:cost) %>" class="block text-sm font-medium text-gray-700 mb-1">비용 (원)</label>
+        <div class="relative">
+          <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <span class="text-gray-500 text-sm">&yen;</span>
+          </div>
+          <%= f.number_field :cost, min: 0, step: 1000, placeholder: "0",
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm pl-7" %>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <% if upgrade.persisted? %>
+          <%= link_to "취소", admin_service_order_upgrade_path(service_order, upgrade),
+                class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition",
+                data: { turbo_frame: dom_id(upgrade) } %>
+        <% end %>
+        <%= f.submit upgrade.persisted? ? "수정" : "추가",
+              class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

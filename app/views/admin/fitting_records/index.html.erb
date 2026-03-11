@@ -1,0 +1,68 @@
+<% content_for(:title, "피팅기록 - #{@bicycle.brand} #{@bicycle.model_label} - Admin - Today Bike") %>
+
+<div class="w-full">
+  <div class="mb-6">
+    <%= link_to admin_bicycle_path(@bicycle), class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      <%= @bicycle.brand %> <%= @bicycle.model_label %>
+    <% end %>
+  </div>
+
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">피팅기록</h1>
+    <%= link_to "새 피팅기록", new_admin_bicycle_fitting_record_path(@bicycle), class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition" %>
+  </div>
+
+  <%# Comparison section: latest vs previous %>
+  <% if @latest && @previous %>
+    <%= render "comparison", latest: @latest, previous: @previous, bicycle: @bicycle %>
+  <% end %>
+
+  <%# Fitting records list %>
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">기록일</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">안장높이</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">스템 길이</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">핸들바 폭</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">크랭크</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">서비스오더</th>
+          <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% if @fitting_records.any? %>
+          <% @fitting_records.each do |record| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= link_to record.recorded_at.strftime("%Y-%m-%d %H:%M"), admin_bicycle_fitting_record_path(@bicycle, record), class: "text-indigo-600 hover:text-indigo-900" %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= record.saddle_height.present? ? "#{record.saddle_height} mm" : "—" %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= record.stem_length.present? ? "#{record.stem_length} mm" : "—" %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= record.handlebar_width.present? ? "#{record.handlebar_width} mm" : "—" %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= record.crank_length.present? ? "#{record.crank_length} mm" : "—" %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <% if record.service_order %>
+                  <%= link_to record.service_order.order_number, admin_service_order_path(record.service_order), class: "text-indigo-600 hover:text-indigo-900" %>
+                <% else %>
+                  —
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <%= link_to "보기", admin_bicycle_fitting_record_path(@bicycle, record), class: "text-indigo-600 hover:text-indigo-900" %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-500">피팅기록이 없습니다.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

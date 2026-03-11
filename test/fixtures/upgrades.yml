@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+wheelset_upgrade:
+  service_order: delivered_order
+  component: wheelset
+  before_brand: Shimano
+  before_model: RS510
+  after_brand: Zipp
+  after_model: 303 Firecrest
+  upgrade_purpose: lightweight
+  cost: 2000000
+
+groupset_upgrade:
+  service_order: overhaul_order
+  component: groupset
+  before_brand: Shimano
+  before_model: 105 R7000
+  after_brand: Shimano
+  after_model: Ultegra Di2 R8170
+  upgrade_purpose: performance
+  cost: 1800000
+
+saddle_upgrade:
+  service_order: repair_order
+  component: saddle
+  before_brand: Bontrager
+  before_model: Montrose
+  after_brand: Fizik
+  after_model: Argo Vento R1
+  upgrade_purpose: comfort
+  cost: 280000

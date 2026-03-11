@@ -1,0 +1,101 @@
+<%= turbo_frame_tag(frame_change.persisted? ? frame_change : "frame_change_form") do %>
+  <div class="border border-amber-200 rounded-lg p-4 bg-amber-50/50">
+    <%= form_with model: [Admin, service_order, frame_change],
+                  url: frame_change.persisted? ? admin_service_order_frame_change_path(service_order, frame_change) : admin_service_order_frame_changes_path(service_order),
+                  class: "space-y-4" do |f| %>
+
+      <% if frame_change.errors.any? %>
+        <div class="rounded-md bg-red-50 p-3">
+          <ul class="text-sm text-red-700 list-disc list-inside">
+            <% frame_change.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%# Before (old frame) %>
+      <fieldset class="border border-gray-200 rounded-md p-3">
+        <legend class="text-sm font-medium text-gray-500 px-1">기존 프레임</legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="<%= f.field_id(:old_frame_brand) %>" class="block text-sm font-medium text-gray-700 mb-1">브랜드</label>
+            <%= f.text_field :old_frame_brand, placeholder: "예: Specialized",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+          <div>
+            <label for="<%= f.field_id(:old_frame_model) %>" class="block text-sm font-medium text-gray-700 mb-1">모델</label>
+            <%= f.text_field :old_frame_model, placeholder: "예: Tarmac SL7",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+        </div>
+      </fieldset>
+
+      <%# After (new frame) %>
+      <fieldset class="border border-amber-200 rounded-md p-3">
+        <legend class="text-sm font-medium text-amber-600 px-1">신규 프레임</legend>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label for="<%= f.field_id(:new_frame_brand) %>" class="block text-sm font-medium text-gray-700 mb-1">브랜드 <span class="text-red-500">*</span></label>
+            <%= f.text_field :new_frame_brand, placeholder: "예: Pinarello",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+          <div>
+            <label for="<%= f.field_id(:new_frame_model) %>" class="block text-sm font-medium text-gray-700 mb-1">모델 <span class="text-red-500">*</span></label>
+            <%= f.text_field :new_frame_model, placeholder: "예: Dogma F",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+          <div>
+            <label for="<%= f.field_id(:new_frame_size) %>" class="block text-sm font-medium text-gray-700 mb-1">사이즈</label>
+            <%= f.text_field :new_frame_size, placeholder: "예: 54",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+          </div>
+        </div>
+      </fieldset>
+
+      <%# Transferred parts %>
+      <fieldset class="border border-gray-200 rounded-md p-3">
+        <legend class="text-sm font-medium text-gray-500 px-1">이전할 부품 (체크된 부품의 스펙이 유지됩니다)</legend>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+          <% BicycleSpec::COMPONENTS.reject { |c| c == "frame" }.each do |comp| %>
+            <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <%= check_box_tag "frame_change[transferred_parts][]", comp,
+                    frame_change.transferred_parts.include?(comp),
+                    id: "frame_change_transferred_parts_#{comp}",
+                    class: "rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+              <%= PartsReplacement::COMPONENT_LABELS[comp] || comp.titleize %>
+            </label>
+          <% end %>
+        </div>
+      </fieldset>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="<%= f.field_id(:reason) %>" class="block text-sm font-medium text-gray-700 mb-1">기변 사유</label>
+          <%= f.text_area :reason, rows: 2, placeholder: "기변 사유를 기록합니다...",
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+        </div>
+        <div>
+          <label for="<%= f.field_id(:cost) %>" class="block text-sm font-medium text-gray-700 mb-1">비용 (원)</label>
+          <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <span class="text-gray-500 text-sm">&yen;</span>
+            </div>
+            <%= f.number_field :cost, min: 0, step: 1000, placeholder: "0",
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm pl-7" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <% if frame_change.persisted? %>
+          <%= link_to "취소", admin_service_order_frame_change_path(service_order, frame_change),
+                class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition",
+                data: { turbo_frame: dom_id(frame_change) } %>
+        <% end %>
+        <%= f.submit frame_change.persisted? ? "수정" : "추가",
+              class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

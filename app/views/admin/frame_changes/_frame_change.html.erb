@@ -1,0 +1,86 @@
+<%= turbo_frame_tag frame_change do %>
+  <div id="<%= dom_id(frame_change) %>" class="border border-gray-200 rounded-lg p-4 bg-white">
+    <div class="flex items-start justify-between">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+            기변
+          </span>
+          <% if frame_change.new_frame_size.present? %>
+            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+              Size: <%= frame_change.new_frame_size %>
+            </span>
+          <% end %>
+          <% if frame_change.cost.present? %>
+            <span class="text-sm font-medium text-gray-900">
+              <%= number_to_currency(frame_change.cost, unit: "\u20A9", format: "%u%n", precision: 0) %>
+            </span>
+          <% end %>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+          <%# Before %>
+          <div class="bg-gray-50 rounded-md p-3">
+            <div class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">기존 프레임</div>
+            <% if frame_change.old_frame_brand.present? || frame_change.old_frame_model.present? %>
+              <div class="text-gray-900">
+                <span class="font-medium"><%= frame_change.old_frame_brand %></span>
+                <% if frame_change.old_frame_model.present? %>
+                  <span class="text-gray-600"><%= frame_change.old_frame_model %></span>
+                <% end %>
+              </div>
+            <% else %>
+              <div class="text-gray-400 italic">정보 없음</div>
+            <% end %>
+          </div>
+
+          <%# After %>
+          <div class="bg-amber-50 rounded-md p-3">
+            <div class="text-xs font-medium text-amber-500 uppercase tracking-wider mb-1">신규 프레임</div>
+            <div class="text-gray-900">
+              <span class="font-medium"><%= frame_change.new_frame_brand %></span>
+              <span class="text-gray-600"><%= frame_change.new_frame_model %></span>
+            </div>
+          </div>
+        </div>
+
+        <% if frame_change.transferred_parts.any? %>
+          <div class="mt-2 text-sm">
+            <span class="font-medium text-gray-700">이전된 부품:</span>
+            <span class="text-gray-600">
+              <%= frame_change.transferred_parts.map { |p| PartsReplacement::COMPONENT_LABELS[p] || p.titleize }.join(", ") %>
+            </span>
+          </div>
+        <% end %>
+
+        <% if frame_change.reason.present? %>
+          <div class="mt-2 text-sm">
+            <span class="font-medium text-gray-700">사유:</span>
+            <span class="text-gray-900 whitespace-pre-wrap"><%= frame_change.reason %></span>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="flex items-center gap-1 ml-4 shrink-0">
+        <%= link_to edit_admin_service_order_frame_change_path(frame_change.service_order, frame_change),
+              class: "inline-flex items-center rounded-md p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-gray-100 transition",
+              data: { turbo_frame: dom_id(frame_change) } do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        <% end %>
+        <%= button_to admin_service_order_frame_change_path(frame_change.service_order, frame_change),
+              method: :delete,
+              class: "inline-flex items-center rounded-md p-1.5 text-gray-400 hover:text-red-600 hover:bg-gray-100 transition",
+              form: { data: { turbo_confirm: "이 기변 내역을 삭제하시겠습니까?" } } do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        <% end %>
+      </div>
+    </div>
+    <div class="mt-2 text-xs text-gray-400">
+      <%= frame_change.created_at.strftime("%Y-%m-%d %H:%M") %>
+    </div>
+  </div>
+<% end %>

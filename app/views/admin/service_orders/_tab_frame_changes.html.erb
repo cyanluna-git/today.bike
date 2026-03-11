@@ -1,0 +1,24 @@
+<div class="space-y-4">
+  <%# New frame change form %>
+  <%= render "admin/frame_changes/form", service_order: service_order, frame_change: FrameChange.new %>
+
+  <%# Frame changes list %>
+  <div id="frame_changes_list" class="space-y-3">
+    <% frame_changes = service_order.frame_changes.ordered %>
+    <% if frame_changes.any? %>
+      <% frame_changes.each do |frame_change| %>
+        <%= render "admin/frame_changes/frame_change", frame_change: frame_change %>
+      <% end %>
+    <% else %>
+      <div id="frame_changes_empty" class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-6 py-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+          </svg>
+          <h3 class="mt-2 text-sm font-semibold text-gray-900">기변 내역 없음</h3>
+          <p class="mt-1 text-sm text-gray-500">위 폼을 사용하여 기변 내역을 추가하세요.</p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

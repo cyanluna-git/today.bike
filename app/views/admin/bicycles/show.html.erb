@@ -84,6 +84,51 @@
   <%# Component Specs (inline CRUD table) %>
   <%= render "admin/bicycle_specs/specs_list", bicycle: @bicycle %>
 
+  <%# Fitting Records %>
+  <div class="mt-8">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-gray-900">피팅기록</h2>
+      <%= link_to "전체보기", admin_bicycle_fitting_records_path(@bicycle), class: "text-sm text-indigo-600 hover:text-indigo-900 transition" %>
+    </div>
+    <% latest_fitting = @bicycle.fitting_records.order(recorded_at: :desc).first %>
+    <% if latest_fitting %>
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <dl class="divide-y divide-gray-200">
+          <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">기록일</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+              <%= link_to latest_fitting.recorded_at.strftime("%Y-%m-%d %H:%M"), admin_bicycle_fitting_record_path(@bicycle, latest_fitting), class: "text-indigo-600 hover:text-indigo-900" %>
+            </dd>
+          </div>
+          <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">안장 높이</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= latest_fitting.saddle_height.present? ? "#{latest_fitting.saddle_height} mm" : "—" %></dd>
+          </div>
+          <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">스템 길이</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= latest_fitting.stem_length.present? ? "#{latest_fitting.stem_length} mm" : "—" %></dd>
+          </div>
+          <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">핸들바 폭</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= latest_fitting.handlebar_width.present? ? "#{latest_fitting.handlebar_width} mm" : "—" %></dd>
+          </div>
+          <div class="px-6 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+            <dt class="text-sm font-medium text-gray-500">크랭크 길이</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= latest_fitting.crank_length.present? ? "#{latest_fitting.crank_length} mm" : "—" %></dd>
+          </div>
+        </dl>
+        <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
+          <span class="text-xs text-gray-500">총 <%= @bicycle.fitting_records.count %>건의 피팅기록</span>
+        </div>
+      </div>
+    <% else %>
+      <div class="bg-white shadow rounded-lg p-6 text-center">
+        <p class="text-sm text-gray-500 mb-3">피팅기록이 없습니다.</p>
+        <%= link_to "새 피팅기록 추가", new_admin_bicycle_fitting_record_path(@bicycle), class: "text-sm text-indigo-600 hover:text-indigo-900 transition" %>
+      </div>
+    <% end %>
+  </div>
+
   <%# Photo Gallery %>
   <% if @bicycle.photos.attached? %>
     <div class="mt-8">
