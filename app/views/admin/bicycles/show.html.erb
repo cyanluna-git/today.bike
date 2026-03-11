@@ -77,4 +77,30 @@
       </div>
     </dl>
   </div>
+
+  <%# Photo Gallery %>
+  <% if @bicycle.photos.attached? %>
+    <div class="mt-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Photos</h2>
+      <div id="photo_gallery" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <% @bicycle.photos.each do |photo| %>
+          <div id="photo_<%= photo.id %>" class="relative group">
+            <a href="<%= url_for(photo) %>" target="_blank">
+              <%= image_tag @bicycle.photo_thumbnail(photo), class: "w-full h-40 object-cover rounded-lg shadow-sm hover:shadow-md transition" %>
+            </a>
+            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition">
+              <%= button_to purge_photo_admin_bicycle_path(@bicycle, photo_id: photo.id),
+                    method: :delete,
+                    class: "rounded-full bg-red-600 p-1.5 text-white shadow-sm hover:bg-red-500 transition",
+                    form: { data: { turbo_confirm: "Delete this photo?" } } do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 </div>

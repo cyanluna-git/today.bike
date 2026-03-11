@@ -1,6 +1,6 @@
 module Admin
   class BicyclesController < BaseController
-    before_action :set_bicycle, only: %i[show edit update destroy]
+    before_action :set_bicycle, only: %i[show edit update destroy purge_photo]
 
     def index
       bicycles = Bicycle.includes(:customer).order(created_at: :desc)
@@ -43,6 +43,16 @@ module Admin
       redirect_to admin_bicycles_path, notice: "Bicycle was successfully deleted."
     end
 
+    def purge_photo
+      @photo = @bicycle.photos.find(params[:photo_id])
+      @photo.purge
+
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.remove("photo_#{params[:photo_id]}") }
+        format.html { redirect_to admin_bicycle_path(@bicycle), notice: "Photo was successfully deleted." }
+      end
+    end
+
     private
 
     def set_bicycle
@@ -50,7 +60,7 @@ module Admin
     end
 
     def bicycle_params
-      params.require(:bicycle).permit(:brand, :model_label, :year, :frame_number, :bike_type, :color, :status, :customer_id)
+      params.require(:bicycle).permit(:brand, :model_label, :year, :frame_number, :bike_type, :color, :status, :customer_id, photos: [])
     end
   end
 end

@@ -4,7 +4,11 @@ Rails.application.routes.draw do
   namespace :admin do
     root "dashboard#index"
     resources :customers
-    resources :bicycles
+    resources :bicycles do
+      member do
+        delete "photos/:photo_id", action: :purge_photo, as: :purge_photo
+      end
+    end
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

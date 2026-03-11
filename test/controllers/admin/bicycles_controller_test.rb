@@ -314,6 +314,142 @@ class Admin::BicyclesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{new_admin_bicycle_path(customer_id: @customer.id)}']", text: /Add Bicycle/
   end
 
+  # --- Photo Upload ---
+
+  test "create with photos attaches photos to bicycle" do
+    sign_in @admin_user
+
+    photo = fixture_file_upload("test_photo.png", "image/png")
+
+    assert_difference "Bicycle.count", 1 do
+      post admin_bicycles_path, params: {
+        bicycle: {
+          brand: "Canyon",
+          model_label: "Aeroad CFR",
+          bike_type: "road",
+          customer_id: @customer.id,
+          photos: [ photo ]
+        }
+      }
+    end
+
+    bicycle = Bicycle.last
+    assert_equal 1, bicycle.photos.count
+    assert_redirected_to admin_bicycle_path(bicycle)
+  end
+
+  test "update with photos attaches additional photos" do
+    sign_in @admin_user
+
+    photo = fixture_file_upload("test_photo.png", "image/png")
+
+    patch admin_bicycle_path(@bicycle), params: {
+      bicycle: { photos: [ photo ] }
+    }
+
+    assert_redirected_to admin_bicycle_path(@bicycle)
+    assert_equal 1, @bicycle.reload.photos.count
+  end
+
+  test "update with multiple photos attaches all" do
+    sign_in @admin_user
+
+    photo1 = fixture_file_upload("test_photo.png", "image/png")
+    photo2 = fixture_file_upload("test_photo2.png", "image/png")
+
+    patch admin_bicycle_path(@bicycle), params: {
+      bicycle: { photos: [ photo1, photo2 ] }
+    }
+
+    assert_redirected_to admin_bicycle_path(@bicycle)
+    assert_equal 2, @bicycle.reload.photos.count
+  end
+
+  test "show displays photo gallery when photos attached" do
+    sign_in @admin_user
+
+    @bicycle.photos.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_photo.png")),
+      filename: "bike.png",
+      content_type: "image/png"
+    )
+
+    get admin_bicycle_path(@bicycle)
+    assert_response :ok
+    assert_select "h2", text: "Photos"
+    assert_select "#photo_gallery"
+  end
+
+  test "show does not display photo gallery when no photos" do
+    sign_in @admin_user
+
+    get admin_bicycle_path(@bicycle)
+    assert_response :ok
+    assert_select "#photo_gallery", count: 0
+  end
+
+  test "form has file input for photos" do
+    sign_in @admin_user
+    get new_admin_bicycle_path
+    assert_select "input[type='file'][name='bicycle[photos][]']"
+  end
+
+  # --- Photo Deletion ---
+
+  test "purge_photo requires authentication" do
+    @bicycle.photos.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_photo.png")),
+      filename: "bike.png",
+      content_type: "image/png"
+    )
+    photo_id = @bicycle.photos.first.id
+
+    delete purge_photo_admin_bicycle_path(@bicycle, photo_id: photo_id)
+    assert_redirected_to new_admin_user_session_path
+  end
+
+  test "purge_photo deletes individual photo and redirects" do
+    sign_in @admin_user
+
+    @bicycle.photos.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_photo.png")),
+      filename: "bike.png",
+      content_type: "image/png"
+    )
+    photo_id = @bicycle.photos.first.id
+
+    assert_difference -> { @bicycle.photos.count }, -1 do
+      delete purge_photo_admin_bicycle_path(@bicycle, photo_id: photo_id)
+    end
+
+    assert_redirected_to admin_bicycle_path(@bicycle)
+  end
+
+  test "purge_photo responds with turbo_stream" do
+    sign_in @admin_user
+
+    @bicycle.photos.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_photo.png")),
+      filename: "bike.png",
+      content_type: "image/png"
+    )
+    photo_id = @bicycle.photos.first.id
+
+    delete purge_photo_admin_bicycle_path(@bicycle, photo_id: photo_id),
+           headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+    assert_response :ok
+    assert_includes response.body, "turbo-stream"
+    assert_includes response.body, "photo_#{photo_id}"
+  end
+
+  test "purge_photo with invalid photo_id returns not found" do
+    sign_in @admin_user
+
+    delete purge_photo_admin_bicycle_path(@bicycle, photo_id: 999999)
+    assert_response :not_found
+  end
+
   # --- Sidebar ---
 
   test "sidebar has bicycles link" do

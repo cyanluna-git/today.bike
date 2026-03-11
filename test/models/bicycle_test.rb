@@ -202,6 +202,70 @@ class BicycleTest < ActiveSupport::TestCase
     assert_not Bicycle.exists?(bicycle_id)
   end
 
+  # --- Photos (ActiveStorage) ---
+
+  test "can attach photos" do
+    @bicycle.save!
+    @bicycle.photos.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_photo.png")),
+      filename: "bike.png",
+      content_type: "image/png"
+    )
+    assert @bicycle.photos.attached?
+    assert_equal 1, @bicycle.photos.count
+  end
+
+  test "can attach multiple photos" do
+    @bicycle.save!
+    2.times do |i|
+      @bicycle.photos.attach(
+        io: File.open(Rails.root.join("test/fixtures/files/test_photo.png")),
+        filename: "bike_#{i}.png",
+        content_type: "image/png"
+      )
+    end
+    assert_equal 2, @bicycle.photos.count
+  end
+
+  test "rejects non-image content type" do
+    @bicycle.photos.attach(
+      io: StringIO.new("not an image"),
+      filename: "malware.exe",
+      content_type: "application/octet-stream"
+    )
+    assert_not @bicycle.valid?
+    assert_includes @bicycle.errors[:photos], "must be JPEG, PNG, WebP, or HEIC format"
+  end
+
+  test "accepts jpeg content type" do
+    @bicycle.photos.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_photo.png")),
+      filename: "bike.jpg",
+      content_type: "image/jpeg"
+    )
+    assert @bicycle.valid?
+  end
+
+  test "accepts webp content type" do
+    @bicycle.photos.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_photo.png")),
+      filename: "bike.webp",
+      content_type: "image/webp"
+    )
+    assert @bicycle.valid?
+  end
+
+  test "photo_thumbnail returns a variant" do
+    @bicycle.save!
+    @bicycle.photos.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_photo.png")),
+      filename: "bike.png",
+      content_type: "image/png"
+    )
+    variant = @bicycle.photo_thumbnail(@bicycle.photos.first)
+    assert variant.present?
+  end
+
   # --- Fixtures loaded correctly ---
 
   test "fixtures are loaded" do
