@@ -1,0 +1,56 @@
+# == Rails ==
+# Ignore bundler config.
+/.bundle
+
+# Ignore all environment files.
+/.env*
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/
+!/tmp/storage/.keep
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key
+/config/credentials/*.key
+
+# Ignore builds (Tailwind CSS).
+/app/assets/builds/*
+!/app/assets/builds/.keep
+
+# Ignore vendored JavaScript.
+/vendor/javascript/*
+!/vendor/javascript/.keep
+
+# Ignore vendored gems.
+/vendor/bundle
+
+# == Project custom ==
+# Dependencies
+tools/node_modules/
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Kanban local
+kanban-board/
+
+# Config secrets
+.codex/

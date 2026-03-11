@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Today.bike 제안서</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #111111;
+    --white: #ffffff;
+    --accent: #FF5C00;
+    --accent-light: #fff3ee;
+    --gray-100: #f5f5f5;
+    --gray-200: #e8e8e8;
+    --gray-500: #888888;
+    --gray-700: #444444;
+    --text: #222222;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--text);
+    background: white;
+    font-size: 10pt;
+    line-height: 1.7;
+  }
+
+  /* ─── 커버 페이지 ─── */
+  .cover {
+    width: 210mm;
+    min-height: 297mm;
+    background: var(--black);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20mm 18mm;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -60mm;
+    right: -40mm;
+    width: 160mm;
+    height: 160mm;
+    border-radius: 50%;
+    border: 18mm solid #1e1e1e;
+    opacity: 0.5;
+  }
+
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: 30mm;
+    left: -30mm;
+    width: 100mm;
+    height: 100mm;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.06;
+  }
+
+  .cover-top { position: relative; z-index: 2; }
+
+  .cover-logo {
+    font-size: 13pt;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cover-logo span {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .cover-main {
+    position: relative;
+    z-index: 2;
+    margin-top: 40mm;
+  }
+
+  .cover-tag {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid var(--accent);
+    padding: 3px 10px;
+    border-radius: 2px;
+    margin-bottom: 8mm;
+  }
+
+  .cover-title {
+    font-size: 34pt;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .cover-title em {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .cover-subtitle {
+    margin-top: 6mm;
+    font-size: 11pt;
+    font-weight: 300;
+    color: #aaaaaa;
+    line-height: 1.6;
+  }
+
+  .cover-divider {
+    width: 40px;
+    height: 3px;
+    background: var(--accent);
+    margin: 8mm 0;
+  }
+
+  .cover-bottom {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .cover-date {
+    font-size: 8pt;
+    color: #666;
+    font-weight: 300;
+  }
+
+  .cover-url {
+    font-size: 9pt;
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── 본문 레이아웃 ─── */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 16mm 18mm;
+    page-break-after: always;
+    position: relative;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1.5px solid var(--gray-200);
+    padding-bottom: 4mm;
+    margin-bottom: 8mm;
+  }
+
+  .page-header-logo {
+    font-size: 8pt;
+    font-weight: 700;
+    color: var(--black);
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .page-header-logo span {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .page-header-section {
+    font-size: 7.5pt;
+    color: var(--gray-500);
+    font-weight: 300;
+  }
+
+  /* ─── 섹션 제목 ─── */
+  .section-num {
+    font-size: 7pt;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 2mm;
+  }
+
+  h2 {
+    font-size: 18pt;
+    font-weight: 900;
+    color: var(--black);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 5mm;
+  }
+
+  h3 {
+    font-size: 12pt;
+    font-weight: 700;
+    color: var(--black);
+    margin-top: 7mm;
+    margin-bottom: 3mm;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  h3::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  p {
+    font-size: 9.5pt;
+    color: var(--gray-700);
+    line-height: 1.75;
+    margin-bottom: 3mm;
+  }
+
+  /* ─── 리드 텍스트 ─── */
+  .lead {
+    font-size: 11pt;
+    font-weight: 400;
+    color: var(--black);
+    line-height: 1.75;
+    border-left: 3px solid var(--accent);
+    padding-left: 5mm;
+    margin-bottom: 6mm;
+  }
+
+  /* ─── 카드 그리드 ─── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4mm;
+    margin: 5mm 0;
+  }
+
+  .card-grid-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .card {
+    background: var(--gray-100);
+    border-radius: 4px;
+    padding: 5mm;
+  }
+
+  .card-accent {
+    background: var(--accent-light);
+    border: 1px solid #ffd5bb;
+  }
+
+  .card-dark {
+    background: var(--black);
+    color: white;
+  }
+
+  .card-title {
+    font-size: 8pt;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 2mm;
+    letter-spacing: 0.02em;
+  }
+
+  .card-dark .card-title { color: white; }
+
+  .card-value {
+    font-size: 20pt;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 1mm;
+  }
+
+  .card-desc {
+    font-size: 8pt;
+    color: var(--gray-500);
+    line-height: 1.5;
+  }
+
+  .card-dark .card-desc { color: #888; }
+
+  /* ─── 테이블 ─── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4mm 0;
+    font-size: 9pt;
+  }
+
+  th {
+    background: var(--black);
+    color: white;
+    font-weight: 600;
+    padding: 3mm 4mm;
+    text-align: left;
+    font-size: 8pt;
+    letter-spacing: 0.03em;
+  }
+
+  td {
+    padding: 3mm 4mm;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: var(--gray-100); }
+
+  td strong { color: var(--black); font-weight: 600; }
+
+  /* ─── 코드/하이라이트 블록 ─── */
+  .code-block {
+    background: #1a1a1a;
+    border-radius: 4px;
+    padding: 5mm 6mm;
+    margin: 4mm 0;
+    font-family: 'Courier New', monospace;
+    font-size: 7.8pt;
+    color: #e0e0e0;
+    line-height: 1.9;
+    white-space: pre;
+    word-break: keep-all;
+    overflow: hidden;
+  }
+
+  .code-block .green { color: #6ee7b7; }
+  .code-block .orange { color: var(--accent); }
+  .code-block .gray { color: #888; }
+
+  /* ─── 하이라이트 박스 ─── */
+  .highlight-box {
+    background: var(--accent);
+    color: white;
+    border-radius: 4px;
+    padding: 5mm 6mm;
+    margin: 5mm 0;
+  }
+
+  .highlight-box .hb-title {
+    font-size: 10pt;
+    font-weight: 700;
+    margin-bottom: 2mm;
+  }
+
+  .highlight-box p {
+    color: rgba(255,255,255,0.9);
+    font-size: 9pt;
+    margin-bottom: 0;
+  }
+
+  /* ─── 타임라인 ─── */
+  .timeline {
+    margin: 4mm 0;
+    padding-left: 5mm;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 4mm;
+    margin-bottom: 4mm;
+    position: relative;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -5mm;
+    top: 2mm;
+    bottom: -4mm;
+    width: 1.5px;
+    background: var(--gray-200);
+  }
+
+  .timeline-item:last-child::before { display: none; }
+
+  .timeline-dot {
+    width: 8mm;
+    min-width: 8mm;
+    height: 8mm;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7pt;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+    margin-left: -1mm;
+    position: relative;
+    z-index: 1;
+  }
+
+  .timeline-content {}
+  .timeline-title {
+    font-size: 10pt;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 1mm;
+  }
+  .timeline-desc {
+    font-size: 8.5pt;
+    color: var(--gray-500);
+    line-height: 1.5;
+  }
+
+  /* ─── 체크리스트 ─── */
+  .checklist {
+    list-style: none;
+    margin: 3mm 0;
+  }
+
+  .checklist li {
+    font-size: 9pt;
+    color: var(--gray-700);
+    padding: 1.5mm 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 3mm;
+  }
+
+  .checklist li::before {
+    content: '→';
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 0.5mm;
+  }
+
+  /* ─── 채널 배지 ─── */
+  .badge-row {
+    display: flex;
+    gap: 3mm;
+    flex-wrap: wrap;
+    margin: 3mm 0;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2mm;
+    background: var(--gray-100);
+    border-radius: 100px;
+    padding: 1.5mm 4mm;
+    font-size: 8pt;
+    font-weight: 500;
+    color: var(--gray-700);
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    flex-shrink: 0;
+  }
+
+  /* ─── 마무리 페이지 ─── */
+  .closing {
+    background: var(--black);
+    min-height: 297mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20mm;
+    page-break-after: never;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .closing::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200mm;
+    height: 200mm;
+    border-radius: 50%;
+    border: 20mm solid #1a1a1a;
+  }
+
+  .closing-inner { position: relative; z-index: 2; }
+
+  .closing-eyebrow {
+    font-size: 8pt;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 6mm;
+  }
+
+  .closing-title {
+    font-size: 28pt;
+    font-weight: 900;
+    color: white;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 6mm;
+  }
+
+  .closing-title em {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .closing-sub {
+    font-size: 10pt;
+    color: #888;
+    font-weight: 300;
+    margin-bottom: 12mm;
+    line-height: 1.6;
+  }
+
+  .closing-url {
+    font-size: 11pt;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  /* ─── 인쇄 설정 ─── */
+  @media print {
+    @page { margin: 0; size: A4; }
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     COVER
+══════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-top">
+    <div class="cover-logo">TODAY<span></span>BIKE</div>
+  </div>
+
+  <div class="cover-main">
+    <div class="cover-tag">Website Proposal</div>
+    <div class="cover-title">
+      이런 거<br>한번 해보면<br><em>어떨까요?</em>
+    </div>
+    <div class="cover-divider"></div>
+    <div class="cover-subtitle">
+      Today.bike 전용 웹 플랫폼 구축 아이디어<br>
+      — 지금까지 해오신 것들을 제대로 담을 그릇
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-date">2026년 3월</div>
+    <div class="cover-url">today.bike</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     PAGE 1 — 들어가며
+══════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-logo">TODAY<span></span>BIKE</div>
+    <div class="page-header-section">들어가며</div>
+  </div>
+
+  <div class="section-num">INTRO</div>
+  <h2>사장님 블로그 보면서<br>느낀 게 있어요</h2>
+
+  <p class="lead">
+    이미 충분히 잘 하고 계세요.<br>
+    그 소중한 것들이 지금 제각각 흩어져 있다는 게 좀 아쉬울 뿐이에요.
+  </p>
+
+  <p>수백 건의 정비 기록을 블로그에 꾸준히 올려오셨잖아요. 매번 작업마다 사진 찍고, 글 쓰고, 올리고. 그 성실함이 지금의 투데이바이크를 만든 거라고 생각해요.</p>
+  <p>근데 그 소중한 기록들이 전부 네이버 안에만 있어요. 고객들도 본인 자전거 이력 보려면 블로그를 뒤져야 하고, 피팅 데이터나 파츠 교체 내역은 엑셀에 따로 있고요.</p>
+
+  <h3>지금 보유하고 계신 자산</h3>
+
+  <div class="card-grid">
+    <div class="card card-dark">
+      <div class="card-value">1,774</div>
+      <div class="card-title">네이버 블로그 포스트</div>
+      <div class="card-desc">출고기록 559 · 정비이야기 355<br>입고기록 152 · 그 외 708건</div>
+    </div>
+    <div class="card card-dark">
+      <div class="card-value" style="font-size:14pt; padding-top:4px;">카카오톡</div>
+      <div class="card-title">투데이바이크 공식 인증 채널</div>
+      <div class="card-desc">이미 운영 중인 공식 채널<br>알림톡 API만 연동하면 됩니다</div>
+    </div>
+    <div class="card">
+      <div class="card-value" style="color: var(--black); font-size:14pt; padding-top:4px;">@today.bike</div>
+      <div class="card-title">인스타그램 운영 중</div>
+      <div class="card-desc">정비 비포·애프터 사진 콘텐츠<br>웹사이트와 크로스포스팅 가능</div>
+    </div>
+    <div class="card card-accent">
+      <div class="card-value" style="color:var(--accent); font-size:14pt; padding-top:4px;">수년치</div>
+      <div class="card-title">고객·정비·피팅 데이터</div>
+      <div class="card-desc">현재 엑셀로 관리 중<br>웹으로 이관하면 훨씬 편해져요</div>
+    </div>
+  </div>
+
+  <h3>지금 이런 부분이 불편하지 않으세요?</h3>
+  <ul class="checklist">
+    <li>"이 고객 지난번에 뭐 했었지?" → 엑셀 열어서 찾아야 함</li>
+    <li>정비 진행 상황 고객에게 알릴 때 → 일일이 카카오 수동 발송</li>
+    <li>파츠 판매·대여 예약 → 채널 문의 들어오면 수동 처리</li>
+    <li>블로그 콘텐츠 → 쌓일수록 네이버 자산, 내 자산 아님</li>
+  </ul>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     PAGE 2 — 핵심 제안
+══════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-logo">TODAY<span></span>BIKE</div>
+    <div class="page-header-section">핵심 제안</div>
+  </div>
+
+  <div class="section-num">CORE IDEA</div>
+  <h2>이런 거 만들어보면<br>어떨까요?</h2>
+
+  <p class="lead">
+    고객이 로그인하면 — 내 자전거의 모든 역사가 한 눈에.<br>
+    샵은 투명하게 공유하고, 고객은 언제든 확인한다.
+  </p>
+
+  <div class="code-block" style="white-space: pre; word-break: keep-all; overflow: hidden;"><span class="gray">// 고객이 스마트폰으로 로그인하면 볼 수 있는 것들</span>
+
+<span class="green">고객: 홍길동</span>
+  └── <span class="orange">Giant TCR Advanced SL</span>  (카본 · 54cm)
+        ├── <span class="gray">2023.05</span>  풀 오버홀  ·  파츠교체 3건
+        ├── <span class="gray">2024.02</span>  Di2 업그레이드
+        ├── <span class="gray">2024.09</span>  피팅 조정  (안장 +3mm)
+        └── <span class="orange">2026.02  ▶ 현재 분해정비 진행 중</span>
+                    구동계 분해 ✓  세척 완료 ✓  베어링 점검 중...</div>
+
+  <h3>고객이 지금 어떤 걸 느끼게 할 수 있냐면요</h3>
+  <p>분해정비 맡긴 자전거가 지금 어느 단계인지 — 굳이 전화 안 해도 폰으로 볼 수 있어요. 사장님이 사진 찍어서 올리면 카카오로 알림이 바로 가는 거죠.</p>
+
+  <div class="highlight-box">
+    <div class="hb-title">카카오 자동 알림 예시</div>
+    <p>"홍길동 님의 TCR, 구동계 분해 완료했어요. 베어링 상태 확인 중입니다. 오늘 중으로 결과 알려드릴게요. [진행 사진 보기 →]"</p>
+  </div>
+
+  <p>지금 블로그에서 하고 계신 투명한 공유를 — 고객 개인에게 실시간으로 보내주는 거예요. 그게 "집착에 가까운 정비"의 디지털 버전이라고 생각해요.</p>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     PAGE 3 — 기능 상세
+══════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-logo">TODAY<span></span>BIKE</div>
+    <div class="page-header-section">기능 상세</div>
+  </div>
+
+  <div class="section-num">FEATURES</div>
+  <h2>어떤 기능들이<br>들어가면 좋을까요</h2>
+
+  <table>
+    <tr>
+      <th style="width:28%">기능</th>
+      <th style="width:40%">이런 게 됩니다</th>
+      <th style="width:32%">지금과 달라지는 점</th>
+    </tr>
+    <tr>
+      <td><strong>정비 이력 관리</strong></td>
+      <td>고객·자전거별 타임라인. 분해정비 / 수리 / 파츠교체 / 업그레이드 / 기변 / 피팅 전부 기록</td>
+      <td>엑셀 → 웹. 이름 치면 바로 나옴</td>
+    </tr>
+    <tr>
+      <td><strong>고객 포털</strong></td>
+      <td>카카오 로그인 → 내 자전거 이력·스펙·피팅 수치 조회. 진행 중 정비 실시간 확인</td>
+      <td>"제 자전거 어떻게 됐어요?" 전화 없어짐</td>
+    </tr>
+    <tr>
+      <td><strong>카카오 자동 알림</strong></td>
+      <td>입고확인·작업시작·단계별 업데이트·완료·리마인더 자동 발송</td>
+      <td>수동 카톡 발송 없어짐</td>
+    </tr>
+    <tr>
+      <td><strong>자전거 디지털 패스포트</strong></td>
+      <td>QR 스티커 발급 → 스캔하면 그 자전거의 전체 이력 페이지</td>
+      <td>중고 거래 시 이력 공유 가능</td>
+    </tr>
+    <tr>
+      <td><strong>Before/After 갤러리</strong></td>
+      <td>정비 전·후 사진 자동 갤러리. 559건 출고기록이 포트폴리오가 됨</td>
+      <td>방문자가 실력 보고 신뢰함</td>
+    </tr>
+    <tr>
+      <td><strong>파츠 샵</strong></td>
+      <td>신품·중고 파츠 상품 페이지. 문의 → 결제 시스템 순으로 확장</td>
+      <td>카카오 문의 전 상품 정보 제공</td>
+    </tr>
+    <tr>
+      <td><strong>대여 예약</strong></td>
+      <td>휠셋·자전거 대여 온라인 캘린더 예약</td>
+      <td>"그날 되나요?" 카톡 없어짐</td>
+    </tr>
+    <tr>
+      <td><strong>블로그 이전</strong></td>
+      <td>네이버 1,774건 → today.bike 자체 도메인으로 이관</td>
+      <td>검색 자산이 내 것이 됨</td>
+    </tr>
+  </table>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     PAGE 4 — 차별화 아이디어
+══════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-logo">TODAY<span></span>BIKE</div>
+    <div class="page-header-section">차별화 아이디어</div>
+  </div>
+
+  <div class="section-num">SPECIAL IDEAS</div>
+  <h2>이런 것들도<br>재밌을 것 같아요</h2>
+
+  <h3>자전거 디지털 패스포트</h3>
+  <p>정비 완료된 자전거에 QR 코드 스티커를 붙여드리는 거예요. 그 QR 찍으면 그 자전거의 정비이력 페이지가 열리고요.</p>
+  <p>중고 거래할 때 "이 자전거 투데이바이크에서 관리한 거예요, QR 찍어보세요" 하면 — 구매자가 직접 이력을 다 볼 수 있잖아요. 자전거 커뮤니티에서 이거 한번 퍼지면 꽤 화제가 될 것 같아요. <strong>"QR로 정비이력 보여주는 샵"</strong>이라고요.</p>
+
+  <h3>블로그 콘텐츠, 이렇게 활용하면 어떨까요</h3>
+  <p>559건의 출고 기록이 그냥 홈페이지 포트폴리오가 돼요. 처음 방문한 사람이 Before/After 사진들 쭉 보다 보면 "이 샵 진짜 꼼꼼하게 하는구나" 자연스럽게 느끼게 되고요.</p>
+  <p>지금은 네이버에 올리면 네이버 트래픽이지만, 자체 홈페이지에 올리면 today.bike의 검색 자산이 돼요. <strong>5년 뒤에 쌓이는 게 달라집니다.</strong></p>
+
+  <div class="badge-row">
+    <div class="badge"><span class="badge-dot"></span> 출고되었어요! 559건</div>
+    <div class="badge"><span class="badge-dot"></span> 정비이야기 355건</div>
+    <div class="badge"><span class="badge-dot"></span> 입고되었어요! 152건</div>
+    <div class="badge"><span class="badge-dot"></span> 자전거이야기 89건</div>
+  </div>
+  <p style="font-size:8.5pt; color:var(--gray-500); margin-top:2mm;">→ 1단계로 핵심 914건(출고+정비+입고) 우선 이전 추천</p>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     PAGE 5 — 로드맵
+══════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-logo">TODAY<span></span>BIKE</div>
+    <div class="page-header-section">진행 순서</div>
+  </div>
+
+  <div class="section-num">ROADMAP</div>
+  <h2>한 번에 다 하지 말고<br>단계별로 해봐요</h2>
+
+  <p>부담 없이 순서대로요. 1단계만 해도 일상 업무가 꽤 편해질 거예요.</p>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot">1</div>
+      <div class="timeline-content">
+        <div class="timeline-title">Phase 1 — 내부 운영 도구 (엑셀 대체)</div>
+        <div class="timeline-desc">
+          고객·자전거 등록 / 정비 이력 기록 / 피팅 데이터 관리 / 입출고 보드 / 기존 엑셀 데이터 이관<br>
+          <strong style="color:var(--accent);">→ 이 단계 끝나면: 엑셀 없이 샵을 운영할 수 있어요</strong>
+        </div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot">2</div>
+      <div class="timeline-content">
+        <div class="timeline-title">Phase 2 — 고객이 느끼는 변화 (신뢰 구축)</div>
+        <div class="timeline-desc">
+          고객 포털 오픈 / 카카오 자동 알림 연동 / 실시간 정비 현황 공개 / 자전거 디지털 패스포트 QR<br>
+          <strong style="color:var(--accent);">→ 이 단계 끝나면: 고객이 "이 샵은 다르다"고 느끼기 시작해요</strong>
+        </div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot">3</div>
+      <div class="timeline-content">
+        <div class="timeline-title">Phase 3 — 밖으로 알리기 (마케팅 & 수익 확장)</div>
+        <div class="timeline-desc">
+          블로그 + 네이버 콘텐츠 이전 / Before/After 갤러리 / 파츠·중고 판매 / 대여 온라인 예약 / 견적 빌더<br>
+          <strong style="color:var(--accent);">→ 이 단계 끝나면: 홈페이지가 영업 도구가 돼요</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>기술적인 얘기는 간단하게만</h3>
+  <table>
+    <tr>
+      <th style="width:30%">구성 요소</th>
+      <th style="width:35%">선택</th>
+      <th style="width:35%">이유</th>
+    </tr>
+    <tr>
+      <td><strong>웹사이트</strong></td>
+      <td>Next.js 15</td>
+      <td>SEO 잘 되고 빠름</td>
+    </tr>
+    <tr>
+      <td><strong>데이터베이스</strong></td>
+      <td>Supabase</td>
+      <td>DB + 인증 + 사진 저장 통합</td>
+    </tr>
+    <tr>
+      <td><strong>로그인</strong></td>
+      <td>카카오 소셜 로그인</td>
+      <td>고객 진입 장벽 최소화</td>
+    </tr>
+    <tr>
+      <td><strong>알림</strong></td>
+      <td>카카오 알림톡 API</td>
+      <td>기존 채널 그대로 활용</td>
+    </tr>
+    <tr>
+      <td><strong>결제 (Phase 3)</strong></td>
+      <td>토스페이먼츠</td>
+      <td>국내 최적화</td>
+    </tr>
+    <tr>
+      <td><strong>호스팅</strong></td>
+      <td>Vercel</td>
+      <td>무료 시작 가능, 안정적</td>
+    </tr>
+    <tr>
+      <td><strong>도메인</strong></td>
+      <td>today.bike</td>
+      <td>구매 필요 (비교적 저렴)</td>
+    </tr>
+  </table>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     CLOSING
+══════════════════════════════════════════ -->
+<div class="closing">
+  <div class="closing-inner">
+    <div class="closing-eyebrow">Let's build together</div>
+    <div class="closing-title">
+      한번 같이<br><em>해봐요</em>
+    </div>
+    <div class="closing-sub">
+      사장님이 지금까지 쌓아온 것들 —<br>
+      그 성실함과 투명함이 이미 콘텐츠예요.<br>
+      홈페이지는 그걸 더 잘 보여주는 도구일 뿐이에요.
+    </div>
+    <div class="closing-url">today.bike</div>
+  </div>
+</div>
+
+</body>
+</html>
