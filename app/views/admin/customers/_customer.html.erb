@@ -1,0 +1,26 @@
+<tr id="<%= dom_id(customer) %>">
+  <td class="px-6 py-4 whitespace-nowrap">
+    <div class="text-sm font-medium text-gray-900">
+      <%= link_to customer.name, admin_customer_path(customer), class: "hover:text-indigo-600 transition", data: { turbo_frame: "_top" } %>
+    </div>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+    <%= customer.phone %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+    <%= customer.email.presence || "—" %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap">
+    <% if customer.active? %>
+      <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Active</span>
+    <% else %>
+      <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">Inactive</span>
+    <% end %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+    <%= link_to "Edit", edit_admin_customer_path(customer), class: "text-indigo-600 hover:text-indigo-900 transition" %>
+    <%= button_to "Delete", admin_customer_path(customer), method: :delete,
+          class: "text-red-600 hover:text-red-900 transition",
+          form: { data: { turbo_confirm: "Are you sure you want to delete #{customer.name}?" } } %>
+  </td>
+</tr>
