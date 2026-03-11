@@ -444,11 +444,131 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
     assert_match "Service order was successfully deleted", response.body
   end
 
+  # --- Kanban ---
+
+  test "kanban requires authentication" do
+    get kanban_admin_service_orders_path
+    assert_redirected_to new_admin_user_session_path
+  end
+
+  test "kanban renders successfully" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_response :ok
+  end
+
+  test "kanban page title contains 칸반보드" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_select "title", text: /칸반보드/
+  end
+
+  test "kanban has 5 columns" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_select "[data-testid='kanban-column']", count: 5
+  end
+
+  test "kanban columns have correct statuses" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_select "[data-testid='kanban-column'][data-status='received']"
+    assert_select "[data-testid='kanban-column'][data-status='diagnosis']"
+    assert_select "[data-testid='kanban-column'][data-status='in_progress']"
+    assert_select "[data-testid='kanban-column'][data-status='completed']"
+    assert_select "[data-testid='kanban-column'][data-status='delivered']"
+  end
+
+  test "kanban columns have Korean labels" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_match "접수", response.body
+    assert_match "진단", response.body
+    assert_match "작업중", response.body
+    assert_match "완료", response.body
+    assert_match "출고", response.body
+  end
+
+  test "kanban displays order cards with order_number" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_select "[data-testid='kanban-card']"
+    assert_match @service_order.order_number, response.body
+  end
+
+  test "kanban cards show customer name" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_match @service_order.customer.name, response.body
+  end
+
+  test "kanban cards show bicycle brand and model" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_match @service_order.bicycle.brand, response.body
+    assert_match @service_order.bicycle.model_label, response.body
+  end
+
+  test "kanban cards show service_type badge" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_match @service_order.service_type.titleize, response.body
+  end
+
+  test "kanban cards link to service order show page" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_select "a[href='#{admin_service_order_path(@service_order)}']"
+  end
+
+  test "kanban places orders in correct columns" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    # overhaul_order has status "received"
+    assert_select "[data-testid='kanban-column'][data-status='received']" do
+      assert_select "[data-testid='kanban-card']", minimum: 1
+    end
+    # repair_order has status "in_progress"
+    assert_select "[data-testid='kanban-column'][data-status='in_progress']" do
+      assert_select "[data-testid='kanban-card']", minimum: 1
+    end
+  end
+
+  test "kanban shows column counts" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_select "[data-testid='column-count']", count: 5
+  end
+
+  test "kanban has link to list view" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_select "a[href='#{admin_service_orders_path}']", text: /리스트 보기/
+  end
+
+  test "kanban has New Service Order button" do
+    sign_in @admin_user
+    get kanban_admin_service_orders_path
+    assert_select "a[href='#{new_admin_service_order_path}']", text: /New Service Order/
+  end
+
   # --- Sidebar ---
 
   test "sidebar has 서비스오더 link" do
     sign_in @admin_user
     get admin_service_orders_path
     assert_select "a[href='#{admin_service_orders_path}']", text: /서비스오더/
+  end
+
+  test "sidebar has 칸반보드 link" do
+    sign_in @admin_user
+    get admin_service_orders_path
+    assert_select "a[href='#{kanban_admin_service_orders_path}']", text: /칸반보드/
+  end
+
+  test "index has kanban toggle link" do
+    sign_in @admin_user
+    get admin_service_orders_path
+    assert_select "a[href='#{kanban_admin_service_orders_path}']", text: /칸반보드/
   end
 end

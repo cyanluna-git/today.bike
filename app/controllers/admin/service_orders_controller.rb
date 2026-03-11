@@ -8,6 +8,13 @@ module Admin
       @pagy, @service_orders = pagy(service_orders)
     end
 
+    def kanban
+      service_orders = ServiceOrder.includes(bicycle: :customer).order(received_at: :desc)
+      @columns = ServiceOrder.statuses.map do |key, value|
+        { key: key, value: value, orders: service_orders.select { |so| so.status == value } }
+      end
+    end
+
     def show
     end
 
