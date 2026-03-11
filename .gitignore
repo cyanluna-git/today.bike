@@ -38,6 +38,10 @@
 # Ignore vendored gems.
 /vendor/bundle
 
+# SQLite database files
+/db/*.sqlite3
+/db/*.sqlite3-*
+
 # == Project custom ==
 # Dependencies
 tools/node_modules/
