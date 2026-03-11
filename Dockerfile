@@ -25,7 +25,17 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development" \
+    RAILS_SERVE_STATIC_FILES="true" \
     LD_PRELOAD="/usr/local/lib/libjemalloc.so"
+
+# Download Litestream binary for SQLite replication
+FROM base AS litestream-download
+ARG TARGETARCH
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl tar && \
+    curl -fsSL "https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-linux-${TARGETARCH}.tar.gz" \
+      | tar -xz -C /usr/local/bin && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
@@ -60,6 +70,9 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
+# Copy Litestream binary from download stage
+COPY --from=litestream-download /usr/local/bin/litestream /usr/local/bin/litestream
+
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
@@ -68,6 +81,9 @@ USER 1000:1000
 # Copy built artifacts: gems, application
 COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --chown=rails:rails --from=build /rails /rails
+
+# Declare volume for persistent SQLite storage
+VOLUME /rails/storage
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
