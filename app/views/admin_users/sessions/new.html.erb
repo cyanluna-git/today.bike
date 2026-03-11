@@ -1,26 +1,44 @@
-<h2>Log in</h2>
-
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password" %>
-  </div>
-
-  <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <h1 class="text-2xl font-bold text-gray-900">Today Bike</h1>
+      <p class="text-sm text-gray-500 mt-1">Admin Panel</p>
     </div>
-  <% end %>
 
-  <div class="actions">
-    <%= f.submit "Log in" %>
+    <div class="bg-white shadow-md rounded-lg px-8 py-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-6">Log in</h2>
+
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+        <div class="mb-4">
+          <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email",
+              class: "w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none" %>
+        </div>
+
+        <div class="mb-4">
+          <%= f.label :password, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.password_field :password, autocomplete: "current-password",
+              class: "w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none" %>
+        </div>
+
+        <% if devise_mapping.rememberable? %>
+          <div class="mb-6 flex items-center gap-2">
+            <%= f.check_box :remember_me, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" %>
+            <%= f.label :remember_me, class: "text-sm text-gray-600" %>
+          </div>
+        <% end %>
+
+        <div>
+          <%= f.submit "Log in",
+              class: "w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mt-4 text-center text-sm text-gray-500 space-y-1">
+      <%- if devise_mapping.recoverable? %>
+        <p><%= link_to "Forgot your password?", new_password_path(resource_name), class: "text-indigo-600 hover:text-indigo-500" %></p>
+      <% end %>
+    </div>
   </div>
-<% end %>
-
-<%= render "admin_users/shared/links" %>
+</div>
