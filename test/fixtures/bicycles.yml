@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+road_bike:
+  brand: Specialized
+  model_label: Tarmac SL7
+  year: 2024
+  frame_number: WSBC604510N123456
+  bike_type: road
+  color: 블랙
+  status: active
+  customer: one
+
+gravel_bike:
+  brand: Trek
+  model_label: Checkpoint SL5
+  year: 2023
+  frame_number: WTU308C22N654321
+  bike_type: gravel
+  color: 레드
+  status: active
+  customer: two
+
+sold_bike:
+  brand: Pinarello
+  model_label: Dogma F
+  year: 2022
+  frame_number: PIN2022DF987654
+  bike_type: road
+  color: 화이트
+  status: sold
+  customer: one

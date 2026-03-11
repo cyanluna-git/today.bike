@@ -1,4 +1,7 @@
 class Customer < ApplicationRecord
+  # Associations
+  has_many :bicycles, dependent: :destroy
+
   # Scopes
   scope :search, ->(query) {
     return all if query.blank?

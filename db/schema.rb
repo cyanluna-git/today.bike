@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_11_151011) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_11_152355) do
   create_table "admin_users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
@@ -21,6 +21,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_151011) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
+  end
+
+  create_table "bicycles", force: :cascade do |t|
+    t.string "bike_type", default: "road", null: false
+    t.string "brand", null: false
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.integer "customer_id", null: false
+    t.string "frame_number"
+    t.string "model_label", null: false
+    t.string "status", default: "active", null: false
+    t.datetime "updated_at", null: false
+    t.integer "year"
+    t.index ["customer_id"], name: "index_bicycles_on_customer_id"
+    t.index ["frame_number"], name: "index_bicycles_on_frame_number", unique: true
   end
 
   create_table "customers", force: :cascade do |t|
@@ -34,4 +49,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_151011) do
     t.datetime "updated_at", null: false
     t.index ["phone"], name: "index_customers_on_phone", unique: true
   end
+
+  add_foreign_key "bicycles", "customers"
 end
