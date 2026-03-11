@@ -455,6 +455,6 @@ class Admin::BicyclesControllerTest < ActionDispatch::IntegrationTest
   test "sidebar has bicycles link" do
     sign_in @admin_user
     get admin_bicycles_path
-    assert_select "a[href='#{admin_bicycles_path}']", text: /Bicycles/
+    assert_select "a[href='#{admin_bicycles_path}']", text: /자전거관리/
   end
 end

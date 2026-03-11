@@ -28,6 +28,7 @@ Rails.application.routes.draw do
       resources :upgrades, only: %i[create edit update destroy]
       resources :frame_changes, only: %i[create edit update destroy]
     end
+    resources :imports, only: %i[new create]
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

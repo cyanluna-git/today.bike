@@ -68,7 +68,7 @@ class AdminCustomersFlowTest < ActionDispatch::IntegrationTest
 
   test "sidebar contains Customers navigation link" do
     get admin_customers_path
-    assert_select "aside nav a[href='#{admin_customers_path}']", text: /Customers/
+    assert_select "aside nav a[href='#{admin_customers_path}']", text: /고객관리/
   end
 
   test "customers index shows active/inactive badges" do

@@ -10,6 +10,12 @@ class Bicycle < ApplicationRecord
   enum :bike_type, { road: "road", mtb: "mtb", gravel: "gravel", hybrid: "hybrid", other: "other" }
   enum :status, { active: "active", sold: "sold", scrapped: "scrapped" }
 
+  # Scopes
+  scope :search, ->(query) {
+    return all if query.blank?
+    where("brand LIKE :q OR model_label LIKE :q", q: "%#{sanitize_sql_like(query)}%")
+  }
+
   # Validations
   validates :brand, presence: true
   validates :model_label, presence: true

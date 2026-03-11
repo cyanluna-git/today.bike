@@ -3,7 +3,11 @@ module Admin
     before_action :set_service_order, only: %i[show edit update destroy update_status]
 
     def index
-      service_orders = ServiceOrder.includes(bicycle: :customer).order(created_at: :desc)
+      service_orders = ServiceOrder.includes(bicycle: :customer)
+                                    .search(params[:query])
+                                    .by_service_type(params[:service_type])
+                                    .by_date_range(params[:start_date], params[:end_date])
+                                    .order(created_at: :desc)
       service_orders = service_orders.where(status: params[:status]) if params[:status].present?
       @pagy, @service_orders = pagy(service_orders)
     end

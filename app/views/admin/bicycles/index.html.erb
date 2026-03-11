@@ -12,9 +12,17 @@
   </div>
 
   <turbo-frame id="bicycles_table">
-    <%# Filter form %>
+    <%# Search and Filter form %>
     <div class="mb-4">
-      <%= form_with url: admin_bicycles_path, method: :get, data: { turbo_frame: "bicycles_table" }, class: "flex items-center gap-3" do |f| %>
+      <%= form_with url: admin_bicycles_path, method: :get, data: { turbo_frame: "bicycles_table" }, class: "flex flex-wrap items-center gap-3" do |f| %>
+        <div class="relative flex-1 min-w-48 max-w-md">
+          <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <%= f.search_field :query, value: params[:query], placeholder: "브랜드 또는 모델 검색...", class: "block w-full rounded-md border-0 py-2 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6", autocomplete: "off" %>
+        </div>
         <div>
           <%= f.select :bike_type, options_for_select(Bicycle.bike_types.map { |k, v| [k.titleize, v] }, params[:bike_type]), { include_blank: "All Types" }, class: "block rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" %>
         </div>
@@ -22,7 +30,7 @@
           <%= f.select :status, options_for_select(Bicycle.statuses.map { |k, v| [k.titleize, v] }, params[:status]), { include_blank: "All Statuses" }, class: "block rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" %>
         </div>
         <%= f.submit "Filter", class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 cursor-pointer transition" %>
-        <% if params[:bike_type].present? || params[:status].present? %>
+        <% if params[:bike_type].present? || params[:status].present? || params[:query].present? %>
           <%= link_to "Reset", admin_bicycles_path, data: { turbo_frame: "bicycles_table" }, class: "text-sm text-gray-500 hover:text-gray-700 transition" %>
         <% end %>
       <% end %>

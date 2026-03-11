@@ -3,7 +3,7 @@ module Admin
     before_action :set_bicycle, only: %i[show edit update destroy purge_photo]
 
     def index
-      bicycles = Bicycle.includes(:customer).order(created_at: :desc)
+      bicycles = Bicycle.includes(:customer).search(params[:query]).order(created_at: :desc)
       bicycles = bicycles.where(bike_type: params[:bike_type]) if params[:bike_type].present?
       bicycles = bicycles.where(status: params[:status]) if params[:status].present?
       @pagy, @bicycles = pagy(bicycles)

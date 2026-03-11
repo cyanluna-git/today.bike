@@ -28,6 +28,25 @@ class ServiceOrder < ApplicationRecord
     delivered: "delivered"
   }
 
+  # Scopes
+  scope :by_service_type, ->(service_type) {
+    return all if service_type.blank?
+    where(service_type: service_type)
+  }
+  scope :by_date_range, ->(start_date, end_date) {
+    scope = all
+    scope = scope.where("received_at >= ?", start_date.to_date.beginning_of_day) if start_date.present?
+    scope = scope.where("received_at <= ?", end_date.to_date.end_of_day) if end_date.present?
+    scope
+  }
+  scope :search, ->(query) {
+    return all if query.blank?
+    left_joins(:bicycle).where(
+      "service_orders.order_number LIKE :q OR bicycles.brand LIKE :q OR bicycles.model_label LIKE :q",
+      q: "%#{sanitize_sql_like(query)}%"
+    )
+  }
+
   # Callbacks
   before_create :generate_order_number
   before_create :set_received_at
