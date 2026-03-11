@@ -13,7 +13,13 @@ module Admin
 
     def new
       @service_order = ServiceOrder.new
-      @service_order.bicycle_id = params[:bicycle_id] if params[:bicycle_id].present?
+      if params[:bicycle_id].present?
+        @service_order.bicycle_id = params[:bicycle_id]
+        bicycle = Bicycle.find_by(id: params[:bicycle_id])
+        @preselected_customer = bicycle&.customer
+      elsif params[:customer_id].present?
+        @preselected_customer = Customer.find_by(id: params[:customer_id])
+      end
     end
 
     def create

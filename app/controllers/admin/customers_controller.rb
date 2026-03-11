@@ -1,6 +1,6 @@
 module Admin
   class CustomersController < BaseController
-    before_action :set_customer, only: %i[show edit update destroy]
+    before_action :set_customer, only: %i[show edit update destroy bicycles]
 
     def index
       customers = Customer.search(params[:query]).order(created_at: :desc)
@@ -38,6 +38,11 @@ module Admin
     def destroy
       @customer.destroy
       redirect_to admin_customers_path, notice: "Customer was successfully deleted."
+    end
+
+    def bicycles
+      @bicycles = @customer.bicycles.where(status: :active).order(:brand, :model_label)
+      render json: @bicycles.map { |b| { id: b.id, label: "#{b.brand} #{b.model_label} (#{b.year || '-'})" } }
     end
 
     private

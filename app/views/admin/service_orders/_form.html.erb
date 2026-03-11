@@ -1,3 +1,11 @@
+<% preselected_customer = local_assigns[:preselected_customer] || @preselected_customer %>
+<% editing = service_order.persisted? %>
+<% if editing %>
+  <% form_customer = service_order.bicycle&.customer %>
+<% else %>
+  <% form_customer = preselected_customer %>
+<% end %>
+
 <%= form_with(model: [:admin, service_order], class: "space-y-6") do |form| %>
   <% if service_order.errors.any? %>
     <div class="rounded-md bg-red-50 p-4">
@@ -21,13 +29,38 @@
     </div>
   <% end %>
 
-  <div class="bg-white shadow rounded-lg p-6 space-y-6">
+  <div class="bg-white shadow rounded-lg p-6 space-y-6"
+       data-controller="service-order-form"
+       data-service-order-form-bicycles-url-template-value="<%= bicycles_admin_customer_path("__CUSTOMER_ID__") %>"
+       data-service-order-form-preselected-bicycle-id-value="<%= service_order.bicycle_id || 0 %>">
+    <%# Step 1: Customer selection %>
     <div>
+      <%= label_tag :customer_id, "Customer", class: "block text-sm font-medium text-gray-700" %>
+      <%= select_tag :customer_id,
+            options_from_collection_for_select(Customer.order(:name), :id, :name, form_customer&.id),
+            prompt: "Select a customer",
+            class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm",
+            required: true,
+            data: { service_order_form_target: "customer", action: "change->service-order-form#customerChanged" } %>
+    </div>
+
+    <%# Step 2: Bicycle selection (dynamically loaded) %>
+    <div data-service-order-form-target="bicycleWrapper">
       <%= form.label :bicycle_id, "Bicycle", class: "block text-sm font-medium text-gray-700" %>
-      <%= form.select :bicycle_id,
-            Bicycle.includes(:customer).order(:brand, :model_label).map { |b| ["#{b.brand} #{b.model_label} (#{b.customer.name})", b.id] },
-            { prompt: "Select a bicycle" },
-            class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", required: true %>
+      <% if editing && service_order.bicycle.present? %>
+        <% bicycle_options = service_order.customer.bicycles.order(:brand, :model_label).map { |b| ["#{b.brand} #{b.model_label} (#{b.year || '-'})", b.id] } %>
+        <%= form.select :bicycle_id, bicycle_options, { prompt: "Select a bicycle" },
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm",
+              required: true,
+              data: { service_order_form_target: "bicycle" } %>
+      <% else %>
+        <%= form.select :bicycle_id, [],
+              { prompt: "Select a customer first" },
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm",
+              required: true,
+              disabled: form_customer.blank?,
+              data: { service_order_form_target: "bicycle" } %>
+      <% end %>
     </div>
 
     <div>

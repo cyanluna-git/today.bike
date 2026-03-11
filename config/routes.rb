@@ -3,7 +3,11 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboard#index"
-    resources :customers
+    resources :customers do
+      member do
+        get :bicycles
+      end
+    end
     resources :bicycles do
       member do
         delete "photos/:photo_id", action: :purge_photo, as: :purge_photo

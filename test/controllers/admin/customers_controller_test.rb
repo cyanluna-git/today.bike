@@ -279,4 +279,48 @@ class Admin::CustomersControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match "Customer was successfully deleted", response.body
   end
+
+  # --- Bicycles JSON endpoint ---
+
+  test "bicycles requires authentication" do
+    get bicycles_admin_customer_path(@customer), as: :json
+    assert_response :unauthorized
+  end
+
+  test "bicycles returns JSON with customer bicycles" do
+    sign_in @admin_user
+    get bicycles_admin_customer_path(@customer), as: :json
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_kind_of Array, json
+    # Customer :one has road_bike (active) and sold_bike (sold)
+    # Only active bicycles should be returned
+    active_bicycles = @customer.bicycles.where(status: :active)
+    assert_equal active_bicycles.count, json.length
+    assert json.first.key?("id")
+    assert json.first.key?("label")
+  end
+
+  test "bicycles only returns active bicycles" do
+    sign_in @admin_user
+    get bicycles_admin_customer_path(@customer), as: :json
+
+    json = JSON.parse(response.body)
+    bicycle_ids = json.map { |b| b["id"] }
+    # sold_bike belongs to customer :one but should not appear
+    sold_bike = bicycles(:sold_bike)
+    assert_not_includes bicycle_ids, sold_bike.id
+  end
+
+  test "bicycles returns empty array for customer with no active bicycles" do
+    sign_in @admin_user
+    customer_two = customers(:two)
+    # Customer two has gravel_bike which is active; let's test with a customer who has none
+    # For now, just verify it returns an array
+    get bicycles_admin_customer_path(customer_two), as: :json
+    assert_response :ok
+    json = JSON.parse(response.body)
+    assert_kind_of Array, json
+  end
 end

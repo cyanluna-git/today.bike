@@ -200,19 +200,35 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "new renders a form" do
+  test "new renders a form with customer and bicycle selects" do
     sign_in @admin_user
     get new_admin_service_order_path
     assert_select "form"
+    assert_select "select[name='customer_id']"
     assert_select "select[name='service_order[bicycle_id]']"
     assert_select "select[name='service_order[service_type]']"
   end
 
-  test "new pre-fills bicycle_id when provided" do
+  test "new has stimulus controller attributes" do
+    sign_in @admin_user
+    get new_admin_service_order_path
+    assert_select "[data-controller='service-order-form']"
+    assert_select "[data-service-order-form-target='customer']"
+    assert_select "[data-service-order-form-target='bicycle']"
+  end
+
+  test "new pre-fills customer when bicycle_id provided" do
     sign_in @admin_user
     get new_admin_service_order_path(bicycle_id: @bicycle.id)
     assert_response :ok
-    assert_select "select[name='service_order[bicycle_id]'] option[selected][value='#{@bicycle.id}']"
+    assert_select "select[name='customer_id'] option[selected][value='#{@customer.id}']"
+  end
+
+  test "new pre-fills customer when customer_id provided" do
+    sign_in @admin_user
+    get new_admin_service_order_path(customer_id: @customer.id)
+    assert_response :ok
+    assert_select "select[name='customer_id'] option[selected][value='#{@customer.id}']"
   end
 
   # --- Create ---
