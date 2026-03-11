@@ -21,6 +21,20 @@ groupset_spec:
   component_model: Ultegra Di2 R8170
   spec_detail: "12-speed electronic"
 
+handlebar_spec:
+  bicycle: road_bike
+  component: handlebar
+  brand: Zipp
+  component_model: SL-70 Ergo
+  spec_detail: "42cm width, carbon"
+
+tire_spec:
+  bicycle: road_bike
+  component: tire
+  brand: Continental
+  component_model: GP5000 S TR
+  spec_detail: "700x25c"
+
 saddle_spec:
   bicycle: gravel_bike
   component: saddle

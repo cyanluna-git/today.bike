@@ -78,7 +78,10 @@
     </dl>
   </div>
 
-  <%# Component Specs %>
+  <%# Spec Summary (grouped card view) %>
+  <%= render "admin/bicycle_specs/spec_summary", bicycle: @bicycle %>
+
+  <%# Component Specs (inline CRUD table) %>
   <%= render "admin/bicycle_specs/specs_list", bicycle: @bicycle %>
 
   <%# Photo Gallery %>

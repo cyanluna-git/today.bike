@@ -1,0 +1,32 @@
+<% grouped = bicycle.grouped_specs %>
+
+<% if grouped.any? %>
+  <div class="mt-8" id="spec_summary_section">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Spec Summary</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <% grouped.each do |category_key, group| %>
+        <div class="bg-white shadow rounded-lg overflow-hidden" id="spec_category_<%= category_key %>">
+          <div class="px-4 py-3 border-b border-gray-100">
+            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide"><%= group[:label] %></h3>
+          </div>
+          <ul class="divide-y divide-gray-50">
+            <% group[:specs].each do |spec| %>
+              <li class="px-4 py-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="min-w-0">
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider"><%= spec.component.titleize %></p>
+                    <p class="text-sm font-medium text-gray-900 truncate"><%= spec.brand %> <%= spec.component_model %></p>
+                    <% if spec.spec_detail.present? %>
+                      <p class="text-xs text-gray-500 mt-0.5"><%= spec.spec_detail %></p>
+                    <% end %>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

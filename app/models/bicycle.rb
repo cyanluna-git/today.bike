@@ -17,6 +17,17 @@ class Bicycle < ApplicationRecord
 
   validate :acceptable_photos
 
+  # Returns specs grouped by category, preserving CATEGORY_GROUPS order.
+  # Only includes categories that have at least one spec.
+  def grouped_specs
+    specs_by_category = bicycle_specs.group_by(&:category)
+    BicycleSpec::CATEGORY_GROUPS.each_with_object({}) do |(key, group), result|
+      specs = specs_by_category[key]
+      next unless specs&.any?
+      result[key] = { label: group[:label], specs: specs.sort_by { |s| group[:components].index(s.component) || 999 } }
+    end
+  end
+
   # Photo thumbnail variant
   def photo_thumbnail(photo)
     photo.variant(resize_to_limit: [ 300, 300 ])

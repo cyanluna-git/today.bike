@@ -261,4 +261,82 @@ class Admin::BicycleSpecsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     assert_match "No component specs registered yet", response.body
   end
+
+  # --- Spec Summary (grouped card view) ---
+
+  test "bicycle show page displays spec summary section" do
+    sign_in @admin_user
+    get admin_bicycle_path(@bicycle)
+    assert_response :ok
+    assert_select "#spec_summary_section"
+    assert_select "h2", text: "Spec Summary"
+  end
+
+  test "spec summary groups specs into category cards" do
+    sign_in @admin_user
+    get admin_bicycle_path(@bicycle)
+    assert_response :ok
+    # road_bike has frame (frame_fork), groupset (drivetrain), wheelset+tire (wheels), handlebar (contact_points)
+    assert_select "#spec_category_frame_fork"
+    assert_select "#spec_category_drivetrain"
+    assert_select "#spec_category_wheels"
+    assert_select "#spec_category_contact_points"
+  end
+
+  test "spec summary card shows category label in Korean" do
+    sign_in @admin_user
+    get admin_bicycle_path(@bicycle)
+    assert_response :ok
+    assert_select "#spec_category_frame_fork h3", text: /프레임\/포크/
+    assert_select "#spec_category_drivetrain h3", text: /구동계/
+    assert_select "#spec_category_wheels h3", text: /휠셋/
+    assert_select "#spec_category_contact_points h3", text: /핸들\/안장/
+  end
+
+  test "spec summary card shows brand and model" do
+    sign_in @admin_user
+    get admin_bicycle_path(@bicycle)
+    assert_response :ok
+    # frame spec: Specialized Tarmac SL7 Expert
+    assert_match "Specialized", response.body
+    assert_match "Tarmac SL7 Expert", response.body
+    # wheelset spec: Roval Rapide CLX
+    assert_match "Roval", response.body
+    assert_match "Rapide CLX", response.body
+  end
+
+  test "spec summary card shows spec detail when present" do
+    sign_in @admin_user
+    get admin_bicycle_path(@bicycle)
+    assert_response :ok
+    assert_match "Size 54, Carbon", response.body
+    assert_match "12-speed electronic", response.body
+  end
+
+  test "spec summary does not show categories with no specs" do
+    sign_in @admin_user
+    get admin_bicycle_path(@bicycle)
+    assert_response :ok
+    # road_bike has no "other" category specs
+    assert_select "#spec_category_other", count: 0
+  end
+
+  test "spec summary is not shown when bicycle has no specs" do
+    sign_in @admin_user
+    bicycle = bicycles(:sold_bike)
+    get admin_bicycle_path(bicycle)
+    assert_response :ok
+    assert_select "#spec_summary_section", count: 0
+  end
+
+  test "spec summary is read-only with no edit or delete buttons" do
+    sign_in @admin_user
+    get admin_bicycle_path(@bicycle)
+    assert_response :ok
+    within_summary = css_select("#spec_summary_section").first
+    assert_not_nil within_summary
+    # Summary section should not contain edit/delete action links
+    refute_match(/Edit<\/a>/, within_summary.to_s.scan(/<a[^>]*>Edit<\/a>/).join)
+    assert_select "#spec_summary_section form[method='post']", count: 0
+  end
 end

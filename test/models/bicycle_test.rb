@@ -202,6 +202,53 @@ class BicycleTest < ActiveSupport::TestCase
     assert_not Bicycle.exists?(bicycle_id)
   end
 
+  # --- grouped_specs ---
+
+  test "grouped_specs returns hash grouped by category" do
+    road_bike = bicycles(:road_bike)
+    grouped = road_bike.grouped_specs
+    assert grouped.is_a?(Hash)
+    assert grouped.key?(:frame_fork), "Expected :frame_fork category"
+    assert grouped.key?(:drivetrain), "Expected :drivetrain category"
+    assert grouped.key?(:wheels), "Expected :wheels category"
+  end
+
+  test "grouped_specs only includes categories with specs" do
+    road_bike = bicycles(:road_bike)
+    grouped = road_bike.grouped_specs
+    # road_bike has no "other" category specs (bottle_cage, computer, etc.)
+    assert_not grouped.key?(:other), "Should not include :other category"
+  end
+
+  test "grouped_specs returns empty hash when no specs" do
+    sold_bike = bicycles(:sold_bike)
+    assert_equal({}, sold_bike.grouped_specs)
+  end
+
+  test "grouped_specs preserves category order from CATEGORY_GROUPS" do
+    road_bike = bicycles(:road_bike)
+    grouped = road_bike.grouped_specs
+    keys = grouped.keys
+    expected_order = BicycleSpec::CATEGORY_GROUPS.keys.select { |k| grouped.key?(k) }
+    assert_equal expected_order, keys
+  end
+
+  test "grouped_specs includes label for each category" do
+    road_bike = bicycles(:road_bike)
+    grouped = road_bike.grouped_specs
+    assert_equal "프레임/포크", grouped[:frame_fork][:label]
+    assert_equal "구동계", grouped[:drivetrain][:label]
+  end
+
+  test "grouped_specs specs within category are sorted by component order" do
+    road_bike = bicycles(:road_bike)
+    grouped = road_bike.grouped_specs
+    # wheels category should have wheelset before tire
+    wheel_specs = grouped[:wheels][:specs]
+    wheel_components = wheel_specs.map(&:component)
+    assert_equal %w[wheelset tire], wheel_components
+  end
+
   # --- Photos (ActiveStorage) ---
 
   test "can attach photos" do
