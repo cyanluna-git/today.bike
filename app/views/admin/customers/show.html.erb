@@ -62,4 +62,67 @@
       </div>
     </dl>
   </div>
+
+  <%# Customer's Bicycles %>
+  <div class="mt-8">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-gray-900">Bicycles (<%= @customer.bicycles.count %>)</h2>
+      <%= link_to new_admin_bicycle_path(customer_id: @customer.id), class: "inline-flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Add Bicycle
+      <% end %>
+    </div>
+
+    <% if @customer.bicycles.any? %>
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bicycle</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @customer.bicycles.order(created_at: :desc).each do |bicycle| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">
+                    <%= link_to "#{bicycle.brand} #{bicycle.model_label}", admin_bicycle_path(bicycle), class: "hover:text-indigo-600 transition" %>
+                  </div>
+                  <% if bicycle.year.present? %>
+                    <div class="text-xs text-gray-500"><%= bicycle.year %></div>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800"><%= bicycle.bike_type.titleize %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% case bicycle.status %>
+                  <% when "active" %>
+                    <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Active</span>
+                  <% when "sold" %>
+                    <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">Sold</span>
+                  <% when "scrapped" %>
+                    <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">Scrapped</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <%= link_to "View", admin_bicycle_path(bicycle), class: "text-indigo-600 hover:text-indigo-900 transition" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="bg-white shadow rounded-lg p-6 text-center text-sm text-gray-500">
+        No bicycles registered for this customer.
+        <%= link_to "Add one", new_admin_bicycle_path(customer_id: @customer.id), class: "text-indigo-600 hover:text-indigo-500 font-medium" %>.
+      </div>
+    <% end %>
+  </div>
 </div>
