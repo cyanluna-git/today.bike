@@ -2,6 +2,7 @@ class ServiceOrder < ApplicationRecord
   # Associations
   belongs_to :bicycle
   has_one :customer, through: :bicycle
+  has_many :service_progresses, dependent: :destroy
 
   # Enums
   enum :service_type, {
@@ -24,6 +25,7 @@ class ServiceOrder < ApplicationRecord
   # Callbacks
   before_create :generate_order_number
   before_create :set_received_at
+  after_update :record_status_change, if: :saved_change_to_status?
 
   # Validations
   validates :order_number, uniqueness: true, allow_nil: true
@@ -54,5 +56,14 @@ class ServiceOrder < ApplicationRecord
 
   def set_received_at
     self.received_at ||= Time.current
+  end
+
+  def record_status_change
+    from, to = saved_change_to_status
+    service_progresses.create!(
+      from_status: from,
+      to_status: to,
+      changed_at: Time.current
+    )
   end
 end

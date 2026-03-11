@@ -51,7 +51,7 @@ module Admin
     private
 
     def set_service_order
-      @service_order = ServiceOrder.includes(bicycle: :customer).find(params[:id])
+      @service_order = ServiceOrder.includes(:service_progresses, bicycle: :customer).find(params[:id])
     end
 
     def service_order_params

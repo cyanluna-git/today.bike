@@ -238,10 +238,25 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
   test "show placeholder tabs display coming soon" do
     sign_in @admin_user
     get admin_service_order_path(@service_order)
-    assert_select "turbo-frame#service_order_tab_progress", text: /Coming soon/
     assert_select "turbo-frame#service_order_tab_photos", text: /Coming soon/
     assert_select "turbo-frame#service_order_tab_parts", text: /Coming soon/
     assert_select "turbo-frame#service_order_tab_repairs", text: /Coming soon/
+  end
+
+  test "show progress tab displays empty state when no progresses" do
+    sign_in @admin_user
+    get admin_service_order_path(@service_order)
+    assert_select "turbo-frame#service_order_tab_progress", text: /진행 기록 없음/
+  end
+
+  test "show progress tab displays timeline for order with progresses" do
+    sign_in @admin_user
+    completed = service_orders(:completed_order)
+    get admin_service_order_path(completed)
+    assert_select "turbo-frame#service_order_tab_progress" do
+      assert_select "ul[role='list']"
+      assert_select "li", count: 2
+    end
   end
 
   test "show default tab is basic_info" do
@@ -379,6 +394,30 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
     assert_match "Service order was successfully updated", response.body
     assert_equal "in_progress", @service_order.reload.status
     assert_equal "작업 시작", @service_order.work_note
+  end
+
+  test "update status change creates service_progress automatically" do
+    sign_in @admin_user
+
+    assert_difference "ServiceProgress.count", 1 do
+      patch admin_service_order_path(@service_order), params: {
+        service_order: { status: "diagnosis" }
+      }
+    end
+
+    progress = @service_order.service_progresses.last
+    assert_equal "received", progress.from_status
+    assert_equal "diagnosis", progress.to_status
+  end
+
+  test "update without status change does not create service_progress" do
+    sign_in @admin_user
+
+    assert_no_difference "ServiceProgress.count" do
+      patch admin_service_order_path(@service_order), params: {
+        service_order: { work_note: "메모 업데이트" }
+      }
+    end
   end
 
   test "update with invalid params re-renders edit form" do
