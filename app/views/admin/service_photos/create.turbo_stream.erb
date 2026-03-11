@@ -1,0 +1,9 @@
+<% @service_photos.each do |photo| %>
+  <%= turbo_stream.append "photo_grid_#{photo.photo_type}" do %>
+    <%= render "admin/service_photos/service_photo", service_photo: photo %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.update "photo_upload_form" do %>
+  <%= render "admin/service_photos/upload_form", service_order: @service_order %>
+<% end %>

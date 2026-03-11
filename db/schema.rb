@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_000002) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -111,6 +111,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_000001) do
     t.index ["status"], name: "index_service_orders_on_status"
   end
 
+  create_table "service_photos", force: :cascade do |t|
+    t.text "caption"
+    t.datetime "created_at", null: false
+    t.string "photo_type", default: "before", null: false
+    t.integer "service_order_id", null: false
+    t.datetime "taken_at"
+    t.datetime "updated_at", null: false
+    t.index ["photo_type"], name: "index_service_photos_on_photo_type"
+    t.index ["service_order_id"], name: "index_service_photos_on_service_order_id"
+  end
+
   create_table "service_progresses", force: :cascade do |t|
     t.datetime "changed_at", null: false
     t.datetime "created_at", null: false
@@ -128,5 +139,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_000001) do
   add_foreign_key "bicycle_specs", "bicycles"
   add_foreign_key "bicycles", "customers"
   add_foreign_key "service_orders", "bicycles"
+  add_foreign_key "service_photos", "service_orders"
   add_foreign_key "service_progresses", "service_orders"
 end

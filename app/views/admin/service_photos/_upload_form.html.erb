@@ -1,0 +1,29 @@
+<%= form_with url: admin_service_order_service_photos_path(service_order), method: :post, id: "photo_upload_form", class: "bg-white shadow rounded-lg p-6 mb-6" do |f| %>
+  <h3 class="text-sm font-semibold text-gray-900 mb-4">사진 업로드</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <label for="photo_type" class="block text-sm font-medium text-gray-700 mb-1">사진 유형</label>
+      <select name="photo_type" id="photo_type" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+        <% ServicePhoto.photo_types.each_key do |type| %>
+          <option value="<%= type %>"><%= ServicePhoto::PHOTO_TYPE_LABELS[type] %></option>
+        <% end %>
+      </select>
+    </div>
+    <div>
+      <label for="caption" class="block text-sm font-medium text-gray-700 mb-1">캡션 (선택)</label>
+      <input type="text" name="caption" id="caption" placeholder="사진 설명..." class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+    </div>
+    <div>
+      <label for="images" class="block text-sm font-medium text-gray-700 mb-1">파일 선택</label>
+      <input type="file" name="images[]" id="images" multiple accept="image/jpeg,image/png,image/webp,image/heic" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+    </div>
+  </div>
+  <div class="mt-4 flex justify-end">
+    <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition">
+      <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+      </svg>
+      업로드
+    </button>
+  </div>
+<% end %>

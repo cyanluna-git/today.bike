@@ -238,7 +238,8 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
   test "show placeholder tabs display coming soon" do
     sign_in @admin_user
     get admin_service_order_path(@service_order)
-    assert_select "turbo-frame#service_order_tab_photos", text: /Coming soon/
+    # Photos tab now has real content (upload form + gallery)
+    assert_select "turbo-frame#service_order_tab_photos", text: /사진 업로드/
     assert_select "turbo-frame#service_order_tab_parts", text: /Coming soon/
     assert_select "turbo-frame#service_order_tab_repairs", text: /Coming soon/
   end

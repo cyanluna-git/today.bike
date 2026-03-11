@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+before_photo:
+  service_order: overhaul_order
+  photo_type: before
+  caption: 정비 전 전체 사진
+  taken_at: <%= Time.zone.parse("2026-03-01 10:05:00") %>
+
+diagnosis_photo:
+  service_order: overhaul_order
+  photo_type: diagnosis
+  caption: 체인 마모 상태
+  taken_at: <%= Time.zone.parse("2026-03-01 10:10:00") %>
+
+during_photo:
+  service_order: repair_order
+  photo_type: during
+  caption: 디레일러 조정 중
+  taken_at: <%= Time.zone.parse("2026-03-06 14:00:00") %>
+
+after_photo:
+  service_order: completed_order
+  photo_type: after
+  caption: 정비 완료 후 상태
+  taken_at: <%= Time.zone.parse("2026-02-24 15:30:00") %>

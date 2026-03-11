@@ -1,9 +1,47 @@
-<div class="bg-white shadow rounded-lg overflow-hidden">
-  <div class="px-6 py-12 text-center">
-    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z" />
-    </svg>
-    <h3 class="mt-2 text-sm font-semibold text-gray-900">정비사진</h3>
-    <p class="mt-1 text-sm text-gray-500">Coming soon. Service photos will be available here.</p>
-  </div>
+<div data-controller="lightbox">
+  <%# Upload Form %>
+  <%= render "admin/service_photos/upload_form", service_order: service_order %>
+
+  <%# Photo Gallery grouped by type %>
+  <% ServicePhoto.photo_types.each_key do |type| %>
+    <% photos = service_order.service_photos.where(photo_type: type).order(taken_at: :desc, created_at: :desc) %>
+    <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-900">
+          <%= ServicePhoto::PHOTO_TYPE_LABELS[type] %>
+          <span class="ml-2 text-xs text-gray-400">(<%= photos.size %>)</span>
+        </h3>
+      </div>
+      <div class="p-6">
+        <% if photos.any? %>
+          <div id="photo_grid_<%= type %>" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <% photos.each do |photo| %>
+              <%= render "admin/service_photos/service_photo", service_photo: photo %>
+            <% end %>
+          </div>
+        <% else %>
+          <div id="photo_grid_<%= type %>" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          </div>
+          <p class="text-sm text-gray-400 text-center py-4">No photos yet.</p>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Lightbox Modal %>
+  <dialog data-lightbox-target="dialog"
+          class="fixed inset-0 z-50 m-0 h-full w-full max-h-full max-w-full bg-black/80 backdrop:bg-transparent p-0">
+    <div class="flex h-full w-full items-center justify-center p-4" data-action="click->lightbox#close">
+      <div class="relative max-h-[90vh] max-w-[90vw]" data-action="click->lightbox#stopPropagation">
+        <button type="button" data-action="click->lightbox#close"
+                class="absolute -top-3 -right-3 rounded-full bg-white p-1.5 shadow-lg hover:bg-gray-100 transition z-10">
+          <svg class="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <img data-lightbox-target="image" src="" alt="" class="max-h-[85vh] max-w-[85vw] rounded-lg object-contain">
+        <p data-lightbox-target="caption" class="mt-2 text-center text-sm text-white"></p>
+      </div>
+    </div>
+  </dialog>
 </div>

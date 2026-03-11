@@ -3,6 +3,7 @@ class ServiceOrder < ApplicationRecord
   belongs_to :bicycle
   has_one :customer, through: :bicycle
   has_many :service_progresses, dependent: :destroy
+  has_many :service_photos, dependent: :destroy
 
   # Enums
   enum :service_type, {
