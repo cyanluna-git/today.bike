@@ -1,0 +1,35 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+published_post:
+  title: How to Maintain Your Road Bike Chain
+  slug: how-to-maintain-your-road-bike-chain
+  category: maintenance_tips
+  published: true
+  published_at: <%= Time.zone.parse("2026-03-01 10:00:00") %>
+  author: Today.bike
+  meta_description: Learn how to properly maintain your road bike chain for optimal performance.
+
+published_review:
+  title: Shimano Ultegra R8100 Review
+  slug: shimano-ultegra-r8100-review
+  category: review
+  published: true
+  published_at: <%= Time.zone.parse("2026-02-15 09:00:00") %>
+  author: Today.bike
+  meta_description: Our in-depth review of the Shimano Ultegra R8100 groupset.
+
+draft_post:
+  title: Upcoming Shop Events
+  slug: upcoming-shop-events
+  category: shop_news
+  published: false
+  published_at:
+  author: Today.bike
+
+migrated_post:
+  title: Naver Blog Original Post
+  slug: naver-blog-original-post
+  category: shop_news
+  published: false
+  author: Today.bike
+  source_url: https://blog.naver.com/todaybike/12345

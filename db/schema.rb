@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_001245) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_002142) do
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -78,6 +88,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_001245) do
     t.index ["customer_id"], name: "index_bicycles_on_customer_id"
     t.index ["frame_number"], name: "index_bicycles_on_frame_number", unique: true
     t.index ["passport_token"], name: "index_bicycles_on_passport_token", unique: true
+  end
+
+  create_table "blog_posts", force: :cascade do |t|
+    t.string "author", default: "Today.bike"
+    t.string "category", default: "other", null: false
+    t.datetime "created_at", null: false
+    t.text "meta_description"
+    t.boolean "published", default: false
+    t.datetime "published_at"
+    t.string "slug", null: false
+    t.string "source_url"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_blog_posts_on_category"
+    t.index ["published"], name: "index_blog_posts_on_published"
+    t.index ["published_at"], name: "index_blog_posts_on_published_at"
+    t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
+    t.index ["source_url"], name: "index_blog_posts_on_source_url", unique: true
   end
 
   create_table "customers", force: :cascade do |t|
@@ -190,6 +218,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_001245) do
     t.string "order_number", null: false
     t.datetime "received_at", null: false
     t.string "service_type", null: false
+    t.boolean "showcase", default: false
     t.string "status", default: "received", null: false
     t.datetime "updated_at", null: false
     t.text "work_note"

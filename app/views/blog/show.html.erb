@@ -1,0 +1,50 @@
+<% content_for(:title, "#{@blog_post.title} - Today Bike Blog") %>
+
+<% content_for(:head) do %>
+  <meta name="description" content="<%= @blog_post.meta_description.presence || @blog_post.excerpt(160) %>">
+  <meta property="og:title" content="<%= @blog_post.title %>">
+  <meta property="og:description" content="<%= @blog_post.meta_description.presence || @blog_post.excerpt(160) %>">
+  <meta property="og:type" content="article">
+  <% if @blog_post.cover_image.attached? %>
+    <meta property="og:image" content="<%= url_for(@blog_post.cover_image) %>">
+  <% end %>
+  <meta property="article:published_time" content="<%= @blog_post.published_at&.iso8601 %>">
+  <meta property="article:author" content="<%= @blog_post.author %>">
+<% end %>
+
+<div class="w-full max-w-4xl mx-auto">
+  <div class="mb-6">
+    <%= link_to blog_path, class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Blog
+    <% end %>
+  </div>
+
+  <article>
+    <%# Cover image %>
+    <% if @blog_post.cover_image.attached? %>
+      <div class="mb-6 rounded-lg overflow-hidden shadow">
+        <%= image_tag @blog_post.cover_image, class: "w-full max-h-[28rem] object-cover" %>
+      </div>
+    <% end %>
+
+    <%# Header %>
+    <header class="mb-8">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800"><%= @blog_post.category_label %></span>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-3"><%= @blog_post.title %></h1>
+      <div class="flex items-center gap-4 text-sm text-gray-500">
+        <span><%= @blog_post.author %></span>
+        <time datetime="<%= @blog_post.published_at&.iso8601 %>"><%= @blog_post.published_at&.strftime("%Y-%m-%d") %></time>
+      </div>
+    </header>
+
+    <%# Content %>
+    <div class="prose max-w-none">
+      <%= @blog_post.content %>
+    </div>
+  </article>
+</div>

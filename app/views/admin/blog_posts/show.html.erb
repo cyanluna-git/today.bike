@@ -1,0 +1,92 @@
+<% content_for(:title, "#{@blog_post.title} - Blog - Admin - Today Bike") %>
+
+<div class="w-full">
+  <div class="mb-6">
+    <%= link_to admin_blog_posts_path, class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Blog Posts
+    <% end %>
+  </div>
+
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-900"><%= @blog_post.title %></h1>
+    <div class="flex items-center gap-3">
+      <% if @blog_post.published? %>
+        <%= link_to "View Public", blog_post_path(@blog_post.slug), target: "_blank", class: "inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" %>
+      <% end %>
+      <%= link_to "Edit", edit_admin_blog_post_path(@blog_post), class: "inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" %>
+      <%= button_to "Delete", admin_blog_post_path(@blog_post), method: :delete,
+            class: "inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 transition",
+            form: { data: { turbo_confirm: "Are you sure you want to delete this blog post?" } } %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <dl class="divide-y divide-gray-200">
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">Category</dt>
+        <dd class="mt-1 sm:col-span-2 sm:mt-0">
+          <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800"><%= @blog_post.category_label %></span>
+        </dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">Status</dt>
+        <dd class="mt-1 sm:col-span-2 sm:mt-0">
+          <% if @blog_post.published? %>
+            <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Published</span>
+          <% else %>
+            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">Draft</span>
+          <% end %>
+        </dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">Author</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @blog_post.author %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">Slug</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @blog_post.slug %></dd>
+      </div>
+      <% if @blog_post.published_at.present? %>
+        <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+          <dt class="text-sm font-medium text-gray-500">Published At</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @blog_post.published_at.strftime("%Y-%m-%d %H:%M") %></dd>
+        </div>
+      <% end %>
+      <% if @blog_post.meta_description.present? %>
+        <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+          <dt class="text-sm font-medium text-gray-500">Meta Description</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @blog_post.meta_description %></dd>
+        </div>
+      <% end %>
+      <% if @blog_post.source_url.present? %>
+        <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+          <dt class="text-sm font-medium text-gray-500">Source URL</dt>
+          <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+            <%= link_to @blog_post.source_url, @blog_post.source_url, target: "_blank", class: "text-indigo-600 hover:text-indigo-900" %>
+          </dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+
+  <%# Cover Image %>
+  <% if @blog_post.cover_image.attached? %>
+    <div class="mt-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">Cover Image</h2>
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <%= image_tag @blog_post.cover_image, class: "w-full max-h-96 object-cover" %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Content %>
+  <div class="mt-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-3">Content</h2>
+    <div class="bg-white shadow rounded-lg p-6 prose max-w-none">
+      <%= @blog_post.content %>
+    </div>
+  </div>
+</div>

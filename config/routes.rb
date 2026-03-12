@@ -31,6 +31,7 @@ Rails.application.routes.draw do
       resources :frame_changes, only: %i[create edit update destroy]
     end
     resources :imports, only: %i[new create]
+    resources :blog_posts
   end
 
   namespace :portal do
@@ -46,6 +47,13 @@ Rails.application.routes.draw do
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Public blog
+  get "blog", to: "blog#index", as: :blog
+  get "blog/:slug", to: "blog#show", as: :blog_post
+
+  # Public gallery
+  get "gallery", to: "gallery#index", as: :gallery
 
   # Public bicycle passport (no auth required)
   get "passport/:token", to: "passports#show", as: :passport
