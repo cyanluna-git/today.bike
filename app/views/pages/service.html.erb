@@ -1,0 +1,218 @@
+<%
+  service_data = {
+    "overhaul" => {
+      title: "분해정비",
+      subtitle: "Overhaul Service",
+      description: "자전거를 완전히 분해하여 모든 부품을 세척, 점검, 그리스업 후 재조립하는 종합 정비 서비스입니다. 오랫동안 관리하지 못한 자전거나 시즌 전후 점검이 필요한 자전거에 추천드립니다.",
+      color: "indigo",
+      icon_path: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z",
+      icon_path2: "M15 12a3 3 0 11-6 0 3 3 0 016 0z",
+      steps: [
+        { name: "접수 및 상태 확인", desc: "자전거 현재 상태를 꼼꼼히 점검하고 사진으로 기록합니다." },
+        { name: "완전 분해", desc: "프레임, 포크, 구동계, 브레이크, 휠 등 모든 부품을 분해합니다." },
+        { name: "세척 및 점검", desc: "각 부품을 세척하고 마모 상태, 손상 여부를 확인합니다." },
+        { name: "그리스업 및 재조립", desc: "베어링, 나사부 등에 적절한 그리스를 도포하고 토크 관리하며 재조립합니다." },
+        { name: "최종 점검 및 테스트", desc: "변속, 브레이크, 휠 얼라인먼트 등 전체 기능을 테스트합니다." },
+        { name: "완료 안내", desc: "작업 내용과 사진을 포함한 정비 기록을 전달해 드립니다." }
+      ],
+      pricing: [
+        { name: "로드바이크 분해정비", price: "150,000원~" },
+        { name: "MTB 분해정비", price: "170,000원~" },
+        { name: "미니벨로/시티바이크", price: "120,000원~" }
+      ]
+    },
+    "repair" => {
+      title: "수리",
+      subtitle: "Repair Service",
+      description: "펑크 수리부터 변속기 조정, 브레이크 수리, 휠 트루잉까지 다양한 수리 서비스를 제공합니다. 정확한 진단과 신속한 수리로 최대한 빨리 라이딩에 복귀하실 수 있도록 도와드립니다.",
+      color: "green",
+      icon_path: "M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z",
+      icon_path2: nil,
+      steps: [
+        { name: "접수 및 증상 확인", desc: "증상을 확인하고 고장 부위를 정밀 진단합니다." },
+        { name: "견적 안내", desc: "수리 범위와 필요한 부품, 예상 비용을 안내해 드립니다." },
+        { name: "수리 진행", desc: "승인 후 수리를 진행하며, 추가 사항 발생 시 사전 연락드립니다." },
+        { name: "테스트 및 완료", desc: "수리 완료 후 정상 작동 여부를 테스트하고 안내드립니다." }
+      ],
+      pricing: [
+        { name: "펑크 수리", price: "10,000원~" },
+        { name: "변속 조정", price: "15,000원~" },
+        { name: "브레이크 조정", price: "15,000원~" },
+        { name: "휠 트루잉", price: "20,000원~" },
+        { name: "체인 교체", price: "부품비 + 공임 10,000원" }
+      ]
+    },
+    "fitting" => {
+      title: "피팅",
+      subtitle: "Bike Fitting",
+      description: "라이더의 체형과 유연성, 라이딩 스타일에 맞춰 자전거 포지션을 최적화합니다. 편안하고 효율적인 라이딩을 위한 필수 서비스입니다. 통증 예방과 퍼포먼스 향상에 도움이 됩니다.",
+      color: "purple",
+      icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z",
+      icon_path2: nil,
+      steps: [
+        { name: "사전 인터뷰", desc: "라이딩 목적, 경험, 불편 사항 등을 상담합니다." },
+        { name: "신체 계측", desc: "신장, 다리 길이, 팔 길이, 유연성 등을 측정합니다." },
+        { name: "현재 포지션 분석", desc: "현재 자전거 세팅과 라이딩 자세를 분석합니다." },
+        { name: "포지션 조정", desc: "안장 높이, 전후 위치, 핸들바 높이 등을 조정합니다." },
+        { name: "테스트 라이딩", desc: "조정된 포지션으로 테스트하고 미세 조정합니다." },
+        { name: "피팅 기록 제공", desc: "모든 수치를 기록한 피팅 리포트를 제공합니다." }
+      ],
+      pricing: [
+        { name: "기본 피팅", price: "80,000원" },
+        { name: "정밀 피팅", price: "150,000원" },
+        { name: "리핏팅 (기존 고객)", price: "50,000원" }
+      ]
+    },
+    "upgrade" => {
+      title: "업그레이드",
+      subtitle: "Upgrade Service",
+      description: "구동계, 휠셋, 핸들바, 안장 등 원하는 부품으로 업그레이드해 드립니다. 부품 선택부터 호환성 확인, 설치까지 전문적으로 진행합니다.",
+      color: "amber",
+      icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6",
+      icon_path2: nil,
+      steps: [
+        { name: "상담 및 부품 선택", desc: "목적과 예산에 맞는 업그레이드 방향을 상담합니다." },
+        { name: "호환성 확인", desc: "기존 자전거와의 호환성을 확인하고 필요한 부품을 안내합니다." },
+        { name: "부품 주문", desc: "국내외 공식 유통 채널을 통해 정품 부품을 주문합니다." },
+        { name: "설치 및 세팅", desc: "전문 정비사가 부품을 설치하고 최적의 세팅으로 조정합니다." },
+        { name: "테스트 및 완료", desc: "설치 완료 후 전체 기능을 테스트하고 안내드립니다." }
+      ],
+      pricing: [
+        { name: "구동계 업그레이드", price: "부품비 + 공임 50,000원~" },
+        { name: "휠셋 교체", price: "부품비 + 공임 30,000원~" },
+        { name: "핸들바/스템 교체", price: "부품비 + 공임 20,000원~" },
+        { name: "기타 부품 교체", price: "부품비 + 공임 별도" }
+      ]
+    }
+  }
+
+  data = service_data[@service_type]
+  color = data[:color]
+%>
+
+<% content_for(:title, "#{data[:title]} - Today.bike") %>
+
+<% content_for(:meta_tags) do %>
+  <meta name="description" content="<%= data[:description].truncate(160) %>">
+  <meta property="og:title" content="<%= data[:title] %> - Today.bike">
+  <meta property="og:description" content="<%= data[:description].truncate(160) %>">
+  <meta property="og:type" content="website">
+<% end %>
+
+<div class="w-full max-w-5xl mx-auto">
+  <%# Breadcrumb %>
+  <div class="mb-6">
+    <%= link_to root_path, class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      홈으로
+    <% end %>
+  </div>
+
+  <%# Header %>
+  <section class="mb-12">
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 bg-<%= color %>-100 rounded-xl flex items-center justify-center">
+        <svg class="w-7 h-7 text-<%= color %>-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= data[:icon_path] %>" />
+          <% if data[:icon_path2] %>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= data[:icon_path2] %>" />
+          <% end %>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900"><%= data[:title] %></h1>
+        <p class="text-sm text-gray-400"><%= data[:subtitle] %></p>
+      </div>
+    </div>
+    <p class="text-lg text-gray-600 max-w-3xl"><%= data[:description] %></p>
+  </section>
+
+  <%# Service Navigation %>
+  <nav class="flex gap-2 flex-wrap mb-12" aria-label="Service types">
+    <% service_data.each do |type, svc| %>
+      <% active = type == @service_type %>
+      <%= link_to svc[:title], service_page_path(type),
+            class: "px-4 py-2 text-sm font-medium rounded-lg transition #{active ? "bg-#{svc[:color]}-600 text-white" : "bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"}" %>
+    <% end %>
+  </nav>
+
+  <%# Process Steps %>
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">서비스 과정</h2>
+    <div class="space-y-4">
+      <% data[:steps].each_with_index do |step, index| %>
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 bg-<%= color %>-600 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0">
+              <%= index + 1 %>
+            </div>
+            <% unless index == data[:steps].length - 1 %>
+              <div class="w-0.5 h-full bg-<%= color %>-200 mt-2"></div>
+            <% end %>
+          </div>
+          <div class="pb-6">
+            <h3 class="text-base font-semibold text-gray-900"><%= step[:name] %></h3>
+            <p class="text-sm text-gray-600 mt-1"><%= step[:desc] %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <%# Pricing %>
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">요금 안내</h2>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <table class="w-full">
+        <tbody class="divide-y divide-gray-100">
+          <% data[:pricing].each do |item| %>
+            <tr>
+              <td class="px-6 py-4 text-sm font-medium text-gray-900"><%= item[:name] %></td>
+              <td class="px-6 py-4 text-sm text-gray-600 text-right"><%= item[:price] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-gray-400 mt-3">* 실제 비용은 자전거 상태에 따라 달라질 수 있습니다. 정확한 견적은 접수 후 안내드립니다.</p>
+  </section>
+
+  <%# Showcase Gallery %>
+  <% if @showcase_orders.any? %>
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">작업 사례</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <% @showcase_orders.each do |order| %>
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <% after_photo = order.service_photos.find { |p| p.photo_type == "after" } %>
+            <% if after_photo&.image&.attached? %>
+              <%= image_tag after_photo.image.variant(resize_to_limit: [400, 300]), class: "w-full h-48 object-cover" %>
+            <% end %>
+            <div class="p-3">
+              <p class="text-sm font-medium text-gray-900"><%= order.bicycle.brand %> <%= order.bicycle.model_label %></p>
+              <p class="text-xs text-gray-500"><%= order.completed_at&.strftime("%Y-%m-%d") %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="mt-4 text-center">
+        <%= link_to "갤러리에서 더 보기", gallery_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-800 transition" %>
+      </div>
+    </section>
+  <% end %>
+
+  <%# CTA %>
+  <section class="bg-gray-50 rounded-2xl p-8 text-center">
+    <h2 class="text-2xl font-bold text-gray-900 mb-3">서비스 문의</h2>
+    <p class="text-gray-600 mb-6">카카오톡으로 편하게 문의하세요. 자전거 사진을 함께 보내주시면 더 정확한 안내가 가능합니다.</p>
+    <%= link_to "https://pf.kakao.com/_todaybike/chat", target: "_blank", rel: "noopener noreferrer",
+          class: "inline-flex items-center gap-2 rounded-lg bg-yellow-400 px-6 py-3 text-base font-semibold text-gray-900 shadow-sm hover:bg-yellow-300 transition" do %>
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 3C6.477 3 2 6.477 2 10.5c0 2.47 1.607 4.647 4.042 5.906-.178.663-.647 2.41-.741 2.785-.118.47.173.464.364.337.15-.1 2.38-1.619 3.34-2.275.32.042.65.064.985.064 5.523 0 10-3.477 10-7.817C20 6.477 17.523 3 12 3z"/>
+      </svg>
+      카카오톡 문의하기
+    <% end %>
+  </section>
+</div>

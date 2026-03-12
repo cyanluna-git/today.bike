@@ -1,5 +1,35 @@
 <% content_for(:title, "#{@product.name} - Products - Today Bike") %>
 
+<% content_for(:meta_tags) do %>
+  <meta name="description" content="<%= @product.description.to_s.truncate(160) %>">
+  <meta property="og:title" content="<%= @product.name %> - Today.bike">
+  <meta property="og:description" content="<%= @product.description.to_s.truncate(160) %>">
+  <meta property="og:type" content="product">
+<% end %>
+
+<% content_for(:json_ld) do %>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "<%= j @product.name %>",
+      "description": "<%= j @product.description.to_s.truncate(300) %>",
+      "brand": {
+        "@type": "Brand",
+        "name": "<%= j @product.brand.to_s %>"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "<%= @product.display_price %>",
+        "priceCurrency": "KRW",
+        "availability": "<%= @product.stock_quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' %>",
+        "url": "<%= product_url(@product) %>"
+      },
+      "sku": "<%= j @product.sku.to_s %>"
+    }
+  </script>
+<% end %>
+
 <div class="w-full max-w-6xl mx-auto">
   <div class="mb-6">
     <%= link_to products_path, class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition" do %>

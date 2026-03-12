@@ -73,6 +73,12 @@ Rails.application.routes.draw do
   # Public bicycle passport (no auth required)
   get "passport/:token", to: "passports#show", as: :passport
 
+  # Service pages
+  get "services/:service_type", to: "pages#service", as: :service_page
+
+  # Sitemap
+  get "sitemap.xml", to: "sitemap#index", as: :sitemap, defaults: { format: :xml }
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
@@ -82,5 +88,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  # root "posts#index"
+  root "pages#home"
 end

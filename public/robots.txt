@@ -1,1 +1,12 @@
 # See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+
+User-agent: *
+Allow: /
+
+# Disallow admin and portal areas
+Disallow: /admin/
+Disallow: /portal/
+Disallow: /rails/
+
+# Sitemap
+Sitemap: https://today.bike/sitemap.xml

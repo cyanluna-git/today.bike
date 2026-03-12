@@ -1,0 +1,11 @@
+<%# Default meta tags - can be overridden using content_for(:meta_tags) in individual views %>
+<% if content_for?(:meta_tags) %>
+  <%= yield(:meta_tags) %>
+<% else %>
+  <meta name="description" content="Today.bike - 서울 자전거 전문 정비 샵. 분해정비, 수리, 피팅, 업그레이드 서비스를 제공합니다.">
+  <meta property="og:title" content="Today.bike - 오늘도 자전거와 함께">
+  <meta property="og:description" content="서울 자전거 전문 정비 샵. 분해정비, 수리, 피팅, 업그레이드 서비스를 제공합니다.">
+  <meta property="og:type" content="website">
+<% end %>
+<meta property="og:site_name" content="Today.bike">
+<meta property="og:locale" content="ko_KR">
