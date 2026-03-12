@@ -1,0 +1,20 @@
+cervelo:
+  name: Cervelo Soloist 56cm
+  description: High-performance road bike
+  rental_type: road
+  daily_rate: 50000
+  active: true
+
+mtb_bike:
+  name: Santa Cruz Hightower
+  description: Full suspension MTB
+  rental_type: mtb
+  daily_rate: 60000
+  active: true
+
+inactive_rental:
+  name: Old Gravel Bike
+  description: Currently under maintenance
+  rental_type: gravel
+  daily_rate: 40000
+  active: false

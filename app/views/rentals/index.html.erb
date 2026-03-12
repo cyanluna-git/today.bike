@@ -1,0 +1,85 @@
+<% content_for(:title, "Bike Rental - Today Bike") %>
+
+<div class="w-full max-w-6xl mx-auto">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Bike Rental</h1>
+    <p class="mt-2 text-gray-600">Rent a high-quality bike for your next ride.</p>
+  </div>
+
+  <%# Type filter tabs %>
+  <div class="mb-6">
+    <nav class="flex gap-2 flex-wrap" aria-label="Type filter">
+      <%= link_to "All", rentals_path, class: "px-3 py-1.5 text-sm font-medium rounded-md #{params[:rental_type].blank? ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'} transition" %>
+      <% Rental::RENTAL_TYPE_LABELS.each do |key, label| %>
+        <%= link_to label, rentals_path(rental_type: key), class: "px-3 py-1.5 text-sm font-medium rounded-md #{params[:rental_type] == key ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'} transition" %>
+      <% end %>
+    </nav>
+  </div>
+
+  <% if @rentals.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @rentals.each do |rental| %>
+        <article class="bg-white shadow rounded-lg overflow-hidden hover:shadow-md transition">
+          <% if rental.images.attached? %>
+            <%= link_to rental_path(rental) do %>
+              <%= image_tag rental.images.first.variant(resize_to_limit: [600, 400]), class: "w-full h-48 object-cover" %>
+            <% end %>
+          <% else %>
+            <%= link_to rental_path(rental) do %>
+              <div class="w-full h-48 bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center">
+                <svg class="w-12 h-12 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+              </div>
+            <% end %>
+          <% end %>
+
+          <div class="p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800"><%= rental.rental_type_label %></span>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900 mb-2">
+              <%= link_to rental.name, rental_path(rental), class: "hover:text-indigo-600 transition" %>
+            </h2>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-lg text-gray-900"><%= number_to_currency(rental.daily_rate, unit: "₩", precision: 0) %><span class="text-sm font-normal text-gray-500">/day</span></span>
+              <%= link_to "Book Now", rental_path(rental), class: "text-sm font-medium text-indigo-600 hover:text-indigo-800 transition" %>
+            </div>
+          </div>
+        </article>
+      <% end %>
+    </div>
+
+    <%# Pagination %>
+    <% if @pagy.pages > 1 %>
+      <div class="mt-8 flex justify-center">
+        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+          <% if @pagy.prev %>
+            <%= link_to pagy_url_for(@pagy, @pagy.prev), class: "relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" do %>
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" /></svg>
+            <% end %>
+          <% end %>
+          <% @pagy.series.each do |item| %>
+            <% case item %>
+            <% when Integer %>
+              <%= link_to item, pagy_url_for(@pagy, item), class: "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" %>
+            <% when String %>
+              <span aria-current="page" class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white"><%= item %></span>
+            <% when :gap %>
+              <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300">&hellip;</span>
+            <% end %>
+          <% end %>
+          <% if @pagy.next %>
+            <%= link_to pagy_url_for(@pagy, @pagy.next), class: "relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" do %>
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" /></svg>
+            <% end %>
+          <% end %>
+        </nav>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="text-center py-12">
+      <p class="text-gray-500">No rental bikes available. Check back soon!</p>
+    </div>
+  <% end %>
+</div>

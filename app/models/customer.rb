@@ -3,6 +3,7 @@ class Customer < ApplicationRecord
   has_many :bicycles, dependent: :destroy
   has_many :service_orders, through: :bicycles
   has_many :notifications, dependent: :destroy
+  has_many :rental_bookings, dependent: :nullify
 
   # Scopes
   scope :search, ->(query) {

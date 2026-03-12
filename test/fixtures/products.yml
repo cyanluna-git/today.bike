@@ -1,0 +1,54 @@
+chain:
+  name: Shimano CN-HG701
+  description: 11-speed chain for road and MTB
+  category: parts
+  brand: Shimano
+  price: 35000
+  sale_price:
+  stock_quantity: 10
+  active: true
+  sku: SHM-CN-HG701
+
+tire:
+  name: Continental GP5000
+  description: High-performance road tire
+  category: parts
+  brand: Continental
+  price: 65000
+  sale_price: 55000
+  stock_quantity: 5
+  active: true
+  sku: CON-GP5000
+
+jersey:
+  name: Rapha Core Jersey
+  description: Lightweight cycling jersey
+  category: apparel
+  brand: Rapha
+  price: 120000
+  sale_price:
+  stock_quantity: 3
+  active: true
+  sku: RAP-CORE-J
+
+energy_gel:
+  name: GU Energy Gel
+  description: Quick energy during rides
+  category: nutrition
+  brand: GU
+  price: 3000
+  sale_price:
+  stock_quantity: 50
+  active: true
+  sku: GU-GEL-001
+
+inactive_product:
+  name: Discontinued Saddle
+  description: No longer available
+  category: accessories
+  brand: Fizik
+  price: 180000
+  sale_price:
+  stock_quantity: 0
+  active: false
+  sku: FIZ-SAD-OLD

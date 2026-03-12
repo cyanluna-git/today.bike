@@ -1,0 +1,71 @@
+<% content_for(:title, "Booking Detail - #{@rental.name} - Admin - Today Bike") %>
+
+<div class="w-full">
+  <div class="mb-6">
+    <%= link_to admin_rental_rental_bookings_path(@rental), class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Bookings
+    <% end %>
+  </div>
+
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Booking Detail</h1>
+    <div class="flex items-center gap-3">
+      <%= link_to "Edit", edit_admin_rental_rental_booking_path(@rental, @rental_booking), class: "inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" %>
+      <%= button_to "Delete", admin_rental_rental_booking_path(@rental, @rental_booking), method: :delete,
+            class: "inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 transition",
+            form: { data: { turbo_confirm: "Are you sure?" } } %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <dl class="divide-y divide-gray-200">
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">Rental</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+          <%= link_to @rental.name, admin_rental_path(@rental), class: "text-indigo-600 hover:text-indigo-900" %>
+        </dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">Guest Name</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @rental_booking.customer&.name || @rental_booking.guest_name || "-" %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">Phone</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @rental_booking.guest_phone || @rental_booking.customer&.phone || "-" %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">Dates</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+          <%= @rental_booking.start_date %> ~ <%= @rental_booking.end_date %> (<%= @rental_booking.days %> days)
+        </dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">Status</dt>
+        <dd class="mt-1 sm:col-span-2 sm:mt-0">
+          <% badge_color = case @rental_booking.status
+            when "pending" then "bg-yellow-100 text-yellow-800"
+            when "confirmed" then "bg-blue-100 text-blue-800"
+            when "active" then "bg-green-100 text-green-800"
+            when "returned" then "bg-gray-100 text-gray-800"
+            when "cancelled" then "bg-red-100 text-red-800"
+            else "bg-gray-100 text-gray-800"
+          end %>
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= badge_color %>"><%= @rental_booking.status_label %></span>
+        </dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">Total Amount</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@rental_booking.total_amount, unit: "₩", precision: 0) %></dd>
+      </div>
+      <% if @rental_booking.notes.present? %>
+        <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+          <dt class="text-sm font-medium text-gray-500">Notes</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= simple_format(@rental_booking.notes) %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+</div>

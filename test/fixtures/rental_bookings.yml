@@ -1,0 +1,43 @@
+pending_booking:
+  rental: cervelo
+  customer:
+  guest_name: Park Jimin
+  guest_phone: 010-5555-1234
+  start_date: <%= Date.current + 7 %>
+  end_date: <%= Date.current + 9 %>
+  status: pending
+  total_amount: 100000
+  notes: First time rental
+
+confirmed_booking:
+  rental: cervelo
+  customer: two
+  guest_name:
+  guest_phone:
+  start_date: <%= Date.current + 14 %>
+  end_date: <%= Date.current + 16 %>
+  status: confirmed
+  total_amount: 100000
+  notes:
+
+active_booking:
+  rental: mtb_bike
+  customer:
+  guest_name: Lee Soonmi
+  guest_phone: 010-3333-4567
+  start_date: <%= Date.current - 1 %>
+  end_date: <%= Date.current + 2 %>
+  status: active
+  total_amount: 180000
+  notes:
+
+returned_booking:
+  rental: cervelo
+  customer:
+  guest_name: Kim Donghyun
+  guest_phone: 010-9999-8888
+  start_date: <%= Date.current - 10 %>
+  end_date: <%= Date.current - 7 %>
+  status: returned
+  total_amount: 150000
+  notes: Returned in good condition

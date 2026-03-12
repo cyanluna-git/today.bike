@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_002142) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_003141) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -193,6 +193,53 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_002142) do
     t.index ["service_order_id"], name: "index_parts_replacements_on_service_order_id"
   end
 
+  create_table "products", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.string "brand"
+    t.string "category", default: "other", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.decimal "price", precision: 10, null: false
+    t.decimal "sale_price", precision: 10
+    t.string "sku"
+    t.integer "stock_quantity", default: 0
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_products_on_active"
+    t.index ["category"], name: "index_products_on_category"
+    t.index ["sku"], name: "index_products_on_sku", unique: true
+  end
+
+  create_table "rental_bookings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "customer_id"
+    t.date "end_date", null: false
+    t.string "guest_name"
+    t.string "guest_phone"
+    t.text "notes"
+    t.integer "rental_id", null: false
+    t.date "start_date", null: false
+    t.string "status", default: "pending", null: false
+    t.decimal "total_amount", precision: 10
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_rental_bookings_on_customer_id"
+    t.index ["rental_id"], name: "index_rental_bookings_on_rental_id"
+    t.index ["start_date", "end_date"], name: "index_rental_bookings_on_start_date_and_end_date"
+    t.index ["status"], name: "index_rental_bookings_on_status"
+  end
+
+  create_table "rentals", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.decimal "daily_rate", precision: 10, null: false
+    t.text "description"
+    t.string "name", null: false
+    t.string "rental_type", default: "road", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_rentals_on_active"
+    t.index ["rental_type"], name: "index_rentals_on_rental_type"
+  end
+
   create_table "repair_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "diagnosis"
@@ -277,6 +324,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_002142) do
   add_foreign_key "notifications", "customers"
   add_foreign_key "notifications", "service_orders"
   add_foreign_key "parts_replacements", "service_orders"
+  add_foreign_key "rental_bookings", "customers"
+  add_foreign_key "rental_bookings", "rentals"
   add_foreign_key "repair_logs", "service_orders"
   add_foreign_key "service_orders", "bicycles"
   add_foreign_key "service_photos", "service_orders"

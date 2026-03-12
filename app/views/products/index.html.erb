@@ -1,0 +1,93 @@
+<% content_for(:title, "Products - Today Bike") %>
+
+<div class="w-full max-w-6xl mx-auto">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Products</h1>
+    <p class="mt-2 text-gray-600">Browse our selection of cycling parts, accessories, and more.</p>
+  </div>
+
+  <%# Category tabs %>
+  <div class="mb-6">
+    <nav class="flex gap-2 flex-wrap" aria-label="Category filter">
+      <%= link_to "All", products_path, class: "px-3 py-1.5 text-sm font-medium rounded-md #{params[:category].blank? ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'} transition" %>
+      <% Product::CATEGORY_LABELS.each do |key, label| %>
+        <%= link_to label, products_path(category: key), class: "px-3 py-1.5 text-sm font-medium rounded-md #{params[:category] == key ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'} transition" %>
+      <% end %>
+    </nav>
+  </div>
+
+  <%# Product cards %>
+  <% if @products.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @products.each do |product| %>
+        <article class="bg-white shadow rounded-lg overflow-hidden hover:shadow-md transition">
+          <% if product.images.attached? %>
+            <%= link_to product_path(product) do %>
+              <%= image_tag product.images.first.variant(resize_to_limit: [600, 400]), class: "w-full h-48 object-cover" %>
+            <% end %>
+          <% else %>
+            <%= link_to product_path(product) do %>
+              <div class="w-full h-48 bg-gradient-to-br from-indigo-100 to-indigo-50 flex items-center justify-center">
+                <svg class="w-12 h-12 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+            <% end %>
+          <% end %>
+
+          <div class="p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800"><%= product.category_label %></span>
+              <% if product.brand.present? %>
+                <span class="text-xs text-gray-500"><%= product.brand %></span>
+              <% end %>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900 mb-2">
+              <%= link_to product.name, product_path(product), class: "hover:text-indigo-600 transition" %>
+            </h2>
+            <div class="flex items-center gap-2">
+              <% if product.on_sale? %>
+                <span class="line-through text-gray-400 text-sm"><%= number_to_currency(product.price, unit: "₩", precision: 0) %></span>
+                <span class="text-red-600 font-bold text-lg"><%= number_to_currency(product.sale_price, unit: "₩", precision: 0) %></span>
+              <% else %>
+                <span class="font-bold text-lg text-gray-900"><%= number_to_currency(product.price, unit: "₩", precision: 0) %></span>
+              <% end %>
+            </div>
+          </div>
+        </article>
+      <% end %>
+    </div>
+
+    <%# Pagination %>
+    <% if @pagy.pages > 1 %>
+      <div class="mt-8 flex justify-center">
+        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+          <% if @pagy.prev %>
+            <%= link_to pagy_url_for(@pagy, @pagy.prev), class: "relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" do %>
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" /></svg>
+            <% end %>
+          <% end %>
+          <% @pagy.series.each do |item| %>
+            <% case item %>
+            <% when Integer %>
+              <%= link_to item, pagy_url_for(@pagy, item), class: "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" %>
+            <% when String %>
+              <span aria-current="page" class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white"><%= item %></span>
+            <% when :gap %>
+              <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300">&hellip;</span>
+            <% end %>
+          <% end %>
+          <% if @pagy.next %>
+            <%= link_to pagy_url_for(@pagy, @pagy.next), class: "relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" do %>
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" /></svg>
+            <% end %>
+          <% end %>
+        </nav>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="text-center py-12">
+      <p class="text-gray-500">No products available. Check back soon!</p>
+    </div>
+  <% end %>
+</div>

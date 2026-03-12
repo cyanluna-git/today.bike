@@ -32,6 +32,10 @@ Rails.application.routes.draw do
     end
     resources :imports, only: %i[new create]
     resources :blog_posts
+    resources :products
+    resources :rentals do
+      resources :rental_bookings
+    end
   end
 
   namespace :portal do
@@ -47,6 +51,17 @@ Rails.application.routes.draw do
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Public products
+  resources :products, only: %i[index show]
+
+  # Public rentals
+  resources :rentals, only: %i[index show] do
+    member do
+      post :create_booking
+      get :booking_confirmation
+    end
+  end
 
   # Public blog
   get "blog", to: "blog#index", as: :blog
