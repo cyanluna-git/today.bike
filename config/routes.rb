@@ -31,6 +31,18 @@ Rails.application.routes.draw do
     resources :imports, only: %i[new create]
   end
 
+  namespace :portal do
+    get "login", to: "sessions#new"
+    post "login", to: "sessions#create"
+    delete "logout", to: "sessions#destroy"
+    get "auth/kakao/callback", to: "sessions#kakao_callback"
+
+    root "bicycles#index"
+    resources :bicycles, only: %i[index show]
+    resources :service_orders, only: %i[index show]
+    resources :fitting_records, only: %i[index show]
+  end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

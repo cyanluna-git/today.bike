@@ -1,0 +1,43 @@
+<% content_for(:title) { "내 자전거 - Today Bike" } %>
+
+<h1 class="text-xl font-bold text-gray-900 mb-4">내 자전거</h1>
+
+<% if @bicycles.any? %>
+  <div class="space-y-4">
+    <% @bicycles.each do |bicycle| %>
+      <%= link_to portal_bicycle_path(bicycle), class: "block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition", data: { testid: "bicycle-card" } do %>
+        <% if bicycle.photos.attached? %>
+          <div class="h-40 bg-gray-100 overflow-hidden">
+            <%= image_tag bicycle.photo_thumbnail(bicycle.photos.first), class: "w-full h-full object-cover" %>
+          </div>
+        <% else %>
+          <div class="h-40 bg-gray-100 flex items-center justify-center">
+            <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+          </div>
+        <% end %>
+        <div class="p-4">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700"><%= bicycle.bike_type.upcase %></span>
+            <% if bicycle.year.present? %>
+              <span class="text-xs text-gray-400"><%= bicycle.year %></span>
+            <% end %>
+          </div>
+          <h2 class="font-semibold text-gray-900"><%= bicycle.brand %></h2>
+          <p class="text-sm text-gray-600"><%= bicycle.model_label %></p>
+          <% if bicycle.color.present? %>
+            <p class="text-xs text-gray-400 mt-1"><%= bicycle.color %></p>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-12">
+    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+    </svg>
+    <p class="text-gray-500">등록된 자전거가 없습니다.</p>
+  </div>
+<% end %>

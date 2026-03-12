@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html class="h-full bg-gray-50">
+  <head>
+    <title><%= content_for(:title) || "Today Bike" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full flex flex-col">
+    <%# Header %>
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+      <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
+        <% if current_customer %>
+          <%= link_to portal_root_path, class: "flex items-center gap-2" do %>
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+            <span class="text-lg font-bold text-gray-900">Today.bike</span>
+          <% end %>
+        <% else %>
+          <div class="flex items-center gap-2">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+            <span class="text-lg font-bold text-gray-900">Today.bike</span>
+          </div>
+        <% end %>
+
+        <% if current_customer %>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-600"><%= current_customer.name %></span>
+            <%= button_to portal_logout_path, method: :delete, class: "text-sm text-gray-400 hover:text-gray-600" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1" />
+              </svg>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </header>
+
+    <%# Main content %>
+    <main class="flex-1 max-w-lg mx-auto w-full px-4 py-4 pb-24">
+      <% if notice.present? %>
+        <div class="mb-4 rounded-lg bg-green-50 p-3">
+          <p class="text-sm text-green-700"><%= notice %></p>
+        </div>
+      <% end %>
+
+      <% if alert.present? %>
+        <div class="mb-4 rounded-lg bg-red-50 p-3">
+          <p class="text-sm text-red-700"><%= alert %></p>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <% if current_customer %>
+      <%# Bottom navigation bar for mobile %>
+      <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-30" aria-label="Portal navigation">
+        <div class="max-w-lg mx-auto flex justify-around py-2">
+          <%= link_to portal_bicycles_path, class: "flex flex-col items-center gap-1 px-3 py-1 text-xs #{'text-blue-600 font-semibold' if controller_name == 'bicycles'} #{'text-gray-500' unless controller_name == 'bicycles'}" do %>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+            <span>내 자전거</span>
+          <% end %>
+
+          <%= link_to portal_service_orders_path, class: "flex flex-col items-center gap-1 px-3 py-1 text-xs #{'text-blue-600 font-semibold' if controller_name == 'service_orders'} #{'text-gray-500' unless controller_name == 'service_orders'}" do %>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+            <span>정비이력</span>
+          <% end %>
+
+          <%= link_to portal_fitting_records_path, class: "flex flex-col items-center gap-1 px-3 py-1 text-xs #{'text-blue-600 font-semibold' if controller_name == 'fitting_records'} #{'text-gray-500' unless controller_name == 'fitting_records'}" do %>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span>피팅</span>
+          <% end %>
+
+          <%= link_to "#", class: "flex flex-col items-center gap-1 px-3 py-1 text-xs text-gray-500", data: { testid: "nav-profile" } do %>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span>내 정보</span>
+          <% end %>
+        </div>
+      </nav>
+    <% end %>
+  </body>
+</html>

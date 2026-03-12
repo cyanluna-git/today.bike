@@ -217,6 +217,31 @@ class CustomerTest < ActiveSupport::TestCase
     assert_kind_of ActiveRecord::Relation, results
   end
 
+  # --- find_for_kakao_auth ---
+
+  test "find_for_kakao_auth finds by kakao_uid" do
+    customer = customers(:one)
+    result = Customer.find_for_kakao_auth(kakao_uid: customer.kakao_uid)
+    assert_equal customer, result
+  end
+
+  test "find_for_kakao_auth finds by phone when uid not found" do
+    customer = customers(:two)
+    result = Customer.find_for_kakao_auth(kakao_uid: "new_kakao_id", phone: customer.phone)
+    assert_equal customer, result
+    assert_equal "new_kakao_id", customer.reload.kakao_uid
+  end
+
+  test "find_for_kakao_auth returns nil when nothing matches" do
+    result = Customer.find_for_kakao_auth(kakao_uid: "nonexistent", phone: "010-0000-0000")
+    assert_nil result
+  end
+
+  test "find_for_kakao_auth returns nil with nil args" do
+    result = Customer.find_for_kakao_auth(kakao_uid: nil, phone: nil)
+    assert_nil result
+  end
+
   # --- Fixtures loaded correctly ---
 
   test "fixtures are loaded" do

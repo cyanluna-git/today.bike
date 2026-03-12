@@ -1,0 +1,96 @@
+<% content_for(:title) { "피팅 기록 상세 - Today Bike" } %>
+
+<%
+  measurement_labels = {
+    saddle_height: { label: "안장 높이", unit: "mm" },
+    saddle_setback: { label: "안장 셋백", unit: "mm" },
+    saddle_tilt: { label: "안장 기울기", unit: "°" },
+    handlebar_width: { label: "핸들바 폭", unit: "mm" },
+    handlebar_drop: { label: "핸들바 드롭", unit: "mm" },
+    handlebar_reach: { label: "핸들바 리치", unit: "mm" },
+    handlebar_stack: { label: "핸들바 스택", unit: "mm" },
+    stem_length: { label: "스템 길이", unit: "mm" },
+    stem_angle: { label: "스템 각도", unit: "°" },
+    stem_spacer: { label: "스페이서", unit: "mm" },
+    crank_length: { label: "크랭크 길이", unit: "mm" }
+  }
+%>
+
+<div class="mb-4">
+  <%= link_to portal_fitting_records_path, class: "text-sm text-blue-600 hover:text-blue-800" do %>
+    &larr; 피팅 기록 목록
+  <% end %>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+  <div class="flex items-start justify-between mb-3">
+    <div>
+      <h1 class="text-lg font-bold text-gray-900">피팅 기록</h1>
+      <p class="text-sm text-gray-500"><%= @bicycle.brand %> <%= @bicycle.model_label %></p>
+    </div>
+    <span class="text-sm text-gray-400"><%= @fitting_record.recorded_at&.strftime("%Y.%m.%d") %></span>
+  </div>
+
+  <% if @fitting_record.notes.present? %>
+    <p class="text-sm text-gray-600 mb-4 bg-gray-50 rounded-lg p-3"><%= @fitting_record.notes %></p>
+  <% end %>
+
+  <%# Measurements %>
+  <h2 class="text-sm font-semibold text-gray-700 mb-2">측정값</h2>
+  <dl class="space-y-2" data-testid="measurements">
+    <% measurement_labels.each do |field, meta| %>
+      <% value = @fitting_record.send(field) %>
+      <% if value.present? %>
+        <div class="flex justify-between items-baseline text-sm border-b border-gray-50 pb-2">
+          <dt class="text-gray-500"><%= meta[:label] %></dt>
+          <dd class="text-gray-900 font-medium font-mono"><%= value %><span class="text-gray-400 text-xs ml-0.5"><%= meta[:unit] %></span></dd>
+        </div>
+      <% end %>
+    <% end %>
+  </dl>
+</div>
+
+<%# Saddle info %>
+<% if @fitting_record.saddle_brand.present? || @fitting_record.saddle_model.present? %>
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4" data-testid="saddle-info">
+    <h2 class="text-sm font-semibold text-gray-700 mb-2">안장</h2>
+    <p class="text-sm text-gray-900">
+      <%= [@fitting_record.saddle_brand, @fitting_record.saddle_model].compact_blank.join(" ") %>
+    </p>
+  </div>
+<% end %>
+
+<%# Cleat info %>
+<% if @fitting_record.cleat_left.present? || @fitting_record.cleat_right.present? %>
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4" data-testid="cleat-info">
+    <h2 class="text-sm font-semibold text-gray-700 mb-2">클릿</h2>
+    <dl class="space-y-2 text-sm">
+      <% if @fitting_record.cleat_left.present? %>
+        <div class="flex justify-between">
+          <dt class="text-gray-500">왼쪽</dt>
+          <dd class="text-gray-900"><%= @fitting_record.cleat_left %></dd>
+        </div>
+      <% end %>
+      <% if @fitting_record.cleat_right.present? %>
+        <div class="flex justify-between">
+          <dt class="text-gray-500">오른쪽</dt>
+          <dd class="text-gray-900"><%= @fitting_record.cleat_right %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+<% end %>
+
+<%# Photos %>
+<% if @fitting_record.photos.attached? %>
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4" data-testid="fitting-photos">
+    <h2 class="text-sm font-semibold text-gray-700 mb-2">사진</h2>
+    <div class="grid grid-cols-2 gap-2">
+      <% @fitting_record.photos.each do |photo| %>
+        <div class="rounded-lg overflow-hidden bg-gray-100 aspect-square">
+          <%= image_tag photo.variant(resize_to_limit: [300, 300]), class: "w-full h-full object-cover" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

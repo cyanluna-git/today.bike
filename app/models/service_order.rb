@@ -1,4 +1,6 @@
 class ServiceOrder < ApplicationRecord
+  include ActionView::RecordIdentifier
+
   # Associations
   belongs_to :bicycle
   has_one :customer, through: :bicycle
@@ -51,6 +53,7 @@ class ServiceOrder < ApplicationRecord
   before_create :generate_order_number
   before_create :set_received_at
   after_update :record_status_change, if: :saved_change_to_status?
+  after_update_commit :broadcast_status_update, if: :saved_change_to_status?
 
   # Validations
   validates :order_number, uniqueness: true, allow_nil: true
@@ -111,6 +114,15 @@ class ServiceOrder < ApplicationRecord
       from_status: from,
       to_status: to,
       changed_at: Time.current
+    )
+  end
+
+  def broadcast_status_update
+    broadcast_replace_to(
+      self,
+      target: dom_id(self),
+      partial: "portal/service_orders/service_order_detail",
+      locals: { service_order: self }
     )
   end
 end

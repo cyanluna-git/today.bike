@@ -1,0 +1,73 @@
+<% content_for(:title) { "정비이력 - Today Bike" } %>
+
+<h1 class="text-xl font-bold text-gray-900 mb-4">정비이력</h1>
+
+<%
+  status_colors = {
+    "received" => "bg-blue-100 text-blue-800",
+    "diagnosis" => "bg-yellow-100 text-yellow-800",
+    "in_progress" => "bg-orange-100 text-orange-800",
+    "completed" => "bg-green-100 text-green-800",
+    "delivered" => "bg-gray-100 text-gray-600"
+  }
+  status_labels = {
+    "received" => "접수",
+    "diagnosis" => "진단",
+    "in_progress" => "작업중",
+    "completed" => "완료",
+    "delivered" => "출고"
+  }
+  service_type_labels = {
+    "overhaul" => "오버홀",
+    "repair" => "수리",
+    "parts" => "부품교체",
+    "upgrade" => "업그레이드",
+    "fitting" => "피팅",
+    "frame_change" => "기변"
+  }
+%>
+
+<% if @service_orders.any? %>
+  <div class="space-y-4">
+    <% @service_orders.each do |order| %>
+      <%= link_to portal_service_order_path(order), class: "block bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition", data: { testid: "service-order-card" } do %>
+        <div class="flex items-start justify-between mb-2">
+          <div>
+            <span class="text-xs font-mono text-gray-400"><%= order.order_number %></span>
+            <span class="inline-block ml-2 text-xs font-medium px-2 py-0.5 rounded-full <%= status_colors[order.status] %>" data-testid="status-badge">
+              <%= status_labels[order.status] %>
+            </span>
+          </div>
+          <span class="text-xs text-gray-400"><%= order.received_at&.strftime("%Y.%m.%d") %></span>
+        </div>
+
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-purple-50 text-purple-700" data-testid="service-type-label">
+            <%= service_type_labels[order.service_type] %>
+          </span>
+        </div>
+
+        <p class="text-sm font-medium text-gray-900">
+          <%= order.bicycle.brand %> <%= order.bicycle.model_label %>
+        </p>
+
+        <% if order.estimated_cost.present? || order.final_cost.present? %>
+          <p class="text-xs text-gray-500 mt-2">
+            <% if order.final_cost.present? %>
+              최종: <%= number_with_delimiter(order.final_cost.to_i) %>원
+            <% elsif order.estimated_cost.present? %>
+              예상: <%= number_with_delimiter(order.estimated_cost.to_i) %>원
+            <% end %>
+          </p>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-12">
+    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    </svg>
+    <p class="text-gray-500">정비 이력이 없습니다.</p>
+  </div>
+<% end %>

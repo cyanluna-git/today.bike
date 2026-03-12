@@ -17,4 +17,22 @@ class Customer < ApplicationRecord
                               message: "는 올바른 한국 휴대폰 번호 형식이어야 합니다" }
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP },
                     allow_blank: true
+
+  # Find customer by Kakao UID or phone number for portal login matching
+  def self.find_for_kakao_auth(kakao_uid:, phone: nil)
+    # First try to find by kakao_uid
+    customer = find_by(kakao_uid: kakao_uid) if kakao_uid.present?
+    return customer if customer
+
+    # Fall back to phone number matching
+    if phone.present?
+      customer = find_by(phone: phone)
+      if customer
+        customer.update!(kakao_uid: kakao_uid) if kakao_uid.present?
+        return customer
+      end
+    end
+
+    nil
+  end
 end
