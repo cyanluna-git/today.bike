@@ -1,6 +1,6 @@
 module Admin
   class BicyclesController < BaseController
-    before_action :set_bicycle, only: %i[show edit update destroy purge_photo]
+    before_action :set_bicycle, only: %i[show edit update destroy purge_photo qr_code qr_print]
 
     def index
       bicycles = Bicycle.includes(:customer).search(params[:query]).order(created_at: :desc)
@@ -41,6 +41,27 @@ module Admin
     def destroy
       @bicycle.destroy
       redirect_to admin_bicycles_path, notice: "Bicycle was successfully deleted."
+    end
+
+    def qr_code
+      @bicycle.ensure_passport_token!
+      svg = QrCodeService.generate_svg(@bicycle.passport_url)
+
+      respond_to do |format|
+        format.svg { render inline: svg, content_type: "image/svg+xml" }
+        format.png do
+          png = QrCodeService.generate_png(@bicycle.passport_url)
+          send_data png.to_s, type: "image/png", disposition: "attachment",
+                    filename: "qr_#{@bicycle.brand}_#{@bicycle.model_label}.png"
+        end
+        format.html { render inline: svg, content_type: "image/svg+xml" }
+      end
+    end
+
+    def qr_print
+      @bicycle.ensure_passport_token!
+      @qr_svg = QrCodeService.generate_svg(@bicycle.passport_url, size: 6)
+      render layout: false
     end
 
     def purge_photo

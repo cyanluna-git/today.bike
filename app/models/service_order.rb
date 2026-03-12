@@ -11,6 +11,7 @@ class ServiceOrder < ApplicationRecord
   has_many :upgrades, dependent: :destroy
   has_many :frame_changes, dependent: :destroy
   has_many :fitting_records, dependent: :nullify
+  has_many :notifications, dependent: :destroy
 
   # Enums
   enum :service_type, {
@@ -53,6 +54,7 @@ class ServiceOrder < ApplicationRecord
   before_create :generate_order_number
   before_create :set_received_at
   after_update :record_status_change, if: :saved_change_to_status?
+  after_update :create_status_notification, if: :saved_change_to_status?
   after_update_commit :broadcast_status_update, if: :saved_change_to_status?
 
   # Validations
@@ -115,6 +117,44 @@ class ServiceOrder < ApplicationRecord
       to_status: to,
       changed_at: Time.current
     )
+  end
+
+  def create_status_notification
+    return unless customer&.phone.present?
+
+    _from, to = saved_change_to_status
+    template_key = notification_template_key(to)
+    return unless template_key
+
+    bicycle_name = "#{bicycle.brand} #{bicycle.model_label}"
+    variables = {
+      customer_name: customer.name,
+      bicycle_name: bicycle_name,
+      status: to
+    }
+
+    message = NotificationTemplate.render(template_key, variables)
+
+    notification = notifications.create!(
+      customer: customer,
+      notification_type: template_key,
+      channel: :kakao,
+      status: :pending,
+      message: message
+    )
+
+    KakaoNotificationJob.perform_later(notification.id)
+  end
+
+  def notification_template_key(new_status)
+    case new_status
+    when "completed"
+      :completion
+    when "delivered"
+      :pickup_ready
+    else
+      nil
+    end
   end
 
   def broadcast_status_update

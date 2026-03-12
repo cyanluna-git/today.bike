@@ -313,6 +313,48 @@ class BicycleTest < ActiveSupport::TestCase
     assert variant.present?
   end
 
+  # --- Passport token ---
+
+  test "passport_token is auto-generated on create" do
+    @bicycle.save!
+    assert_not_nil @bicycle.passport_token
+    assert @bicycle.passport_token.length > 0
+  end
+
+  test "passport_token is unique" do
+    @bicycle.save!
+    another = Bicycle.create!(brand: "Cervelo", model_label: "S5", customer: @customer)
+    assert_not_equal @bicycle.passport_token, another.passport_token
+  end
+
+  test "passport_url returns correct URL" do
+    @bicycle.save!
+    assert_equal "https://today.bike/passport/#{@bicycle.passport_token}", @bicycle.passport_url
+  end
+
+  test "passport_url returns nil without token" do
+    @bicycle.passport_token = nil
+    assert_nil @bicycle.passport_url
+  end
+
+  test "ensure_passport_token! generates token if missing" do
+    @bicycle.save!
+    @bicycle.update_columns(passport_token: nil)
+    @bicycle.reload
+    assert_nil @bicycle.passport_token
+
+    token = @bicycle.ensure_passport_token!
+    assert_not_nil token
+    assert_equal token, @bicycle.reload.passport_token
+  end
+
+  test "ensure_passport_token! does not regenerate existing token" do
+    @bicycle.save!
+    original_token = @bicycle.passport_token
+    @bicycle.ensure_passport_token!
+    assert_equal original_token, @bicycle.passport_token
+  end
+
   # --- Fixtures loaded correctly ---
 
   test "fixtures are loaded" do

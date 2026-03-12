@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     resources :bicycles do
       member do
         delete "photos/:photo_id", action: :purge_photo, as: :purge_photo
+        get :qr_code
+        get :qr_print
       end
       resources :bicycle_specs, only: %i[new create edit update destroy]
       resources :fitting_records
@@ -44,6 +46,9 @@ Rails.application.routes.draw do
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Public bicycle passport (no auth required)
+  get "passport/:token", to: "passports#show", as: :passport
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

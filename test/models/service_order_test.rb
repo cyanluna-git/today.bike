@@ -1,6 +1,8 @@
 require "test_helper"
 
 class ServiceOrderTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   def setup
     @bicycle = bicycles(:road_bike)
     @service_order = ServiceOrder.new(
@@ -339,6 +341,60 @@ class ServiceOrderTest < ActiveSupport::TestCase
   test "can_go_back? returns true when not at first status" do
     @service_order.status = "diagnosis"
     assert @service_order.can_go_back?
+  end
+
+  # --- Notification callbacks (#759) ---
+
+  test "creates notification when status changes to completed" do
+    order = service_orders(:repair_order) # status: in_progress
+    assert_difference "Notification.count", 1 do
+      order.update!(status: "completed")
+    end
+
+    notification = Notification.last
+    assert_equal "completion", notification.notification_type
+    assert_equal "pending", notification.status
+    assert_equal order.customer, notification.customer
+    assert_equal order, notification.service_order
+    assert_includes notification.message, order.customer.name
+  end
+
+  test "creates notification when status changes to delivered" do
+    order = service_orders(:completed_order) # status: completed
+    assert_difference "Notification.count", 1 do
+      order.update!(status: "delivered")
+    end
+
+    notification = Notification.last
+    assert_equal "pickup_ready", notification.notification_type
+    assert_equal "pending", notification.status
+  end
+
+  test "does not create notification for other status changes" do
+    order = service_orders(:overhaul_order) # status: received
+    assert_no_difference "Notification.count" do
+      order.update!(status: "diagnosis")
+    end
+  end
+
+  test "does not create notification when customer has no phone" do
+    customer = customers(:two)
+    customer.update_columns(phone: "")
+    order = service_orders(:repair_order) # belongs to gravel_bike -> customer two
+
+    assert_no_difference "Notification.count" do
+      order.update!(status: "completed")
+    end
+
+    # Restore phone for other tests
+    customer.update_columns(phone: "010-9876-5432")
+  end
+
+  test "enqueues KakaoNotificationJob when notification is created" do
+    order = service_orders(:repair_order) # status: in_progress
+    assert_enqueued_with(job: KakaoNotificationJob) do
+      order.update!(status: "completed")
+    end
   end
 
   # --- Fixtures loaded correctly ---

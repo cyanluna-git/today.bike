@@ -10,6 +10,9 @@ class Bicycle < ApplicationRecord
   enum :bike_type, { road: "road", mtb: "mtb", gravel: "gravel", hybrid: "hybrid", other: "other" }
   enum :status, { active: "active", sold: "sold", scrapped: "scrapped" }
 
+  # Callbacks
+  before_create :generate_passport_token
+
   # Scopes
   scope :search, ->(query) {
     return all if query.blank?
@@ -20,6 +23,7 @@ class Bicycle < ApplicationRecord
   validates :brand, presence: true
   validates :model_label, presence: true
   validates :frame_number, uniqueness: true, allow_nil: true
+  validates :passport_token, uniqueness: true, allow_nil: true
   validates :bike_type, presence: true
   validates :status, presence: true
 
@@ -41,7 +45,24 @@ class Bicycle < ApplicationRecord
     photo.variant(resize_to_limit: [ 300, 300 ])
   end
 
+  def passport_url
+    QrCodeService.passport_url(passport_token) if passport_token.present?
+  end
+
+  def ensure_passport_token!
+    generate_passport_token if passport_token.blank?
+    save! if passport_token_changed?
+    passport_token
+  end
+
   private
+
+  def generate_passport_token
+    loop do
+      self.passport_token = SecureRandom.urlsafe_base64(32)
+      break unless Bicycle.exists?(passport_token: passport_token)
+    end
+  end
 
   def acceptable_photos
     return unless photos.attached?

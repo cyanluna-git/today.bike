@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_000007) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_001245) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -71,11 +71,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_000007) do
     t.integer "customer_id", null: false
     t.string "frame_number"
     t.string "model_label", null: false
+    t.string "passport_token"
     t.string "status", default: "active", null: false
     t.datetime "updated_at", null: false
     t.integer "year"
     t.index ["customer_id"], name: "index_bicycles_on_customer_id"
     t.index ["frame_number"], name: "index_bicycles_on_frame_number", unique: true
+    t.index ["passport_token"], name: "index_bicycles_on_passport_token", unique: true
   end
 
   create_table "customers", force: :cascade do |t|
@@ -129,6 +131,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_000007) do
     t.text "transferred_parts"
     t.datetime "updated_at", null: false
     t.index ["service_order_id"], name: "index_frame_changes_on_service_order_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.string "channel", default: "kakao", null: false
+    t.datetime "created_at", null: false
+    t.integer "customer_id", null: false
+    t.text "error_message"
+    t.text "message"
+    t.string "notification_type", null: false
+    t.datetime "sent_at"
+    t.integer "service_order_id"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_notifications_on_customer_id"
+    t.index ["notification_type"], name: "index_notifications_on_notification_type"
+    t.index ["service_order_id"], name: "index_notifications_on_service_order_id"
+    t.index ["status"], name: "index_notifications_on_status"
   end
 
   create_table "parts_replacements", force: :cascade do |t|
@@ -226,6 +245,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_000007) do
   add_foreign_key "fitting_records", "bicycles"
   add_foreign_key "fitting_records", "service_orders"
   add_foreign_key "frame_changes", "service_orders"
+  add_foreign_key "notifications", "customers"
+  add_foreign_key "notifications", "service_orders"
   add_foreign_key "parts_replacements", "service_orders"
   add_foreign_key "repair_logs", "service_orders"
   add_foreign_key "service_orders", "bicycles"

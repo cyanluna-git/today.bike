@@ -1,0 +1,18 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+pending_notification:
+  customer: one
+  service_order: completed_order
+  notification_type: completion
+  channel: kakao
+  status: pending
+  message: "김철수님, Specialized Tarmac SL7 정비가 완료되었습니다. 픽업 가능합니다."
+
+sent_notification:
+  customer: one
+  service_order: delivered_order
+  notification_type: pickup_ready
+  channel: kakao
+  status: sent
+  message: "김철수님, Pinarello Dogma F 출고 준비가 완료되었습니다."
+  sent_at: <%= Time.zone.parse("2025-12-09 10:00:00") %>

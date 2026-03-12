@@ -129,6 +129,27 @@
     <% end %>
   </div>
 
+  <%# QR Code / Bicycle Passport %>
+  <div class="mt-8">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-gray-900">QR Code / Passport</h2>
+      <div class="flex items-center gap-2">
+        <%= link_to "Download PNG", qr_code_admin_bicycle_path(@bicycle, format: :png), class: "inline-flex items-center rounded-md bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" %>
+        <%= link_to "Print", qr_print_admin_bicycle_path(@bicycle), target: "_blank", class: "inline-flex items-center rounded-md bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" %>
+        <% if @bicycle.passport_token.present? %>
+          <%= link_to "View Passport", passport_path(@bicycle.passport_token), target: "_blank", class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 transition" %>
+        <% end %>
+      </div>
+    </div>
+    <div class="bg-white shadow rounded-lg p-6 flex items-center justify-center">
+      <% if @bicycle.passport_token.present? %>
+        <%= raw QrCodeService.generate_svg(@bicycle.passport_url) %>
+      <% else %>
+        <p class="text-sm text-gray-500">QR code will be generated when you download or print it.</p>
+      <% end %>
+    </div>
+  </div>
+
   <%# Photo Gallery %>
   <% if @bicycle.photos.attached? %>
     <div class="mt-8">

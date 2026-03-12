@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>QR Code - <%= @bicycle.brand %> <%= @bicycle.model_label %></title>
+    <meta charset="utf-8">
+    <style>
+      @media print {
+        body { margin: 0; }
+        .no-print { display: none; }
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        text-align: center;
+        padding: 40px 20px;
+        color: #1a1a1a;
+      }
+      .qr-container {
+        display: inline-block;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 32px;
+        background: white;
+      }
+      .qr-code {
+        margin: 0 auto 16px;
+      }
+      .qr-code svg {
+        width: 200px;
+        height: 200px;
+      }
+      .bike-info {
+        margin-top: 12px;
+      }
+      .bike-name {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 4px;
+      }
+      .bike-details {
+        font-size: 13px;
+        color: #6b7280;
+        margin: 0;
+      }
+      .shop-name {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 16px;
+      }
+      .actions {
+        margin-top: 24px;
+      }
+      .actions button, .actions a {
+        display: inline-block;
+        padding: 8px 20px;
+        margin: 0 4px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: white;
+        color: #374151;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .actions button:hover, .actions a:hover {
+        background: #f3f4f6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="qr-container">
+      <div class="qr-code">
+        <%= raw @qr_svg %>
+      </div>
+      <div class="bike-info">
+        <p class="bike-name"><%= @bicycle.brand %> <%= @bicycle.model_label %></p>
+        <p class="bike-details">
+          <%= @bicycle.bike_type.titleize %>
+          <% if @bicycle.year.present? %> | <%= @bicycle.year %><% end %>
+          <% if @bicycle.color.present? %> | <%= @bicycle.color %><% end %>
+        </p>
+        <p class="bike-details"><%= @bicycle.customer.name %></p>
+      </div>
+      <p class="shop-name">Today.bike</p>
+    </div>
+
+    <div class="actions no-print">
+      <button onclick="window.print()">Print</button>
+      <a href="<%= admin_bicycle_path(@bicycle) %>">Back</a>
+    </div>
+  </body>
+</html>
