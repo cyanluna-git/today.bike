@@ -28,96 +28,180 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-gray-50 flex flex-col" data-controller="mobile-nav">
-    <%# Mobile overlay %>
-    <div data-mobile-nav-target="overlay"
-         data-action="click->mobile-nav#close"
-         class="hidden fixed inset-0 bg-gray-900/50 z-40"></div>
-
-    <%# Public navigation header %>
-    <header class="bg-white shadow-sm sticky top-0 z-30">
-      <nav class="container mx-auto px-4 sm:px-6">
-        <div class="flex items-center justify-between h-16">
-          <%# Logo %>
-          <%= link_to root_path, class: "flex items-center gap-2 shrink-0" do %>
-            <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <circle cx="7" cy="17" r="3" stroke-width="2"/>
-              <circle cx="17" cy="17" r="3" stroke-width="2"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17L14 7h-4l3 10M7 17l3-10"/>
-            </svg>
-            <span class="text-lg font-bold text-gray-900">Today.bike</span>
-          <% end %>
-
-          <%# Desktop nav links %>
-          <div class="hidden md:flex items-center gap-6">
-            <%= link_to "서비스", service_page_path("overhaul"), class: "text-sm font-medium #{request.path.start_with?('/services') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600'} transition" %>
-            <%= link_to "블로그", blog_path, class: "text-sm font-medium #{request.path.start_with?('/blog') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600'} transition" %>
-            <%= link_to "파츠", products_path, class: "text-sm font-medium #{request.path.start_with?('/products') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600'} transition" %>
-            <%= link_to "대여", rentals_path, class: "text-sm font-medium #{request.path.start_with?('/rentals') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600'} transition" %>
-            <%= link_to "갤러리", gallery_path, class: "text-sm font-medium #{request.path == '/gallery' ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600'} transition" %>
-          </div>
-
-          <%# Mobile hamburger button %>
-          <button type="button" data-action="click->mobile-nav#toggle"
-                  class="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition"
-                  aria-label="Toggle navigation menu">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-      </nav>
-
-      <%# Mobile nav menu %>
-      <div data-mobile-nav-target="menu" class="hidden md:hidden fixed inset-y-0 right-0 w-64 bg-white shadow-xl z-50">
-        <div class="flex items-center justify-between px-4 h-16 border-b border-gray-100">
-          <span class="text-lg font-bold text-gray-900">Today.bike</span>
-          <button type="button" data-action="click->mobile-nav#close"
-                  class="p-2 rounded-md text-gray-400 hover:text-gray-600 transition"
-                  aria-label="Close navigation menu">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <nav class="px-4 py-4 space-y-1">
-          <%= link_to "홈", root_path, class: "block px-3 py-2.5 text-base font-medium rounded-lg #{request.path == '/' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50'} transition" %>
-          <%= link_to "서비스", service_page_path("overhaul"), class: "block px-3 py-2.5 text-base font-medium rounded-lg #{request.path.start_with?('/services') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50'} transition" %>
-          <%= link_to "블로그", blog_path, class: "block px-3 py-2.5 text-base font-medium rounded-lg #{request.path.start_with?('/blog') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50'} transition" %>
-          <%= link_to "파츠", products_path, class: "block px-3 py-2.5 text-base font-medium rounded-lg #{request.path.start_with?('/products') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50'} transition" %>
-          <%= link_to "대여", rentals_path, class: "block px-3 py-2.5 text-base font-medium rounded-lg #{request.path.start_with?('/rentals') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50'} transition" %>
-          <%= link_to "갤러리", gallery_path, class: "block px-3 py-2.5 text-base font-medium rounded-lg #{request.path == '/gallery' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50'} transition" %>
-        </nav>
-      </div>
-    </header>
-
+  <body class="min-h-screen bg-gray-50 flex flex-col">
     <% if devise_controller? %>
       <main class="flex flex-1 items-center justify-center px-4">
         <%= yield %>
       </main>
     <% else %>
-      <main class="container mx-auto mt-8 px-4 sm:px-6 pb-16 flex flex-1">
+      <main class="container mx-auto mt-8 px-4 sm:px-6 pb-28 flex flex-1">
         <%= yield %>
       </main>
-    <% end %>
 
-    <%# Footer %>
-    <footer class="bg-white border-t border-gray-200">
-      <div class="container mx-auto px-4 sm:px-6 py-8">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p class="text-sm text-gray-500">&copy; <%= Date.current.year %> Today.bike. All rights reserved.</p>
-          <nav class="flex gap-4 text-sm text-gray-500">
-            <%= link_to "서비스", service_page_path("overhaul"), class: "hover:text-gray-700 transition" %>
-            <%= link_to "블로그", blog_path, class: "hover:text-gray-700 transition" %>
-            <%= link_to "파츠", products_path, class: "hover:text-gray-700 transition" %>
-            <%= link_to "대여", rentals_path, class: "hover:text-gray-700 transition" %>
-            <%= link_to "갤러리", gallery_path, class: "hover:text-gray-700 transition" %>
-            <span class="text-gray-300">|</span>
-            <%= link_to "내 정비이력", portal_login_path, class: "hover:text-gray-700 transition" %>
-            <%= link_to "관리자", admin_root_path, class: "hover:text-gray-700 transition" %>
-          </nav>
+      <%# Floating Pill Navigation %>
+      <%
+        active_page = case
+          when request.path == "/" then "home"
+          when request.path.start_with?("/services") then "services"
+          when request.path.start_with?("/blog") then "blog"
+          when request.path.start_with?("/products") then "products"
+          when request.path.start_with?("/rentals") then "rentals"
+          when request.path == "/gallery" then "gallery"
+          else ""
+        end
+      %>
+      <div data-controller="pill-nav"
+           data-pill-nav-active-page-value="<%= active_page %>"
+           data-pill-nav-active-class="!text-indigo-600 !font-semibold"
+           class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
+
+        <%# Submenu overlay %>
+        <div data-pill-nav-target="submenuOverlay"
+             data-action="click->pill-nav#close"
+             class="hidden fixed inset-0 z-40"></div>
+
+        <%# Service submenu popover %>
+        <div data-pill-nav-target="submenu"
+             aria-hidden="true"
+             class="hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-50">
+          <div class="backdrop-blur-lg bg-white/80 border border-white/30 shadow-xl rounded-2xl p-3 grid grid-cols-2 gap-2 min-w-[280px]">
+            <%= link_to service_page_path("overhaul"), class: "flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 transition group" do %>
+              <div class="w-9 h-9 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-200 transition">
+                <svg class="w-4.5 h-4.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-sm font-medium text-gray-900">분해정비</div>
+                <div class="text-xs text-gray-500">완전 분해 세척</div>
+              </div>
+            <% end %>
+            <%= link_to service_page_path("repair"), class: "flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-green-50 transition group" do %>
+              <div class="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition">
+                <svg class="w-4.5 h-4.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-sm font-medium text-gray-900">수리</div>
+                <div class="text-xs text-gray-500">고장 진단 처치</div>
+              </div>
+            <% end %>
+            <%= link_to service_page_path("fitting"), class: "flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-amber-50 transition group" do %>
+              <div class="w-9 h-9 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-200 transition">
+                <svg class="w-4.5 h-4.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-sm font-medium text-gray-900">피팅</div>
+                <div class="text-xs text-gray-500">체형 맞춤 세팅</div>
+              </div>
+            <% end %>
+            <%= link_to service_page_path("upgrade"), class: "flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-rose-50 transition group" do %>
+              <div class="w-9 h-9 bg-rose-100 rounded-lg flex items-center justify-center group-hover:bg-rose-200 transition">
+                <svg class="w-4.5 h-4.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-sm font-medium text-gray-900">업그레이드</div>
+                <div class="text-xs text-gray-500">부품 교체 업그레이드</div>
+              </div>
+            <% end %>
+          </div>
         </div>
+
+        <%# Pill bar %>
+        <nav class="backdrop-blur-lg bg-white/75 border border-white/30 shadow-lg rounded-full px-2 py-1.5 flex items-center gap-1"
+             role="navigation" aria-label="메인 네비게이션">
+          <%# Logo / Home %>
+          <%= link_to root_path, data: { pill_nav_target: "pill", page: "home" },
+                class: "flex items-center gap-1.5 px-3 py-2 rounded-full text-gray-600 hover:text-indigo-600 hover:bg-white/60 transition text-sm font-medium" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="7" cy="17" r="3" stroke-width="2"/>
+              <circle cx="17" cy="17" r="3" stroke-width="2"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17L14 7h-4l3 10M7 17l3-10"/>
+            </svg>
+            <span class="hidden sm:inline">홈</span>
+          <% end %>
+
+          <span class="w-px h-5 bg-gray-300/50"></span>
+
+          <%# Services (with submenu toggle) %>
+          <button type="button"
+                  data-pill-nav-target="pill" data-page="services"
+                  data-action="click->pill-nav#toggle"
+                  aria-expanded="false"
+                  aria-controls="services-submenu"
+                  class="flex items-center gap-1.5 px-3 py-2 rounded-full text-gray-600 hover:text-indigo-600 hover:bg-white/60 transition text-sm font-medium">
+            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="hidden sm:inline">서비스</span>
+            <svg class="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+            </svg>
+          </button>
+
+          <%# Blog %>
+          <%= link_to blog_path, data: { pill_nav_target: "pill", page: "blog" },
+                class: "flex items-center gap-1.5 px-3 py-2 rounded-full text-gray-600 hover:text-indigo-600 hover:bg-white/60 transition text-sm font-medium" do %>
+            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            </svg>
+            <span class="hidden sm:inline">블로그</span>
+          <% end %>
+
+          <%# Products %>
+          <%= link_to products_path, data: { pill_nav_target: "pill", page: "products" },
+                class: "flex items-center gap-1.5 px-3 py-2 rounded-full text-gray-600 hover:text-indigo-600 hover:bg-white/60 transition text-sm font-medium" do %>
+            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            <span class="hidden sm:inline">파츠</span>
+          <% end %>
+
+          <%# Rentals %>
+          <%= link_to rentals_path, data: { pill_nav_target: "pill", page: "rentals" },
+                class: "flex items-center gap-1.5 px-3 py-2 rounded-full text-gray-600 hover:text-indigo-600 hover:bg-white/60 transition text-sm font-medium" do %>
+            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="hidden sm:inline">대여</span>
+          <% end %>
+
+          <%# Gallery %>
+          <%= link_to gallery_path, data: { pill_nav_target: "pill", page: "gallery" },
+                class: "flex items-center gap-1.5 px-3 py-2 rounded-full text-gray-600 hover:text-indigo-600 hover:bg-white/60 transition text-sm font-medium" do %>
+            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="hidden sm:inline">갤러리</span>
+          <% end %>
+        </nav>
       </div>
-    </footer>
+
+      <%# Footer %>
+      <footer class="bg-white border-t border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 py-8 pb-24">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-sm text-gray-500">&copy; <%= Date.current.year %> Today.bike. All rights reserved.</p>
+            <nav class="flex gap-4 text-sm text-gray-500">
+              <%= link_to "서비스", service_page_path("overhaul"), class: "hover:text-gray-700 transition" %>
+              <%= link_to "블로그", blog_path, class: "hover:text-gray-700 transition" %>
+              <%= link_to "파츠", products_path, class: "hover:text-gray-700 transition" %>
+              <%= link_to "대여", rentals_path, class: "hover:text-gray-700 transition" %>
+              <%= link_to "갤러리", gallery_path, class: "hover:text-gray-700 transition" %>
+              <span class="text-gray-300">|</span>
+              <%= link_to "내 정비이력", portal_login_path, class: "hover:text-gray-700 transition" %>
+              <%= link_to "관리자", admin_root_path, class: "hover:text-gray-700 transition" %>
+            </nav>
+          </div>
+        </div>
+      </footer>
+    <% end %>
   </body>
 </html>
