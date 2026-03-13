@@ -49,3 +49,12 @@
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
+
+# Ignore large dev-only directories
+/sample_images/
+/test/
+/docs/
+/kanban-board/
+/tools/
+/CLAUDE.md
+/README.md
