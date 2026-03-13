@@ -46,7 +46,7 @@ gem "image_processing", "~> 1.2"
 gem "devise", "~> 4.9"
 
 # Pagination [https://github.com/ddnexus/pagy]
-gem "pagy", "~> 9.0"
+gem "pagy", "~> 43.3"
 
 # QR Code generation [https://github.com/whomwah/rqrcode]
 gem "rqrcode", "~> 2.0"
