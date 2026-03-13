@@ -4,6 +4,8 @@ set -euo pipefail
 APP="today-bike"
 SERVER="ubuntu@217.142.238.243"
 IMAGE="today-bike:latest"
+REGISTRY="ghcr.io/cyanluna-git"
+REMOTE_IMAGE="$REGISTRY/today-bike:latest"
 MASTER_KEY_FILE="config/master.key"
 
 # Colors
@@ -19,24 +21,30 @@ fail() { echo -e "${RED}✗ $1${NC}"; exit 1; }
 # Pre-flight checks
 [ -f "$MASTER_KEY_FILE" ] || fail "master.key not found at $MASTER_KEY_FILE"
 MASTER_KEY=$(cat "$MASTER_KEY_FILE")
-command -v zstd >/dev/null 2>&1 || fail "zstd not found locally — install with: brew install zstd"
+[ -n "${GHCR_TOKEN:-}" ] || fail "GHCR_TOKEN not set — export GHCR_TOKEN=<your-github-pat> (needs packages:write scope)"
 
-step "Ensuring zstd is installed on server..."
-ssh "$SERVER" "command -v zstd >/dev/null 2>&1 || sudo apt-get install -y zstd" \
-  || fail "Failed to install zstd on server"
-ok "zstd available on server"
+# 1. Login to ghcr.io
+step "Logging in to ghcr.io..."
+echo "$GHCR_TOKEN" | docker login ghcr.io -u cyanluna-git --password-stdin
+ok "Logged in to ghcr.io"
 
-# 1. Build
+# 2. Build
 step "Building Docker image (linux/amd64)..."
 docker build --platform linux/amd64 -t "$IMAGE" . 2>&1 | tail -5
 ok "Image built"
 
-# 2. Transfer
-step "Transferring image to server..."
-docker save "$IMAGE" | zstd -T0 | ssh "$SERVER" "zstd -d | docker load"
-ok "Image transferred"
+# 3. Push to registry
+step "Pushing image to ghcr.io..."
+docker tag "$IMAGE" "$REMOTE_IMAGE"
+docker push "$REMOTE_IMAGE"
+ok "Image pushed"
 
-# 3. Restart container
+# 4. Pull on server
+step "Pulling image on server..."
+ssh "$SERVER" "echo '$GHCR_TOKEN' | docker login ghcr.io -u cyanluna-git --password-stdin && docker pull '$REMOTE_IMAGE'"
+ok "Image pulled on server"
+
+# 5. Restart container
 step "Restarting container..."
 ssh "$SERVER" "docker stop $APP 2>/dev/null; docker rm $APP 2>/dev/null; true"
 ssh "$SERVER" "docker run -d \
@@ -47,10 +55,10 @@ ssh "$SERVER" "docker run -d \
   -e RAILS_MASTER_KEY=$MASTER_KEY \
   -e RAILS_SERVE_STATIC_FILES=true \
   -e SOLID_QUEUE_IN_PUMA=true \
-  $IMAGE" > /dev/null
+  $REMOTE_IMAGE" > /dev/null
 ok "Container started"
 
-# 4. Health check (wait for Puma boot)
+# 6. Health check (wait for Puma boot)
 step "Health check..."
 for i in $(seq 1 10); do
   STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://217.142.238.243/" 2>/dev/null || echo "000")
