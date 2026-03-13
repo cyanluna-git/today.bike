@@ -39,27 +39,26 @@
 
 <div class="w-full">
   <%# Hero Section %>
-  <section class="relative bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-900 rounded-2xl overflow-hidden mb-16">
+  <section class="relative bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-900 rounded-2xl overflow-hidden mb-10">
     <div class="absolute inset-0 opacity-10">
-      <svg class="w-full h-full" viewBox="0 0 800 400" fill="none">
-        <circle cx="700" cy="200" r="200" stroke="white" stroke-width="1"/>
-        <circle cx="700" cy="200" r="150" stroke="white" stroke-width="0.5"/>
-        <circle cx="100" cy="200" r="200" stroke="white" stroke-width="1"/>
-        <circle cx="100" cy="200" r="150" stroke="white" stroke-width="0.5"/>
+      <svg class="w-full h-full" viewBox="0 0 800 200" fill="none">
+        <circle cx="700" cy="100" r="150" stroke="white" stroke-width="1"/>
+        <circle cx="100" cy="100" r="150" stroke="white" stroke-width="1"/>
       </svg>
     </div>
-    <div class="relative px-6 py-20 sm:px-12 sm:py-28 text-center">
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">Today.bike</h1>
-      <p class="text-xl sm:text-2xl text-indigo-200 mb-8">오늘도 자전거와 함께</p>
-      <p class="text-base sm:text-lg text-indigo-100 max-w-2xl mx-auto mb-10">
-        전문 정비사가 당신의 자전거를 최상의 상태로 관리해 드립니다.
-        분해정비부터 피팅까지, 모든 서비스를 한 곳에서.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+    <div class="relative px-6 py-8 sm:px-12 sm:py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="text-center sm:text-left">
+        <h1 class="text-2xl sm:text-3xl font-bold text-white mb-1">Today.bike</h1>
+        <p class="text-base text-indigo-200 mb-2">오늘도 자전거와 함께</p>
+        <p class="text-sm text-indigo-100 max-w-lg">
+          전문 정비사가 당신의 자전거를 최상의 상태로 관리해 드립니다. 분해정비부터 피팅까지, 모든 서비스를 한 곳에서.
+        </p>
+      </div>
+      <div class="flex gap-3 shrink-0">
         <%= link_to "서비스 보기", service_page_path("overhaul"),
-              class: "inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-base font-semibold text-indigo-700 shadow-sm hover:bg-indigo-50 transition" %>
+              class: "inline-flex items-center justify-center rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-indigo-700 shadow-sm hover:bg-indigo-50 transition" %>
         <%= link_to "갤러리", gallery_path,
-              class: "inline-flex items-center justify-center rounded-lg bg-indigo-500 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-indigo-400 transition ring-1 ring-inset ring-indigo-400" %>
+              class: "inline-flex items-center justify-center rounded-lg bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 transition ring-1 ring-inset ring-indigo-400" %>
       </div>
     </div>
   </section>
