@@ -1,0 +1,91 @@
+Action completed. Waiting until the resource has entered state: ('RUNNING',)
+{
+  "data": {
+    "agent-config": {
+      "are-all-plugins-disabled": false,
+      "is-management-disabled": false,
+      "is-monitoring-disabled": false,
+      "plugins-config": null
+    },
+    "availability-config": {
+      "is-live-migration-preferred": null,
+      "recovery-action": "RESTORE_INSTANCE"
+    },
+    "availability-domain": "kWNa:AP-OSAKA-1-AD-1",
+    "capacity-reservation-id": null,
+    "cluster-placement-group-id": null,
+    "compartment-id": "ocid1.tenancy.oc1..aaaaaaaat7jksst3l6butmxhrsdekrepk72twqejq4kh2a4lepmuvsuqxata",
+    "dedicated-vm-host-id": null,
+    "defined-tags": {
+      "Oracle-Tags": {
+        "CreatedBy": "default/geunyun.park@gmail.com",
+        "CreatedOn": "2026-03-13T08:58:19.649Z"
+      }
+    },
+    "display-name": "today-bike-prod",
+    "extended-metadata": {},
+    "fault-domain": "FAULT-DOMAIN-2",
+    "freeform-tags": {},
+    "id": "ocid1.instance.oc1.ap-osaka-1.anvwsljrm6eucnycygyfjuiw7bqhq4qomdbm6ngtok3xfgyqmrcu4tnvi5wa",
+    "image-id": "ocid1.image.oc1.ap-osaka-1.aaaaaaaa4icwwnrg4k7q6qbgwb7ojjnom23tsotvwg6yycwkwjsixf7hwndq",
+    "instance-configuration-id": null,
+    "instance-options": {
+      "are-legacy-imds-endpoints-disabled": false
+    },
+    "ipxe-script": null,
+    "is-ai-enterprise-enabled": null,
+    "is-cross-numa-node": false,
+    "launch-mode": "PARAVIRTUALIZED",
+    "launch-options": {
+      "boot-volume-type": "PARAVIRTUALIZED",
+      "firmware": "UEFI_64",
+      "is-consistent-volume-naming-enabled": true,
+      "is-pv-encryption-in-transit-enabled": false,
+      "network-type": "PARAVIRTUALIZED",
+      "remote-data-volume-type": "PARAVIRTUALIZED"
+    },
+    "licensing-configs": null,
+    "lifecycle-state": "RUNNING",
+    "metadata": {
+      "ssh_authorized_keys": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKd43jkEnMczSHkzo3Z1/cEs5tdZLOB+OxkFB95qHLx2 cyanluna-pro16@cyanluna-pro16ui-MacBookPro.local"
+    },
+    "placement-constraint-details": null,
+    "platform-config": null,
+    "preemptible-instance-config": null,
+    "region": "ap-osaka-1",
+    "security-attributes": {},
+    "security-attributes-state": "STABLE",
+    "shape": "VM.Standard.E2.1.Micro",
+    "shape-config": {
+      "baseline-ocpu-utilization": null,
+      "gpu-description": null,
+      "gpus": 0,
+      "local-disk-description": null,
+      "local-disks": 0,
+      "local-disks-total-size-in-gbs": null,
+      "max-vnic-attachments": 1,
+      "memory-in-gbs": 1.0,
+      "networking-bandwidth-in-gbps": 0.48,
+      "ocpus": 1.0,
+      "processor-description": "2.0 GHz AMD EPYC™ 7551 (Naples)",
+      "resource-management": null,
+      "vcpus": 2
+    },
+    "source-details": {
+      "boot-volume-size-in-gbs": null,
+      "boot-volume-vpus-per-gb": null,
+      "image-id": "ocid1.image.oc1.ap-osaka-1.aaaaaaaa4icwwnrg4k7q6qbgwb7ojjnom23tsotvwg6yycwkwjsixf7hwndq",
+      "instance-source-image-filter-details": null,
+      "kms-key-id": null,
+      "source-type": "image"
+    },
+    "system-tags": {
+      "orcl-cloud": {
+        "free-tier-retained": "true"
+      }
+    },
+    "time-created": "2026-03-13T08:58:20.112000+00:00",
+    "time-maintenance-reboot-due": null
+  },
+  "etag": "07931be52df0a5aaab72a6f0bc0b1d98374c4f936f7de3cb814c23a6c67709fb"
+}
