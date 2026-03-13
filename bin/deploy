@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP="today-bike"
+SERVER="ubuntu@217.142.238.243"
+IMAGE="today-bike:latest"
+MASTER_KEY_FILE="config/master.key"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+step() { echo -e "\n${YELLOW}▸ $1${NC}"; }
+ok()   { echo -e "${GREEN}✓ $1${NC}"; }
+fail() { echo -e "${RED}✗ $1${NC}"; exit 1; }
+
+# Pre-flight checks
+[ -f "$MASTER_KEY_FILE" ] || fail "master.key not found at $MASTER_KEY_FILE"
+MASTER_KEY=$(cat "$MASTER_KEY_FILE")
+
+# 1. Build
+step "Building Docker image (linux/amd64)..."
+docker build --platform linux/amd64 -t "$IMAGE" . 2>&1 | tail -5
+ok "Image built"
+
+# 2. Transfer
+step "Transferring image to server..."
+docker save "$IMAGE" | gzip | ssh "$SERVER" "docker load"
+ok "Image transferred"
+
+# 3. Restart container
+step "Restarting container..."
+ssh "$SERVER" "docker stop $APP 2>/dev/null; docker rm $APP 2>/dev/null; true"
+ssh "$SERVER" "docker run -d \
+  --name $APP \
+  --restart unless-stopped \
+  -p 80:80 \
+  -v ${APP}_storage:/rails/storage \
+  -e RAILS_MASTER_KEY=$MASTER_KEY \
+  -e RAILS_SERVE_STATIC_FILES=true \
+  -e SOLID_QUEUE_IN_PUMA=true \
+  $IMAGE" > /dev/null
+ok "Container started"
+
+# 4. Health check (wait for Puma boot)
+step "Health check..."
+for i in $(seq 1 10); do
+  STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://217.142.238.243/" 2>/dev/null || echo "000")
+  if [ "$STATUS" = "200" ]; then
+    ok "Server responding HTTP 200"
+    echo -e "\n${GREEN}Deploy complete!${NC}"
+    exit 0
+  fi
+  sleep 2
+done
+fail "Health check failed (last status: $STATUS). Check logs: ssh $SERVER 'docker logs $APP --tail 30'"
