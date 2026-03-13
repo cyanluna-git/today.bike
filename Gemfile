@@ -49,7 +49,7 @@ gem "devise", "~> 4.9"
 gem "pagy", "~> 9.0"
 
 # QR Code generation [https://github.com/whomwah/rqrcode]
-gem "rqrcode", "~> 2.0"
+gem "rqrcode", "~> 3.2"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
