@@ -19,6 +19,12 @@ fail() { echo -e "${RED}✗ $1${NC}"; exit 1; }
 # Pre-flight checks
 [ -f "$MASTER_KEY_FILE" ] || fail "master.key not found at $MASTER_KEY_FILE"
 MASTER_KEY=$(cat "$MASTER_KEY_FILE")
+command -v zstd >/dev/null 2>&1 || fail "zstd not found locally — install with: brew install zstd"
+
+step "Ensuring zstd is installed on server..."
+ssh "$SERVER" "command -v zstd >/dev/null 2>&1 || sudo apt-get install -y zstd" \
+  || fail "Failed to install zstd on server"
+ok "zstd available on server"
 
 # 1. Build
 step "Building Docker image (linux/amd64)..."
@@ -27,7 +33,7 @@ ok "Image built"
 
 # 2. Transfer
 step "Transferring image to server..."
-docker save "$IMAGE" | gzip | ssh "$SERVER" "docker load"
+docker save "$IMAGE" | zstd -T0 | ssh "$SERVER" "zstd -d | docker load"
 ok "Image transferred"
 
 # 3. Restart container
