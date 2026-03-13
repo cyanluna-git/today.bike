@@ -1,9 +1,9 @@
 <% content_for(:title, "Today.bike - 오늘도 자전거와 함께") %>
 
 <% content_for(:meta_tags) do %>
-  <meta name="description" content="Today.bike - 서울 자전거 전문 정비 샵. 분해정비, 수리, 피팅, 업그레이드 서비스를 제공합니다.">
-  <meta property="og:title" content="Today.bike - 오늘도 자전거와 함께">
-  <meta property="og:description" content="서울 자전거 전문 정비 샵. 분해정비, 수리, 피팅, 업그레이드 서비스를 제공합니다.">
+  <meta name="description" content="투데이바이크 - 충남 천안 자전거 전문 정비 샵. 분해정비, 수리, 피팅, 업그레이드 서비스를 제공합니다.">
+  <meta property="og:title" content="투데이바이크 - 오늘도 자전거와 함께">
+  <meta property="og:description" content="충남 천안 자전거 전문 정비 샵. 분해정비, 수리, 피팅, 업그레이드 서비스를 제공합니다.">
   <meta property="og:type" content="website">
 <% end %>
 
@@ -13,29 +13,23 @@
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
       "name": "Today.bike",
-      "description": "서울 자전거 전문 정비 샵. 분해정비, 수리, 피팅, 업그레이드 서비스를 제공합니다.",
+      "description": "투데이바이크 - 충남 천안 자전거 전문 정비 샵. 분해정비, 수리, 피팅, 업그레이드 서비스를 제공합니다.",
       "url": "<%= root_url %>",
-      "telephone": "+82-10-1234-5678",
+      "telephone": "+82-10-4454-5027",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "서울특별시 강남구 역삼로 123",
-        "addressLocality": "서울특별시",
-        "addressRegion": "강남구",
-        "postalCode": "06241",
+        "streetAddress": "충남 천안시 동남구 신흥1길 42 1층",
+        "addressLocality": "천안시",
+        "addressRegion": "충청남도",
+        "postalCode": "31127",
         "addressCountry": "KR"
       },
       "openingHoursSpecification": [
         {
           "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
           "opens": "10:00",
           "closes": "19:00"
-        },
-        {
-          "@type": "OpeningHoursSpecification",
-          "dayOfWeek": "Saturday",
-          "opens": "10:00",
-          "closes": "17:00"
         }
       ],
       "priceRange": "$$"
@@ -183,7 +177,7 @@
             </svg>
             <div>
               <dt class="text-sm font-medium text-gray-500">주소</dt>
-              <dd class="text-gray-900">서울특별시 강남구 역삼로 123</dd>
+              <dd class="text-gray-900">충남 천안시 동남구 신흥1길 42 1층</dd>
             </div>
           </div>
           <div class="flex items-start gap-3">
@@ -193,9 +187,8 @@
             <div>
               <dt class="text-sm font-medium text-gray-500">영업시간</dt>
               <dd class="text-gray-900">
-                평일 10:00 - 19:00<br>
-                토요일 10:00 - 17:00<br>
-                <span class="text-sm text-gray-500">일요일 / 공휴일 휴무</span>
+                화~토 10:00 - 19:00<br>
+                <span class="text-sm text-gray-500">일요일 · 월요일 휴무</span>
               </dd>
             </div>
           </div>
@@ -205,7 +198,7 @@
             </svg>
             <div>
               <dt class="text-sm font-medium text-gray-500">전화</dt>
-              <dd class="text-gray-900">010-1234-5678</dd>
+              <dd class="text-gray-900">010-4454-5027</dd>
             </div>
           </div>
           <div class="flex items-start gap-3">
@@ -220,16 +213,21 @@
         </dl>
       </div>
 
-      <%# Map Placeholder %>
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="bg-gray-100 h-full min-h-[300px] flex flex-col items-center justify-center p-6 text-center">
-          <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      <%# Map %>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+        <iframe class="w-full flex-1 min-h-[300px]"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=127.1218%2C36.7777%2C127.1278%2C36.7817&layer=mapnik&marker=36.7797%2C127.1248"
+                loading="lazy"
+                title="투데이바이크 위치"></iframe>
+        <a href="https://map.kakao.com/?q=%EC%B6%A9%EB%82%A8+%EC%B2%9C%EC%95%88%EC%8B%9C+%EB%8F%99%EB%82%A8%EA%B5%AC+%EC%8B%A0%ED%9D%A51%EA%B8%B8+42"
+           target="_blank" rel="noopener noreferrer"
+           class="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-indigo-600 hover:bg-indigo-50 transition border-t border-gray-100">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          <p class="text-gray-500 font-medium mb-1">서울특별시 강남구 역삼로 123</p>
-          <p class="text-sm text-gray-400">지도 서비스 준비 중입니다</p>
-        </div>
+          카카오맵에서 길찾기
+        </a>
       </div>
     </div>
   </section>
