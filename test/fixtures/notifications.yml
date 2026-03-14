@@ -16,3 +16,11 @@ sent_notification:
   status: sent
   message: "김철수님, Pinarello Dogma F 출고 준비가 완료되었습니다."
   sent_at: <%= Time.zone.parse("2025-12-09 10:00:00") %>
+
+general_notification:
+  customer: one
+  notification_type: general
+  channel: email
+  status: sent
+  message: "3월 셋째 주 토요일은 샵 행사로 운영 시간이 1시간 단축됩니다."
+  sent_at: <%= Time.zone.parse("2026-03-02 09:00:00") %>

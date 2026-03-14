@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       member do
         patch :update_status
       end
+      resources :service_progresses, only: %i[create]
       resources :service_photos, only: %i[create destroy]
       resources :repair_logs, only: %i[create edit update destroy]
       resources :parts_replacements, only: %i[create edit update destroy]
@@ -33,6 +34,13 @@ Rails.application.routes.draw do
     resources :imports, only: %i[new create]
     resources :blog_posts
     resources :products
+    resources :service_inquiries, only: %i[index show update] do
+      member do
+        patch :link_customer
+        patch :link_bicycle
+        patch :unlink_linkage
+      end
+    end
     resources :rentals do
       resources :rental_bookings
     end
@@ -45,9 +53,16 @@ Rails.application.routes.draw do
     get "auth/kakao/callback", to: "sessions#kakao_callback"
 
     root "bicycles#index"
+    resources :updates, only: %i[index]
     resources :bicycles, only: %i[index show]
     resources :service_orders, only: %i[index show]
     resources :fitting_records, only: %i[index show]
+  end
+
+  resources :service_inquiries, only: %i[new create] do
+    collection do
+      get :confirmation
+    end
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

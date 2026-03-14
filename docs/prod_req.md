@@ -468,12 +468,17 @@ end
 
 ## 6. 배포 사양
 
+> Current reality note (2026-03-14):
+> 아래 섹션은 초기 목표 아키텍처를 설명합니다.
+> 실제 운영은 현재 `Hetzner + Kamal`이 아니라 `Oracle Cloud VM + bin/deploy + GHCR` 경로를 사용합니다.
+> 현재 런북은 `docs/current_deploy_runbook.md`, 서버 정보는 `docs/oracle_server_info.md`를 기준으로 봅니다.
+
 ### 6-1. 인프라 구성
 
 ```
 ┌─────────────────────────────────────────────┐
-│            Hetzner VPS (CX22)               │
-│            월 ~6달러 / 2코어 / 4GB RAM       │
+│      Target state: Hetzner VPS (CX22)       │
+│        월 ~6달러 / 2코어 / 4GB RAM          │
 │                                             │
 │  ┌─────────────────────────────────────┐   │
 │  │  Docker Container (Kamal 관리)       │   │
@@ -492,16 +497,16 @@ end
 │  Traefik (리버스 프록시 + SSL 자동 갱신)    │
 └─────────────────────────────────────────────┘
 
-Cloudflare R2 (별도 / 무료 티어)
+Cloudflare R2 (target state / 무료 티어)
 ├── 정비 사진 (ActiveStorage)
 └── SQLite DB 실시간 백업 (Litestream)
 
 today.bike 도메인 → Cloudflare DNS → Hetzner VPS
 ```
 
-### 6-2. 배포 도구: Kamal 2
+### 6-2. 배포 도구: Kamal 2 (target state)
 
-Rails 8 공식 배포 도구. `git push` 후 명령 하나로 무중단 배포.
+Rails 8 공식 배포 도구. 목표 상태에서는 `git push` 후 명령 하나로 무중단 배포한다.
 
 ```yaml
 # config/deploy.yml
@@ -546,6 +551,9 @@ kamal deploy
 
 DB 파일이 변경될 때마다 Cloudflare R2로 실시간 복제.
 
+> Current reality:
+> Litestream 구성은 코드에 존재하지만, 실제 복제 동작은 production secrets가 완비되어야 활성화됩니다.
+
 ```yaml
 # litestream.yml
 dbs:
@@ -563,14 +571,32 @@ dbs:
 
 | 서비스 | 용도 | 월 비용 |
 |--------|------|---------|
-| Hetzner VPS (CX22) | 앱 + DB 서버 | ~$6 |
+| Hetzner VPS (CX22) | 목표 앱 + DB 서버 | ~$6 |
 | Cloudflare R2 | 사진 저장 + DB 백업 | 무료 (10GB 이내) |
 | Cloudflare DNS | 도메인 관리 + CDN | 무료 |
 | GitHub Container Registry | Docker 이미지 | 무료 |
 | 카카오 알림톡 | 건당 과금 (약 8~15원) | 사용량 비례 |
 | 토스페이먼츠 | 결제 수수료 (Phase 3) | 건당 수수료 |
 | today.bike 도메인 | 연 갱신 | 연 ~$30–50 |
-| **합계 (초기)** | | **~$6–10/월** |
+| **합계 (목표 상태)** | | **~$6–10/월** |
+
+### 6-5. Current Reality Snapshot
+
+현재 실제 운영 상태는 아래와 같습니다.
+
+| 항목 | 현재 운영 현실 |
+|------|----------------|
+| 서버 | Oracle Cloud Always Free VM |
+| 배포 방식 | `bin/deploy` 수동 GHCR + SSH |
+| 이미지 레지스트리 | GHCR |
+| 데이터 저장 | Docker volume의 SQLite + local Active Storage |
+| 미디어 저장소 | production은 아직 `:local` |
+| 백업 | Litestream/R2는 준비돼 있으나 env 완결 여부에 의존 |
+
+자세한 현재 런북:
+
+- `docs/current_deploy_runbook.md`
+- `docs/oracle_server_info.md`
 
 ---
 
@@ -586,7 +612,7 @@ dbs:
 - [ ] 입출고 관리 보드 (Turbo Frames로 칸반)
 - [ ] 관리자 대시보드 (입고 현황, 통계)
 - [ ] 엑셀 데이터 CSV 임포트 도구
-- [ ] Kamal로 Hetzner 배포
+- [ ] Kamal 기반 목표 배포 경로로 마이그레이션 여부 결정
 
 ### Phase 2 — 고객 경험 (신뢰 구축)
 > 목표: 투명성으로 고객 충성도 향상.

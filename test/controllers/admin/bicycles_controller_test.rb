@@ -7,6 +7,13 @@ class Admin::BicyclesControllerTest < ActionDispatch::IntegrationTest
     @admin_user = admin_users(:one)
     @bicycle = bicycles(:road_bike)
     @customer = customers(:one)
+    @service_inquiry = ServiceInquiry.create!(
+      name: "문의 고객",
+      phone: "010-2222-4444",
+      message: "자전거 접수 문의",
+      customer: @customer,
+      conversion_status: "customer_linked"
+    )
   end
 
   # --- Authentication tests ---
@@ -206,6 +213,17 @@ class Admin::BicyclesControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='bicycle[customer_id]'] option[selected][value='#{@customer.id}']"
   end
 
+  test "new with inquiry pre-fills customer and hidden inquiry id" do
+    sign_in @admin_user
+
+    get new_admin_bicycle_path, params: { service_inquiry_id: @service_inquiry.id }
+
+    assert_response :ok
+    assert_select "select[name='bicycle[customer_id]'] option[selected][value='#{@customer.id}']"
+    assert_select "input[name='service_inquiry_id'][value='#{@service_inquiry.id}']", count: 1
+    assert_match "문의에서 자전거 생성", response.body
+  end
+
   # --- Create ---
 
   test "create with valid params creates bicycle and redirects" do
@@ -230,6 +248,28 @@ class Admin::BicyclesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to admin_bicycle_path(bicycle)
     follow_redirect!
     assert_match "Bicycle was successfully created", response.body
+  end
+
+  test "create from inquiry links bicycle and returns to inquiry" do
+    sign_in @admin_user
+
+    assert_difference "Bicycle.count", 1 do
+      post admin_bicycles_path, params: {
+        service_inquiry_id: @service_inquiry.id,
+        bicycle: {
+          customer_id: @customer.id,
+          brand: "Cervelo",
+          model_label: "Soloist",
+          bike_type: "road",
+          status: "active"
+        }
+      }
+    end
+
+    assert_redirected_to admin_service_inquiry_path(@service_inquiry)
+    @service_inquiry.reload
+    assert_equal "bicycle_linked", @service_inquiry.conversion_status
+    assert_equal "Cervelo", @service_inquiry.bicycle.brand
   end
 
   test "create with invalid params re-renders new form" do

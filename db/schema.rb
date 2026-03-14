@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_003141) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_14_030000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -253,6 +253,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_003141) do
     t.index ["service_order_id"], name: "index_repair_logs_on_service_order_id"
   end
 
+  create_table "service_inquiries", force: :cascade do |t|
+    t.text "admin_notes"
+    t.integer "bicycle_id"
+    t.string "conversion_status", default: "unlinked", null: false
+    t.datetime "created_at", null: false
+    t.integer "customer_id"
+    t.date "desired_visit_on"
+    t.string "email"
+    t.text "message", null: false
+    t.string "name", null: false
+    t.string "phone", null: false
+    t.integer "product_id"
+    t.string "request_category", default: "general", null: false
+    t.datetime "responded_at"
+    t.integer "service_order_id"
+    t.string "service_type"
+    t.string "source_page"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bicycle_id"], name: "index_service_inquiries_on_bicycle_id"
+    t.index ["conversion_status"], name: "index_service_inquiries_on_conversion_status"
+    t.index ["customer_id"], name: "index_service_inquiries_on_customer_id"
+    t.index ["product_id"], name: "index_service_inquiries_on_product_id"
+    t.index ["request_category"], name: "index_service_inquiries_on_request_category"
+    t.index ["service_order_id"], name: "index_service_inquiries_on_service_order_id"
+    t.index ["service_type"], name: "index_service_inquiries_on_service_type"
+    t.index ["status"], name: "index_service_inquiries_on_status"
+  end
+
   create_table "service_orders", force: :cascade do |t|
     t.integer "bicycle_id", null: false
     t.datetime "completed_at"
@@ -288,13 +317,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_003141) do
 
   create_table "service_progresses", force: :cascade do |t|
     t.datetime "changed_at", null: false
+    t.text "cost_summary"
     t.datetime "created_at", null: false
+    t.boolean "customer_visible", default: true, null: false
+    t.string "entry_type", default: "status_change", null: false
     t.string "from_status", null: false
     t.text "note"
+    t.string "review_state", default: "none", null: false
     t.integer "service_order_id", null: false
+    t.string "title"
     t.string "to_status", null: false
     t.datetime "updated_at", null: false
+    t.text "work_summary"
     t.index ["changed_at"], name: "index_service_progresses_on_changed_at"
+    t.index ["customer_visible"], name: "index_service_progresses_on_customer_visible"
+    t.index ["entry_type"], name: "index_service_progresses_on_entry_type"
+    t.index ["review_state"], name: "index_service_progresses_on_review_state"
     t.index ["service_order_id"], name: "index_service_progresses_on_service_order_id"
   end
 
@@ -327,6 +365,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_003141) do
   add_foreign_key "rental_bookings", "customers"
   add_foreign_key "rental_bookings", "rentals"
   add_foreign_key "repair_logs", "service_orders"
+  add_foreign_key "service_inquiries", "bicycles"
+  add_foreign_key "service_inquiries", "customers"
+  add_foreign_key "service_inquiries", "products"
+  add_foreign_key "service_inquiries", "service_orders"
   add_foreign_key "service_orders", "bicycles"
   add_foreign_key "service_photos", "service_orders"
   add_foreign_key "service_progresses", "service_orders"

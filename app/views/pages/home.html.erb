@@ -57,7 +57,7 @@
       <div class="flex gap-3 shrink-0">
         <%= link_to "서비스 보기", service_page_path("overhaul"),
               class: "inline-flex items-center justify-center rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-indigo-700 shadow-sm hover:bg-indigo-50 transition" %>
-        <%= link_to "갤러리", gallery_path,
+        <%= link_to "문의 접수", new_service_inquiry_path(source_page: "home"),
               class: "inline-flex items-center justify-center rounded-lg bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 transition ring-1 ring-inset ring-indigo-400" %>
       </div>
     </div>

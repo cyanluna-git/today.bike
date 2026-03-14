@@ -58,3 +58,4 @@ kanban-board/
 
 # Config secrets
 .codex/
+.claude/kanban.json

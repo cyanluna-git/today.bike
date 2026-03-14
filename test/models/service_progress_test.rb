@@ -21,6 +21,18 @@ class ServiceProgressTest < ActiveSupport::TestCase
     assert @progress.valid?
   end
 
+  test "manual update is valid with title and same status" do
+    progress = ServiceProgress.new(
+      service_order: @service_order,
+      from_status: "received",
+      to_status: "received",
+      entry_type: "manual_update",
+      title: "추가 점검이 필요합니다"
+    )
+
+    assert progress.valid?
+  end
+
   # --- Validations ---
 
   test "invalid without service_order" do
@@ -55,6 +67,27 @@ class ServiceProgressTest < ActiveSupport::TestCase
     @progress.changed_at = custom_time
     @progress.save!
     assert_equal custom_time, @progress.changed_at
+  end
+
+  test "status change sets default entry metadata" do
+    @progress.save!
+
+    assert_equal "status_change", @progress.entry_type
+    assert_equal "none", @progress.review_state
+    assert_equal true, @progress.customer_visible
+    assert_equal "정비 전 점검을 시작했어요", @progress.display_title
+  end
+
+  test "manual update requires title" do
+    progress = ServiceProgress.new(
+      service_order: @service_order,
+      from_status: "received",
+      to_status: "received",
+      entry_type: "manual_update"
+    )
+
+    assert_not progress.valid?
+    assert_includes progress.errors[:title], "can't be blank"
   end
 
   # --- Associations ---
@@ -99,6 +132,13 @@ class ServiceProgressTest < ActiveSupport::TestCase
     assert_equal "received", progresses.last.from_status
   end
 
+  test "customer_visible scope excludes internal updates" do
+    progresses = @service_order.service_progresses.customer_visible
+
+    assert_includes progresses, service_progresses(:overhaul_review_update)
+    assert_not_includes progresses, service_progresses(:overhaul_internal_update)
+  end
+
   # --- Status labels ---
 
   test "from_status_label returns Korean label" do
@@ -126,6 +166,11 @@ class ServiceProgressTest < ActiveSupport::TestCase
       assert_equal label, @progress.from_status_label
       assert_equal label, @progress.to_status_label
     end
+  end
+
+  test "review_state_label returns Korean label" do
+    progress = service_progresses(:overhaul_review_update)
+    assert_equal "검토중", progress.review_state_label
   end
 
   # --- Auto-record on ServiceOrder status change ---
@@ -161,7 +206,7 @@ class ServiceProgressTest < ActiveSupport::TestCase
       order.update!(status: "completed")
     end
 
-    progresses = order.service_progresses.chronological
+    progresses = order.service_progresses.status_change.chronological.last(3)
     assert_equal "received", progresses[0].from_status
     assert_equal "diagnosis", progresses[0].to_status
     assert_equal "diagnosis", progresses[1].from_status
@@ -183,5 +228,10 @@ class ServiceProgressTest < ActiveSupport::TestCase
     assert_equal "completed", delivered_progress.from_status
     assert_equal "delivered", delivered_progress.to_status
     assert_equal "고객 수령 완료", delivered_progress.note
+
+    update = service_progresses(:overhaul_review_update)
+    assert_equal "manual_update", update.entry_type
+    assert_equal "추가 점검이 필요합니다", update.title
+    assert_equal "under_review", update.review_state
   end
 end

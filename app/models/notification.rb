@@ -33,6 +33,13 @@ class Notification < ApplicationRecord
   # Scopes
   scope :recent, -> { order(created_at: :desc) }
 
+  TYPE_LABELS = {
+    "status_change" => "정비 상태 안내",
+    "completion" => "정비 완료 안내",
+    "pickup_ready" => "출고 안내",
+    "general" => "일반 안내"
+  }.freeze
+
   def mark_sent!
     update!(status: :sent, sent_at: Time.current)
   end
@@ -43,5 +50,13 @@ class Notification < ApplicationRecord
 
   def mark_skipped!(reason = nil)
     update!(status: :skipped, error_message: reason)
+  end
+
+  def display_title
+    TYPE_LABELS[notification_type] || notification_type&.titleize || "업데이트"
+  end
+
+  def display_timestamp
+    sent_at || created_at
   end
 end

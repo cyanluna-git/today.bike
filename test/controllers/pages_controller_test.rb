@@ -28,6 +28,11 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{service_page_path('overhaul')}']", text: /서비스 보기/
   end
 
+  test "home has inquiry CTA button" do
+    get root_path
+    assert_select "a[href='#{new_service_inquiry_path(source_page: "home")}']", text: /문의 접수/
+  end
+
   test "home has services overview section with 4 service cards" do
     get root_path
     assert_match "분해정비", response.body
@@ -112,6 +117,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "service page has CTA section" do
     get service_page_path("overhaul")
     assert_match "서비스 문의", response.body
+    assert_select "a[href='#{new_service_inquiry_path(service_type: "overhaul", source_page: "service")}']", text: /문의 접수하기/
   end
 
   test "service page has service navigation" do

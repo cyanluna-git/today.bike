@@ -1,6 +1,7 @@
 module Admin
   class ServiceOrdersController < BaseController
     before_action :set_service_order, only: %i[show edit update destroy update_status]
+    before_action :set_source_inquiry, only: %i[new create]
 
     def index
       service_orders = ServiceOrder.includes(bicycle: :customer)
@@ -31,14 +32,24 @@ module Admin
       elsif params[:customer_id].present?
         @preselected_customer = Customer.find_by(id: params[:customer_id])
       end
+
+      if @source_inquiry.present?
+        @service_order.assign_attributes(@source_inquiry.service_order_prefill_attributes)
+        @preselected_customer ||= @source_inquiry.customer || @service_order.bicycle&.customer
+      end
     end
 
     def create
       @service_order = ServiceOrder.new(service_order_params)
 
-      if @service_order.save
-        redirect_to admin_service_order_path(@service_order), notice: "Service order was successfully created."
+      if save_service_order_with_optional_inquiry_link
+        if @source_inquiry.present?
+          redirect_to admin_service_inquiry_path(@source_inquiry), notice: "서비스오더를 생성하고 문의에 연결했습니다."
+        else
+          redirect_to admin_service_order_path(@service_order), notice: "Service order was successfully created."
+        end
       else
+        @preselected_customer ||= @service_order.bicycle&.customer
         render :new, status: :unprocessable_entity
       end
     end
@@ -83,6 +94,21 @@ module Admin
 
     def set_service_order
       @service_order = ServiceOrder.includes(:service_progresses, :service_photos, :repair_logs, :parts_replacements, bicycle: :customer).find(params[:id])
+    end
+
+    def set_source_inquiry
+      @source_inquiry = ServiceInquiry.find_by(id: params[:service_inquiry_id])
+    end
+
+    def save_service_order_with_optional_inquiry_link
+      ActiveRecord::Base.transaction do
+        @service_order.save!
+        @source_inquiry&.link_service_order!(@service_order)
+      end
+
+      true
+    rescue ActiveRecord::RecordInvalid
+      false
     end
 
     def service_order_params

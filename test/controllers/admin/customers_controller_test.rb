@@ -6,6 +6,14 @@ class Admin::CustomersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @admin_user = admin_users(:one)
     @customer = customers(:one)
+    @service_inquiry = ServiceInquiry.create!(
+      name: "문의 고객",
+      phone: "010-2222-3333",
+      email: "inquiry@example.com",
+      message: "브레이크 점검 문의드립니다.",
+      service_type: "repair",
+      source_page: "service"
+    )
   end
 
   # --- Authentication tests ---
@@ -198,6 +206,18 @@ class Admin::CustomersControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='customer[phone]']"
   end
 
+  test "new with inquiry pre-fills customer form" do
+    sign_in @admin_user
+
+    get new_admin_customer_path, params: { service_inquiry_id: @service_inquiry.id }
+
+    assert_response :ok
+    assert_select "input[name='customer[name]'][value='문의 고객']"
+    assert_select "input[name='customer[phone]'][value='010-2222-3333']"
+    assert_select "input[name='service_inquiry_id'][value='#{@service_inquiry.id}']", count: 1
+    assert_match "문의 접수에서 생성된 고객", response.body
+  end
+
   # --- Create ---
 
   test "create with valid params creates customer and redirects" do
@@ -225,6 +245,28 @@ class Admin::CustomersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
+  end
+
+  test "create from inquiry links new customer and returns to inquiry" do
+    sign_in @admin_user
+
+    assert_difference "Customer.count", 1 do
+      post admin_customers_path, params: {
+        service_inquiry_id: @service_inquiry.id,
+        customer: {
+          name: "신규 고객",
+          phone: "010-3333-4444",
+          email: "new@example.com",
+          memo: "메모",
+          active: true
+        }
+      }
+    end
+
+    assert_redirected_to admin_service_inquiry_path(@service_inquiry)
+    @service_inquiry.reload
+    assert_equal "customer_linked", @service_inquiry.conversion_status
+    assert_equal "신규 고객", @service_inquiry.customer.name
   end
 
   # --- Edit ---

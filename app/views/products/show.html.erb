@@ -109,14 +109,14 @@
         <p class="text-xs text-gray-400 mb-6">SKU: <%= @product.sku %></p>
       <% end %>
 
-      <%# Kakao inquiry button %>
+      <%# Internal inquiry button %>
       <div class="mt-8">
-        <%= link_to "https://pf.kakao.com/_hxaupxb/chat", target: "_blank", rel: "noopener noreferrer",
-              class: "inline-flex items-center gap-2 rounded-md bg-yellow-400 px-6 py-3 text-sm font-semibold text-gray-900 shadow-sm hover:bg-yellow-300 transition" do %>
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 3C6.477 3 2 6.477 2 10.5c0 2.47 1.607 4.647 4.042 5.906-.178.663-.647 2.41-.741 2.785-.118.47.173.464.364.337.15-.1 2.38-1.619 3.34-2.275.32.042.65.064.985.064 5.523 0 10-3.477 10-7.817C20 6.477 17.523 3 12 3z"/>
+        <%= link_to new_service_inquiry_path(product_id: @product.id, source_page: "product"),
+              class: "inline-flex items-center gap-2 rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-4 4v-4z" />
           </svg>
-          카카오톡 문의하기
+          문의 접수하기
         <% end %>
       </div>
     </div>

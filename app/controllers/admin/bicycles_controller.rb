@@ -1,6 +1,7 @@
 module Admin
   class BicyclesController < BaseController
     before_action :set_bicycle, only: %i[show edit update destroy purge_photo qr_code qr_print]
+    before_action :set_source_inquiry, only: %i[new create]
 
     def index
       bicycles = Bicycle.includes(:customer).search(params[:query]).order(created_at: :desc)
@@ -15,13 +16,18 @@ module Admin
     def new
       @bicycle = Bicycle.new
       @bicycle.customer_id = params[:customer_id] if params[:customer_id].present?
+      @bicycle.assign_attributes(@source_inquiry.bicycle_prefill_attributes) if @source_inquiry.present?
     end
 
     def create
       @bicycle = Bicycle.new(bicycle_params)
 
-      if @bicycle.save
-        redirect_to admin_bicycle_path(@bicycle), notice: "Bicycle was successfully created."
+      if save_bicycle_with_optional_inquiry_link
+        if @source_inquiry.present?
+          redirect_to admin_service_inquiry_path(@source_inquiry), notice: "새 자전거를 생성하고 문의에 연결했습니다."
+        else
+          redirect_to admin_bicycle_path(@bicycle), notice: "Bicycle was successfully created."
+        end
       else
         render :new, status: :unprocessable_entity
       end
@@ -78,6 +84,21 @@ module Admin
 
     def set_bicycle
       @bicycle = Bicycle.includes(:bicycle_specs).find(params[:id])
+    end
+
+    def set_source_inquiry
+      @source_inquiry = ServiceInquiry.find_by(id: params[:service_inquiry_id])
+    end
+
+    def save_bicycle_with_optional_inquiry_link
+      ActiveRecord::Base.transaction do
+        @bicycle.save!
+        @source_inquiry&.link_bicycle!(@bicycle)
+      end
+
+      true
+    rescue ActiveRecord::RecordInvalid
+      false
     end
 
     def bicycle_params

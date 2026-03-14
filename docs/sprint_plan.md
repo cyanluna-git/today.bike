@@ -37,12 +37,17 @@
 - T004: Devise gem 설치 + Admin User 모델 생성
 - T005: 관리자 로그인/로그아웃 UI + admin 네임스페이스 라우팅
 
-**Story 1.3: 배포 환경 (Kamal + Hetzner)**
+**Story 1.3: 배포 환경 (목표: Kamal + Hetzner / 현재: Oracle + bin/deploy)**
 - T006: Dockerfile 작성 (Rails 8 production)
 - T007: Kamal config/deploy.yml 작성
-- T008: Hetzner VPS 프로비저닝 + Cloudflare DNS 연결
-- T009: kamal setup 초기 배포 + SSL 인증서
+- T008: 프로덕션 서버 프로비저닝 + Cloudflare DNS 연결
+- T009: 초기 배포 경로 구성
 - T010: Litestream SQLite 백업 → Cloudflare R2
+
+> Current reality note:
+> Sprint 문서는 초기 계획 기준이라 `Kamal + Hetzner`를 전제로 적혀 있습니다.
+> 실제 운영은 현재 `Oracle Cloud VM + bin/deploy` 경로를 사용합니다.
+> 현재 상태는 `docs/current_deploy_runbook.md`를 기준으로 봅니다.
 
 ---
 

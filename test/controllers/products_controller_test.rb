@@ -79,9 +79,9 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_match "35,000", response.body
   end
 
-  test "show has kakao inquiry button" do
+  test "show has internal inquiry button" do
     get product_path(@product)
-    assert_select "a", text: /카카오톡 문의하기/
+    assert_select "a[href='#{new_service_inquiry_path(product_id: @product.id, source_page: "product")}']", text: /문의 접수하기/
   end
 
   test "show has back to products link" do

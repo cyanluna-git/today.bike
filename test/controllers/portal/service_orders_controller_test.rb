@@ -168,4 +168,26 @@ class Portal::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
     get portal_service_order_path(@completed_order)
     assert_select "[data-testid='progress-timeline']"
   end
+
+  test "show displays customer-facing progress update feed entries" do
+    get portal_service_order_path(@service_order)
+
+    assert_select "[data-testid='progress-feed-entry']", minimum: 1
+    assert_match "추가 점검이 필요합니다", response.body
+    assert_match "검토중", response.body
+    assert_match "BB 유격과 크랭크 체결 상태를 추가로 점검 중입니다.", response.body
+  end
+
+  test "show displays contextual cost summary from progress feed" do
+    get portal_service_order_path(@service_order)
+
+    assert_select "[data-testid='progress-cost-summary']"
+    assert_match "교체 필요 시 추가 비용이 발생할 수 있어 확인 후 안내드릴 예정입니다.", response.body
+  end
+
+  test "show hides non customer visible progress updates" do
+    get portal_service_order_path(@service_order)
+
+    assert_no_match "고객에게 바로 노출하지 않을 내부 메모입니다.", response.body
+  end
 end

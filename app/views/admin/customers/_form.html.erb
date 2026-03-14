@@ -1,4 +1,10 @@
+<% service_inquiry = local_assigns[:service_inquiry] %>
+
 <%= form_with(model: [:admin, customer], class: "space-y-6") do |form| %>
+  <% if service_inquiry.present? %>
+    <%= hidden_field_tag :service_inquiry_id, service_inquiry.id %>
+  <% end %>
+
   <% if customer.errors.any? %>
     <div class="rounded-md bg-red-50 p-4">
       <div class="flex">
@@ -54,7 +60,15 @@
   </div>
 
   <div class="flex items-center justify-end gap-3">
-    <%= link_to "Cancel", (customer.persisted? ? admin_customer_path(customer) : admin_customers_path), class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" %>
+    <% cancel_path =
+      if customer.persisted?
+        admin_customer_path(customer)
+      elsif service_inquiry.present?
+        admin_service_inquiry_path(service_inquiry)
+      else
+        admin_customers_path
+      end %>
+    <%= link_to "Cancel", cancel_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition" %>
     <%= form.submit class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition cursor-pointer" %>
   </div>
 <% end %>

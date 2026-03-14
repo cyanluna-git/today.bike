@@ -8,6 +8,17 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
     @service_order = service_orders(:overhaul_order)
     @bicycle = bicycles(:road_bike)
     @customer = customers(:one)
+    @service_inquiry = ServiceInquiry.create!(
+      name: "문의 고객",
+      phone: "010-4444-5555",
+      message: "오버홀 접수 문의",
+      service_type: "overhaul",
+      desired_visit_on: Date.new(2026, 3, 22),
+      source_page: "service",
+      customer: @customer,
+      bicycle: @bicycle,
+      conversion_status: "bicycle_linked"
+    )
   end
 
   # --- Authentication tests ---
@@ -143,12 +154,43 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
     assert_select "nav[aria-label='Pagination']"
   end
 
+  test "new with inquiry pre-fills bicycle and intake summary" do
+    sign_in @admin_user
+
+    get new_admin_service_order_path, params: { service_inquiry_id: @service_inquiry.id, bicycle_id: @bicycle.id }
+
+    assert_response :ok
+    assert_select "input[name='service_inquiry_id'][value='#{@service_inquiry.id}']", count: 1
+    assert_select "select[name='service_order[service_type]'] option[selected][value='overhaul']"
+    assert_select "textarea[name='service_order[diagnosis_note]']", text: /\[문의 접수 전환\]/
+  end
+
   # --- Show ---
 
   test "show renders successfully" do
     sign_in @admin_user
     get admin_service_order_path(@service_order)
     assert_response :ok
+  end
+
+  test "create from inquiry links service order and returns to inquiry" do
+    sign_in @admin_user
+
+    assert_difference "ServiceOrder.count", 1 do
+      post admin_service_orders_path, params: {
+        service_inquiry_id: @service_inquiry.id,
+        service_order: {
+          bicycle_id: @bicycle.id,
+          service_type: "overhaul",
+          diagnosis_note: "문의 요약 반영"
+        }
+      }
+    end
+
+    assert_redirected_to admin_service_inquiry_path(@service_inquiry)
+    @service_inquiry.reload
+    assert_equal "service_order_linked", @service_inquiry.conversion_status
+    assert_equal "overhaul", @service_inquiry.service_order.service_type
   end
 
   test "show displays service order details" do
@@ -252,18 +294,34 @@ class Admin::ServiceOrdersControllerTest < ActionDispatch::IntegrationTest
 
   test "show progress tab displays empty state when no progresses" do
     sign_in @admin_user
-    get admin_service_order_path(@service_order)
+    order = ServiceOrder.create!(
+      bicycle: @bicycle,
+      service_type: "repair",
+      status: "received",
+      received_at: Time.current
+    )
+    get admin_service_order_path(order)
     assert_select "turbo-frame#service_order_tab_progress", text: /진행 기록 없음/
   end
 
-  test "show progress tab displays timeline for order with progresses" do
+  test "show progress tab displays feed cards for order with progresses" do
     sign_in @admin_user
     completed = service_orders(:completed_order)
     get admin_service_order_path(completed)
     assert_select "turbo-frame#service_order_tab_progress" do
-      assert_select "ul[role='list']"
-      assert_select "li", count: 2
+      assert_select "article", minimum: 2
+      assert_match "고객 업데이트", response.body
     end
+  end
+
+  test "show progress tab includes customer update form" do
+    sign_in @admin_user
+    get admin_service_order_path(@service_order)
+
+    assert_select "turbo-frame#service_order_tab_progress form[action='#{admin_service_order_service_progresses_path(@service_order)}']"
+    assert_select "input[name='service_progress[title]']"
+    assert_select "textarea[name='service_progress[work_summary]']"
+    assert_select "textarea[name='service_progress[cost_summary]']"
   end
 
   test "show default tab is basic_info" do
