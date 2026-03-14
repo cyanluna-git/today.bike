@@ -4,27 +4,27 @@ Guidance for Claude Code when working with this repository.
 
 ## Project Overview
 
-Today.Bike — 자전거 서비스 관리 플랫폼. 자전거 입고/수리/피팅/대여 워크플로우를 관리하고, 고객 포탈과 자전거 여권(QR) 기능을 제공하는 Rails 8 풀스택 애플리케이션.
+Today.Bike — Bicycle service management platform. Manages bicycle intake/repair/fitting/rental workflows, provides a customer portal and bicycle passport (QR) features. Full-stack Rails 8 application.
 
 ## Repository Structure
 
-- `app/models/` — 20개 도메인 모델 (Bicycle, ServiceOrder, Customer 등)
-- `app/controllers/admin/` — 관리자 CRUD 컨트롤러 (17개)
-- `app/controllers/portal/` — 고객 셀프서비스 포탈
-- `app/views/` — ERB 템플릿 (Tailwind + Stimulus)
-- `app/services/` — 비즈니스 로직 서비스 객체
-- `app/jobs/` — Solid Queue 백그라운드 잡
-- `db/migrate/` — SQLite 마이그레이션
-- `test/` — Minitest 테스트 스위트
-- `kanban-board/` — 칸반 보드 설정
+- `app/models/` — 20 domain models (Bicycle, ServiceOrder, Customer, etc.)
+- `app/controllers/admin/` — Admin CRUD controllers (17)
+- `app/controllers/portal/` — Customer self-service portal
+- `app/views/` — ERB templates (Tailwind + Stimulus)
+- `app/services/` — Business logic service objects
+- `app/jobs/` — Solid Queue background jobs
+- `db/migrate/` — SQLite migrations
+- `test/` — Minitest test suite
+- `kanban-board/` — Kanban board configuration
 
 ## Tech Stack
 
 - **Framework**: Ruby on Rails 8.1.2 (Hotwire: Turbo + Stimulus)
-- **Database**: SQLite (primary, cache, queue, cable — 4개 인스턴스)
+- **Database**: SQLite (primary, cache, queue, cable — 4 instances)
 - **Frontend**: Tailwind CSS, Stimulus Controllers, ImportMap (ESM)
-- **Auth**: Devise (관리자), Kakao OAuth (고객 포탈)
-- **Background Jobs**: Solid Queue (Rails 8 기본)
+- **Auth**: Devise (admin), Kakao OAuth (customer portal)
+- **Background Jobs**: Solid Queue (Rails 8 default)
 - **Caching**: Solid Cache (DB-backed)
 - **WebSocket**: Solid Cable
 - **Asset Pipeline**: Propshaft
@@ -35,23 +35,23 @@ Today.Bike — 자전거 서비스 관리 플랫폼. 자전거 입고/수리/피
 ```
 Browser → Rails 8 (Puma, port 3000)
        → SQLite (4 databases: primary, cache, queue, cable)
-       → Kakao API (OAuth + 알림톡)
+       → Kakao API (OAuth + notification messages)
 ```
 
-### 핵심 도메인 모델
-- **Bicycle**: 개별 자전거 (road/MTB/gravel/hybrid), 프레임번호, 여권 토큰
-- **Customer**: 자전거 소유자 (전화번호 기반 식별)
-- **ServiceOrder**: 서비스 요청 (6가지 유형)
+### Core Domain Models
+- **Bicycle**: Individual bike (road/MTB/gravel/hybrid), frame number, passport token
+- **Customer**: Bicycle owner (phone-based identity)
+- **ServiceOrder**: Service request (6 types)
   - `overhaul`, `repair`, `parts`, `upgrade`, `fitting`, `frame_change`
-  - 상태 워크플로우: received → diagnosis → in_progress → completed → delivered
-- **ServiceProgress**: 상태 전환 감사 로그
-- **BicycleSpec**: 컴포넌트 상세 사양
+  - Status workflow: received → diagnosis → in_progress → completed → delivered
+- **ServiceProgress**: Status transition audit log
+- **BicycleSpec**: Detailed component specifications
 
-### 핵심 패턴
-- **MVC 계층**: Model(도메인 로직) → Controller(액션) → View(ERB 렌더링)
-- **Service Object**: 복잡한 비즈니스 로직은 `app/services/`에 분리
-- **Stimulus Controller**: JavaScript 인터랙션은 Stimulus로 처리
-- **Namespace 라우팅**: `/admin/*` (관리자), `/portal/*` (고객), `/` (공개)
+### Key Patterns
+- **MVC Layers**: Model (domain logic) → Controller (actions) → View (ERB rendering)
+- **Service Object**: Complex business logic extracted to `app/services/`
+- **Stimulus Controller**: JavaScript interactions handled via Stimulus
+- **Namespace Routing**: `/admin/*` (staff), `/portal/*` (customers), `/` (public)
 
 ## Commands
 
@@ -74,39 +74,39 @@ bin/rake bundler-audit        # Gem vulnerability audit
 kamal deploy                  # Deploy via Docker
 ```
 
-## 의존성 방향 (위반 금지)
+## Dependency Direction (Must Not Violate)
 
 ```
 Controller → Service → Model
-View → Helper → Model (읽기 전용)
+View → Helper → Model (read-only)
 ```
 
-- Controller에서 Model을 직접 복잡하게 조작하지 않음 — Service로 위임
-- View에서 DB 쿼리 금지 — Controller/Helper에서 데이터 준비
-- Model 간 순환 의존 금지
+- Controllers must not perform complex model operations directly — delegate to Services
+- Views must not execute DB queries — use `@variables` prepared by Controllers/Helpers
+- No circular dependencies between Models
 
-## 금지 패턴
+## Forbidden Patterns
 
-- ❌ Controller에 비즈니스 로직 (10줄 이상의 로직은 Service로 추출)
-- ❌ View에서 직접 DB 쿼리 (`@variable`만 사용)
-- ❌ N+1 쿼리 (반드시 `includes`/`eager_load` 사용)
-- ❌ `skip_before_action` 없이 인증 우회
-- ❌ JavaScript를 inline으로 작성 (Stimulus controller로 분리)
+- ❌ Business logic in Controllers (extract to Service if >10 lines of logic)
+- ❌ Direct DB queries in Views (use `@variables` only)
+- ❌ N+1 queries (always use `includes`/`eager_load`)
+- ❌ Bypassing authentication without `skip_before_action`
+- ❌ Inline JavaScript (extract to Stimulus controllers)
 
-## 필수 패턴
+## Required Patterns
 
-- ✅ 새 모델 추가 시 마이그레이션 + 테스트 + fixture 함께 생성
-- ✅ 상태 변경은 ServiceProgress에 기록 (감사 추적)
-- ✅ 금액 관련 필드는 정수(원) 단위로 저장
-- ✅ 고객 전화번호는 한국 형식 검증 (010-XXXX-XXXX)
-- ✅ Active Storage로 이미지 관리 (서비스당 최대 10장)
+- ✅ New models must include migration + test + fixture together
+- ✅ Status changes must be recorded in ServiceProgress (audit trail)
+- ✅ Monetary fields stored as integers (KRW, no decimals)
+- ✅ Customer phone numbers validated in Korean format (010-XXXX-XXXX)
+- ✅ Images managed via Active Storage (max 10 per service order)
 
 ## CI/CD
 
 GitHub Actions (`.github/workflows/ci.yml`):
-- Brakeman 보안 스캔
+- Brakeman security scan
 - Bundler Audit
-- ImportMap JS 감사
-- RuboCop 린팅
-- 전체 테스트 스위트
-- 시스템 테스트 (스크린샷 아티팩트)
+- ImportMap JS audit
+- RuboCop linting
+- Full test suite
+- System tests (screenshot artifacts)
