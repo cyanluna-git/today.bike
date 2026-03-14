@@ -48,6 +48,30 @@ ssh ubuntu@217.142.238.243
 - 키: `~/.ssh/id_ed25519` (로컬 Mac 기본 키)
 - 사용자: `ubuntu`
 
+## 현재 배포 경로
+
+현재 프로덕션 배포는 Kamal이 아니라 수동 GHCR + SSH 경로를 사용한다.
+
+- 실행 스크립트: `bin/deploy`
+- 배포 대상 컨테이너: `today-bike`
+- 배포 이미지: `ghcr.io/cyanluna-git/today-bike:latest`
+- 영속 볼륨: `today-bike_storage:/rails/storage`
+
+요약 흐름:
+
+```text
+로컬 working tree
+  -> docker build
+  -> GHCR push
+  -> Oracle VM SSH 접속
+  -> docker pull / stop / rm / run
+  -> HTTP 200 헬스체크
+```
+
+배포 런북:
+
+- `docs/current_deploy_runbook.md`
+
 ## 방화벽 (iptables)
 
 ```

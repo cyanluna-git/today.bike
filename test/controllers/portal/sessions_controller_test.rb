@@ -22,6 +22,11 @@ class Portal::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "button[type='submit']"
   end
 
+  test "new links header logo to site home" do
+    get portal_login_path
+    assert_select "a[href='#{root_path}']", text: /Today\.bike/
+  end
+
   test "new redirects to portal root if already logged in" do
     post portal_login_path, params: { phone: @customer.phone }
     get portal_login_path

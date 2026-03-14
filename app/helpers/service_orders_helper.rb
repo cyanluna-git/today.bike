@@ -32,4 +32,25 @@ module ServiceOrdersHelper
       "bg-gray-100 text-gray-700"
     end
   end
+
+  def progress_review_badge_class(review_state)
+    case review_state
+    when "under_review"
+      "bg-amber-100 text-amber-800"
+    when "approval_needed"
+      "bg-sky-100 text-sky-800"
+    when "confirmed"
+      "bg-emerald-100 text-emerald-800"
+    else
+      "bg-gray-100 text-gray-700"
+    end
+  end
+
+  def progress_entry_badge_class(progress)
+    if progress.manual_update?
+      "bg-slate-100 text-slate-700"
+    else
+      "bg-indigo-100 text-indigo-700"
+    end
+  end
 end

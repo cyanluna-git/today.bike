@@ -1,0 +1,331 @@
+<% content_for(:title, "#{@service_inquiry.name} - 문의 접수 - Admin - Today Bike") %>
+<% conversion_steps = [
+  { key: "unlinked", label: "문의 접수" },
+  { key: "customer_linked", label: "고객 연결" },
+  { key: "bicycle_linked", label: "자전거 연결" },
+  { key: "service_order_linked", label: "서비스오더 연결" }
+] %>
+<% current_step_index = conversion_steps.index { |step| step[:key] == @service_inquiry.progress_step_status } || 0 %>
+<% grid_class = conversion_steps.length == 4 ? "sm:grid-cols-4" : "sm:grid-cols-5" %>
+
+<div class="w-full max-w-4xl">
+  <div class="mb-6">
+    <%= link_to admin_service_inquiries_path, class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      문의 목록
+    <% end %>
+  </div>
+
+  <div class="flex items-start justify-between gap-4 mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900"><%= @service_inquiry.name %></h1>
+      <p class="mt-2 text-sm text-gray-500"><%= @service_inquiry.request_category_label %> · <%= @service_inquiry.source_label %></p>
+    </div>
+    <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium <%= @service_inquiry.status == 'pending' ? 'bg-amber-100 text-amber-800' : @service_inquiry.status == 'in_review' ? 'bg-sky-100 text-sky-800' : 'bg-emerald-100 text-emerald-800' %>">
+      <%= @service_inquiry.status_label %>
+    </span>
+  </div>
+
+  <section class="mb-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <h2 class="text-lg font-semibold text-gray-900">문의 전환 허브</h2>
+        <p class="mt-1 text-sm text-gray-500">현재 문의가 고객, 자전거, 서비스오더로 얼마나 전환됐는지 한눈에 확인합니다.</p>
+      </div>
+      <div class="flex flex-wrap items-center justify-end gap-2">
+        <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-800">
+          <%= @service_inquiry.progress_step_status == "unlinked" ? "미연결" : ServiceInquiry::CONVERSION_STATUS_LABELS[@service_inquiry.progress_step_status] %>
+        </span>
+        <% if @service_inquiry.closed? %>
+          <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-800">
+            운영상 종료
+          </span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="mt-5 grid gap-3 <%= grid_class %>">
+      <% conversion_steps.each_with_index do |step, index| %>
+        <% reached = current_step_index >= index %>
+        <% current = current_step_index == index %>
+        <div class="rounded-2xl border px-4 py-3 <%= reached ? 'border-indigo-200 bg-indigo-50' : 'border-gray-200 bg-gray-50' %>">
+          <p class="text-xs font-medium <%= reached ? 'text-indigo-700' : 'text-gray-500' %>">Step <%= index + 1 %></p>
+          <p class="mt-1 text-sm font-semibold <%= current ? 'text-indigo-900' : reached ? 'text-indigo-800' : 'text-gray-700' %>"><%= step[:label] %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @service_inquiry.closed? %>
+      <p class="mt-4 text-sm text-emerald-700">이 문의는 운영상 종료 처리되었습니다. 연결된 고객/자전거/서비스오더 기록은 그대로 유지됩니다.</p>
+    <% end %>
+
+    <div class="mt-5 grid gap-4 md:grid-cols-3">
+      <div class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4">
+        <p class="text-xs font-medium text-gray-500">연결된 고객</p>
+        <% if @service_inquiry.customer.present? %>
+          <p class="mt-2 text-sm font-semibold text-gray-900">
+            <%= link_to @service_inquiry.customer.name, admin_customer_path(@service_inquiry.customer), class: "text-indigo-600 hover:text-indigo-900" %>
+          </p>
+          <p class="mt-1 text-xs text-gray-500"><%= @service_inquiry.customer.phone %></p>
+        <% else %>
+          <p class="mt-2 text-sm text-gray-600">고객 연결 필요</p>
+        <% end %>
+      </div>
+
+      <div class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4">
+        <p class="text-xs font-medium text-gray-500">연결된 자전거</p>
+        <% if @service_inquiry.bicycle.present? %>
+          <p class="mt-2 text-sm font-semibold text-gray-900">
+            <%= link_to "#{@service_inquiry.bicycle.brand} #{@service_inquiry.bicycle.model_label}", admin_bicycle_path(@service_inquiry.bicycle), class: "text-indigo-600 hover:text-indigo-900" %>
+          </p>
+          <p class="mt-1 text-xs text-gray-500"><%= @service_inquiry.bicycle.year || "-" %> · <%= @service_inquiry.bicycle.bike_type&.titleize || "기타" %></p>
+        <% else %>
+          <p class="mt-2 text-sm text-gray-600">자전거 연결 필요</p>
+        <% end %>
+      </div>
+
+      <div class="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4">
+        <p class="text-xs font-medium text-gray-500">연결된 서비스오더</p>
+        <% if @service_inquiry.service_order.present? %>
+          <p class="mt-2 text-sm font-semibold text-gray-900">
+            <%= link_to @service_inquiry.service_order.order_number, admin_service_order_path(@service_inquiry.service_order), class: "text-indigo-600 hover:text-indigo-900" %>
+          </p>
+          <p class="mt-1 text-xs text-gray-500"><%= @service_inquiry.service_order.service_type&.titleize %> · <%= @service_inquiry.service_order.status&.titleize %></p>
+        <% else %>
+          <p class="mt-2 text-sm text-gray-600">서비스오더 연결 필요</p>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid gap-6 lg:grid-cols-[1.3fr_0.9fr]">
+    <section class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+      <h2 class="text-lg font-semibold text-gray-900">문의 내용</h2>
+      <div class="mt-4 space-y-4 text-sm text-gray-700">
+        <div>
+          <p class="text-xs font-medium text-gray-500">고객 연락처</p>
+          <p class="mt-1"><%= @service_inquiry.phone %></p>
+          <% if @service_inquiry.email.present? %>
+            <p class="mt-1"><%= @service_inquiry.email %></p>
+          <% end %>
+        </div>
+
+        <% if @service_inquiry.service_type.present? %>
+          <div>
+            <p class="text-xs font-medium text-gray-500">서비스 맥락</p>
+            <p class="mt-1"><%= @service_inquiry.service_type_label %></p>
+          </div>
+        <% end %>
+
+        <% if @service_inquiry.product.present? %>
+          <div>
+            <p class="text-xs font-medium text-gray-500">상품 맥락</p>
+            <p class="mt-1"><%= @service_inquiry.product.name %></p>
+          </div>
+        <% end %>
+
+        <% if @service_inquiry.desired_visit_on.present? %>
+          <div>
+            <p class="text-xs font-medium text-gray-500">희망 방문일</p>
+            <p class="mt-1"><%= @service_inquiry.desired_visit_on %></p>
+          </div>
+        <% end %>
+
+        <div>
+          <p class="text-xs font-medium text-gray-500">문의 전문</p>
+          <div class="mt-2 rounded-xl bg-gray-50 px-4 py-4 leading-7"><%= simple_format(@service_inquiry.message) %></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+      <h2 class="text-lg font-semibold text-gray-900">전환 상태</h2>
+
+      <div class="mt-4 space-y-4 text-sm text-gray-700">
+        <div>
+          <p class="text-xs font-medium text-gray-500">현재 단계</p>
+          <span class="mt-2 inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-800">
+            <%= @service_inquiry.conversion_status_label %>
+          </span>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-gray-500">연결된 고객</p>
+          <% if @service_inquiry.customer.present? %>
+            <p class="mt-1">
+              <%= link_to @service_inquiry.customer.name, admin_customer_path(@service_inquiry.customer), class: "font-medium text-indigo-600 hover:text-indigo-900" %>
+            </p>
+          <% else %>
+            <p class="mt-1 text-gray-500">아직 연결되지 않았습니다.</p>
+          <% end %>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-gray-500">연결된 자전거</p>
+          <% if @service_inquiry.bicycle.present? %>
+            <p class="mt-1">
+              <%= link_to "#{@service_inquiry.bicycle.brand} #{@service_inquiry.bicycle.model_label}", admin_bicycle_path(@service_inquiry.bicycle), class: "font-medium text-indigo-600 hover:text-indigo-900" %>
+            </p>
+          <% else %>
+            <p class="mt-1 text-gray-500">아직 연결되지 않았습니다.</p>
+          <% end %>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-gray-500">연결된 서비스오더</p>
+          <% if @service_inquiry.service_order.present? %>
+            <p class="mt-1">
+              <%= link_to @service_inquiry.service_order.order_number, admin_service_order_path(@service_inquiry.service_order), class: "font-medium text-indigo-600 hover:text-indigo-900" %>
+            </p>
+          <% else %>
+            <p class="mt-1 text-gray-500">아직 연결되지 않았습니다.</p>
+          <% end %>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-gray-500">전화번호 기준 기존 고객 후보</p>
+          <% candidates = @service_inquiry.customer_candidates.to_a %>
+          <% if candidates.any? %>
+            <div class="mt-2 space-y-2">
+              <% candidates.each do |candidate| %>
+                <div class="rounded-xl bg-gray-50 px-4 py-3">
+                  <div class="flex items-start justify-between gap-3">
+                    <div>
+                      <%= link_to candidate.name, admin_customer_path(candidate), class: "font-medium text-indigo-600 hover:text-indigo-900" %>
+                      <p class="mt-1 text-xs text-gray-500"><%= candidate.phone %></p>
+                    </div>
+                    <% if @service_inquiry.customer.blank? %>
+                      <%= button_to "이 고객 연결", link_customer_admin_service_inquiry_path(@service_inquiry), method: :patch, params: { customer_id: candidate.id }, class: "inline-flex items-center rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="mt-1 text-gray-500">전화번호 기준 기존 고객 후보가 없습니다.</p>
+          <% end %>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-gray-500">고객 연결 액션</p>
+          <% if @service_inquiry.customer.present? %>
+            <% if @service_inquiry.bicycle.present? || @service_inquiry.service_order.present? %>
+              <p class="mt-1 text-gray-500">고객을 바꾸려면 자전거와 서비스오더 연결을 먼저 해제해 주세요.</p>
+            <% else %>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <%= button_to "고객 연결 해제", unlink_linkage_admin_service_inquiry_path(@service_inquiry), method: :patch, params: { target: "customer" }, class: "inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+                <p class="w-full text-xs text-gray-500">연결을 해제하면 기존 고객 후보 또는 새 고객 생성으로 다시 연결할 수 있습니다.</p>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <%= link_to "새 고객 생성", new_admin_customer_path(service_inquiry_id: @service_inquiry.id), class: "inline-flex items-center rounded-full bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+              <p class="w-full text-xs text-gray-500">
+                문의 정보가 미리 채워진 고객 생성 화면으로 이동합니다.
+              </p>
+            </div>
+          <% end %>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-gray-500">자전거 연결 액션</p>
+          <% if @service_inquiry.customer.blank? %>
+            <p class="mt-1 text-gray-500">자전거 연결 전에 먼저 고객을 연결해 주세요.</p>
+          <% elsif @service_inquiry.bicycle.present? %>
+            <% if @service_inquiry.service_order.present? %>
+              <p class="mt-1 text-gray-500">자전거를 바꾸려면 먼저 서비스오더 연결을 해제해 주세요.</p>
+            <% else %>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <%= button_to "자전거 연결 해제", unlink_linkage_admin_service_inquiry_path(@service_inquiry), method: :patch, params: { target: "bicycle" }, class: "inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+                <p class="w-full text-xs text-gray-500">해제 후 기존 자전거 연결이나 새 자전거 생성으로 다시 선택할 수 있습니다.</p>
+              </div>
+            <% end %>
+          <% else %>
+            <% bicycles = @service_inquiry.customer.bicycles.order(:brand, :model_label) %>
+            <% if bicycles.any? %>
+              <div class="mt-2 space-y-2">
+                <% bicycles.each do |bicycle| %>
+                  <div class="rounded-xl bg-gray-50 px-4 py-3">
+                    <div class="flex items-start justify-between gap-3">
+                      <div>
+                        <%= link_to "#{bicycle.brand} #{bicycle.model_label}", admin_bicycle_path(bicycle), class: "font-medium text-indigo-600 hover:text-indigo-900" %>
+                        <p class="mt-1 text-xs text-gray-500"><%= bicycle.year || "-" %> · <%= bicycle.bike_type&.titleize || "기타" %></p>
+                      </div>
+                      <%= button_to "이 자전거 연결", link_bicycle_admin_service_inquiry_path(@service_inquiry), method: :patch, params: { bicycle_id: bicycle.id }, class: "inline-flex items-center rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="mt-1 text-gray-500">이 고객에 연결된 자전거가 아직 없습니다.</p>
+            <% end %>
+
+            <div class="mt-3 flex flex-wrap gap-2">
+              <%= link_to "새 자전거 생성", new_admin_bicycle_path(service_inquiry_id: @service_inquiry.id, customer_id: @service_inquiry.customer.id), class: "inline-flex items-center rounded-full bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+              <p class="w-full text-xs text-gray-500">생성 후 문의 상세로 복귀하며 대표 자전거로 자동 연결됩니다.</p>
+            </div>
+          <% end %>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-gray-500">서비스오더 전환 액션</p>
+          <% if @service_inquiry.bicycle.blank? %>
+            <p class="mt-1 text-gray-500">서비스오더 생성 전에 먼저 대표 자전거를 연결해 주세요.</p>
+          <% elsif @service_inquiry.service_order.present? %>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <%= button_to "서비스오더 연결 해제", unlink_linkage_admin_service_inquiry_path(@service_inquiry), method: :patch, params: { target: "service_order" }, class: "inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+              <p class="w-full text-xs text-gray-500">해제 후 새 서비스오더를 다시 생성해 대표 접수로 연결할 수 있습니다.</p>
+            </div>
+          <% else %>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <%= link_to "서비스오더 생성", new_admin_service_order_path(service_inquiry_id: @service_inquiry.id, bicycle_id: @service_inquiry.bicycle.id), class: "inline-flex items-center rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+              <p class="w-full text-xs text-gray-500">서비스 유형과 문의 요약을 미리 채운 뒤, 저장하면 문의에 자동 연결됩니다.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="my-6 border-t border-gray-100"></div>
+
+      <h2 class="text-lg font-semibold text-gray-900">처리 상태</h2>
+
+      <%= form_with model: [ :admin, @service_inquiry ], class: "mt-4 space-y-4" do |form| %>
+        <% if @service_inquiry.errors.any? %>
+          <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <% @service_inquiry.errors.full_messages.each do |message| %>
+              <p><%= message %></p>
+            <% end %>
+          </div>
+        <% end %>
+
+        <div>
+          <%= form.label :status, "상태", class: "block text-sm font-medium text-gray-700" %>
+          <%= form.select :status, ServiceInquiry.statuses.keys.map { |key| [ServiceInquiry::STATUS_LABELS[key], key] }, {}, class: "mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :conversion_status, "전환 단계", class: "block text-sm font-medium text-gray-700" %>
+          <% conversion_options = @service_inquiry.available_conversion_statuses.map { |key| [ServiceInquiry::CONVERSION_STATUS_LABELS[key], key] } %>
+          <%= form.select :conversion_status, conversion_options, {}, class: "mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+          <p class="mt-2 text-xs text-gray-500">현재 연결 상태에서 저장 가능한 단계만 표시합니다. 고객이 연결된 문의는 필요 시 `종료`로 마무리할 수 있습니다.</p>
+        </div>
+
+        <div>
+          <%= form.label :admin_notes, "관리자 메모", class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_area :admin_notes, rows: 8, class: "mt-1 block w-full rounded-2xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "응대 내용이나 내부 처리 메모를 남겨주세요." %>
+        </div>
+
+        <div class="rounded-xl bg-gray-50 px-4 py-3 text-xs text-gray-500">
+          생성일 <%= @service_inquiry.created_at.strftime("%Y-%m-%d %H:%M") %>
+          <% if @service_inquiry.responded_at.present? %>
+            <span class="block mt-1">응답완료 시각 <%= @service_inquiry.responded_at.strftime("%Y-%m-%d %H:%M") %></span>
+          <% end %>
+        </div>
+
+        <%= form.submit "상태 저장", class: "inline-flex items-center rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+      <% end %>
+    </section>
+  </div>
+</div>

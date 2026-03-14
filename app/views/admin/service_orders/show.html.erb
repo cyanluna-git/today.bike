@@ -89,7 +89,9 @@
     </turbo-frame>
 
     <turbo-frame id="service_order_tab_progress" data-tabs-target="panel" data-tab-name="progress" class="hidden">
-      <%= render "admin/service_orders/tab_progress", service_order: @service_order %>
+      <%= render "admin/service_orders/tab_progress",
+            service_order: @service_order,
+            service_progress: (defined?(@service_progress) && @service_progress.present? ? @service_progress : ServiceProgress.new(review_state: :none)) %>
     </turbo-frame>
 
     <turbo-frame id="service_order_tab_photos" data-tabs-target="panel" data-tab-name="photos" class="hidden">

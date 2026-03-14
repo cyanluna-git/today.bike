@@ -15,7 +15,7 @@
 | Instance | `instance-20260313-1711` |
 | Shape | VM.Standard.E2.1.Micro (1 OCPU / 1GB RAM) — Always Free |
 | OS | Canonical Ubuntu 24.04 |
-| Public IP | `217.142.238.243` (Reserved) |
+| Public IP | `217.142.238.243` (현재 운영 IP, Reserved 아님) |
 | Private IP | `10.0.0.52` |
 | VCN | `geunyunpark-vcn` |
 
@@ -36,7 +36,7 @@
 ### VCN + Public IP ✅ 완료
 
 - VCN Wizard로 `geunyunpark-vcn` 생성 (CIDR: `10.0.0.0/16`)
-- Reserved Public IP `217.142.238.243` 할당
+- 현재 운영 Public IP `217.142.238.243` 사용
 
 ### SSH 키 등록 (인스턴스 재생성)
 
@@ -84,7 +84,7 @@ NEW_ID=$(oci compute instance list --compartment-id $OCI_TENANCY --query 'data[?
 oci compute instance list-vnics --instance-id "$NEW_ID" --query 'data[0]."public-ip"' --raw-output
 ```
 
-> 출력된 IP를 메모. 기존 Reserved IP(217.142.238.243)와 다를 수 있음 → Cloudflare DNS 업데이트 필요.
+> 출력된 IP를 메모. 현재 운영 IP(`217.142.238.243`)와 다를 수 있음 → Cloudflare DNS 업데이트 필요.
 
 **Step 4**: 로컬 Mac 터미널에서 SSH 접속 확인
 
@@ -149,6 +149,8 @@ Cloudflare Dashboard → DNS → Records:
 | `A` | `@` | `217.142.238.243` | Proxied (주황색) | Auto |
 | `A` | `www` | `217.142.238.243` | Proxied (주황색) | Auto |
 
+> 현재 운영 서버 IP는 Reserved가 아니므로, 인스턴스 재생성/재시작 후 IP가 바뀌면 이 레코드도 같이 갱신해야 합니다.
+
 ### SSL 설정
 
 - SSL/TLS → Overview → **Full (strict)** 선택
@@ -191,6 +193,40 @@ Cloudflare Dashboard → DNS → Records:
 | R2 Secret Access Key | Litestream 설정 |
 | R2 Endpoint URL | `https://{account-id}.r2.cloudflarestorage.com` |
 | Bucket Name | `today-bike-backup` |
+
+---
+
+## 현재 배포 경로 메모
+
+현재 프로덕션 배포는 Kamal이 아니라 `bin/deploy`를 사용하는 수동 GHCR + SSH 경로입니다.
+
+요약:
+
+```text
+로컬 working tree
+  -> docker build
+  -> GHCR push
+  -> Oracle VM SSH 접속
+  -> docker pull / docker run
+  -> HTTP 200 헬스체크
+```
+
+실행 전제조건:
+
+- 로컬 `config/master.key`
+- `GHCR_TOKEN` 환경변수 (`write:packages` 권한 필요)
+- Docker 실행 중
+- Oracle VM SSH 접속 가능
+
+실행 명령:
+
+```bash
+bin/deploy
+```
+
+상세 런북:
+
+- `docs/current_deploy_runbook.md`
 
 ---
 
@@ -315,7 +351,7 @@ tosspayments:
 
 ```
 [1일차] Oracle Cloud VM 생성 + Cloudflare 도메인 연결 + R2 버킷 생성
-         └→ Public IP 확정되면 AI가 Kamal 배포 설정 진행
+         └→ 현재는 `bin/deploy` 기준 수동 GHCR + SSH 배포 진행
 
 [1일차] 카카오 개발자 앱 생성 + 키 발급
          └→ 키 받으면 AI가 OmniAuth 연동 코드 작성

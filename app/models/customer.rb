@@ -2,6 +2,7 @@ class Customer < ApplicationRecord
   # Associations
   has_many :bicycles, dependent: :destroy
   has_many :service_orders, through: :bicycles
+  has_many :fitting_records, through: :bicycles
   has_many :notifications, dependent: :destroy
   has_many :rental_bookings, dependent: :nullify
 

@@ -1,0 +1,50 @@
+<%
+  reminder ||= {}
+  compact ||= false
+
+  tone_classes = {
+    info: "border-blue-100 bg-blue-50 text-blue-900",
+    attention: "border-amber-100 bg-amber-50 text-amber-900",
+    calm: "border-emerald-100 bg-emerald-50 text-emerald-900",
+    positive: "border-slate-100 bg-slate-50 text-slate-900",
+    neutral: "border-gray-200 bg-gray-50 text-gray-800"
+  }
+  badge_classes = {
+    info: "bg-blue-100 text-blue-800",
+    attention: "bg-amber-100 text-amber-800",
+    calm: "bg-emerald-100 text-emerald-800",
+    positive: "bg-slate-200 text-slate-800",
+    neutral: "bg-gray-200 text-gray-700"
+  }
+  tone = reminder[:tone] || :neutral
+%>
+
+<article
+  data-testid="<%= compact ? "bicycle-lifecycle-reminder-compact" : "bicycle-lifecycle-reminder" %>"
+  class="rounded-2xl border px-4 py-4 break-keep <%= tone_classes.fetch(tone, tone_classes[:neutral]) %>">
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold <%= badge_classes.fetch(tone, badge_classes[:neutral]) %>">
+      <%= reminder[:badge] %>
+    </span>
+
+    <% unless compact %>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to "정비 이력 보기", portal_service_orders_path, class: "inline-flex items-center rounded-full border border-current/15 px-3 py-1.5 text-xs font-semibold transition hover:bg-white/60" %>
+        <%= link_to "피팅 기록 보기", portal_fitting_records_path, class: "inline-flex items-center rounded-full border border-current/15 px-3 py-1.5 text-xs font-semibold transition hover:bg-white/60" %>
+      </div>
+    <% end %>
+  </div>
+
+  <h2 class="<%= compact ? "mt-3 text-sm font-semibold" : "mt-3 text-lg font-bold" %>"><%= reminder[:title] %></h2>
+  <p class="<%= compact ? "mt-2 text-xs leading-5 md:text-sm" : "mt-2 text-sm leading-6" %>"><%= reminder[:body] %></p>
+
+  <% if reminder[:highlights].present? %>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <% reminder[:highlights].each do |highlight| %>
+        <span class="inline-flex rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-gray-700 ring-1 ring-inset ring-black/5">
+          <%= highlight %>
+        </span>
+      <% end %>
+    </div>
+  <% end %>
+</article>

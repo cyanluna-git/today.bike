@@ -47,6 +47,10 @@
   </div>
 </div>
 
+<div class="mb-6">
+  <%= render "lifecycle_reminder", reminder: @lifecycle_reminder, compact: false %>
+</div>
+
 <%# Specs grouped by category %>
 <% if @grouped_specs.any? %>
   <h2 class="text-lg font-bold text-gray-900 mb-3">사양</h2>

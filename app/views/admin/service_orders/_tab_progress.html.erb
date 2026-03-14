@@ -1,60 +1,149 @@
-<div class="bg-white shadow rounded-lg overflow-hidden">
-  <div class="px-6 py-5 border-b border-gray-200">
-    <h3 class="text-base font-semibold text-gray-900">진행상황</h3>
-    <p class="mt-1 text-sm text-gray-500">상태 변경 이력을 시간순으로 표시합니다.</p>
+<% service_progress ||= ServiceProgress.new(review_state: :none) %>
+
+<div class="space-y-6">
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="px-6 py-5 border-b border-gray-200">
+      <h3 class="text-base font-semibold text-gray-900">고객 업데이트 추가</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        상태를 바꾸지 않고도 고객에게 보여줄 진행 상황을 추가할 수 있습니다. 내부 메모는 기본정보의 진단/작업 노트를 계속 사용하세요.
+      </p>
+    </div>
+
+    <div class="px-6 py-5">
+      <%= form_with model: [ :admin, service_order, service_progress ], class: "space-y-4" do |form| %>
+        <% if service_progress.errors.any? %>
+          <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <% service_progress.errors.full_messages.each do |message| %>
+              <p><%= message %></p>
+            <% end %>
+          </div>
+        <% end %>
+
+        <div class="grid gap-4 md:grid-cols-2">
+          <div class="md:col-span-2">
+            <%= form.label :title, "업데이트 제목", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_field :title, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "예: 추가 점검이 필요합니다" %>
+          </div>
+
+          <div>
+            <%= form.label :review_state, "검토 상태", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.select :review_state,
+                  ServiceProgress.review_states.keys.map { |key| [ServiceProgress::REVIEW_STATE_LABELS[key] || "표시 없음", key] },
+                  {},
+                  class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+          </div>
+
+          <div class="rounded-md border border-dashed border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-500">
+            현재 공식 상태:
+            <span class="ml-1 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= progress_badge_class(service_order.status) %>"><%= ServiceProgress::STATUS_LABELS[service_order.status] || service_order.status.humanize %></span>
+            <p class="mt-1 text-xs">이 폼은 상태를 바꾸지 않고 고객용 피드만 추가합니다.</p>
+          </div>
+
+          <div class="md:col-span-2">
+            <%= form.label :note, "고객 안내 문구", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_area :note, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "고객이 이해할 수 있는 문장으로 현재 진행 상황을 설명하세요." %>
+          </div>
+
+          <div>
+            <%= form.label :work_summary, "현재 검토 중 작업 범위", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_area :work_summary, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "예: BB 유격과 크랭크 체결 상태를 추가로 확인하고 있습니다." %>
+          </div>
+
+          <div>
+            <%= form.label :cost_summary, "비용 관련 안내", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_area :cost_summary, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "예: 교체 필요 시 추가 비용이 발생할 수 있어 확인 후 안내드릴 예정입니다." %>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <%= form.submit "고객 업데이트 추가", class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition" %>
+        </div>
+      <% end %>
+    </div>
   </div>
 
-  <% progresses = service_order.service_progresses.reverse_chronological %>
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="px-6 py-5 border-b border-gray-200">
+      <h3 class="text-base font-semibold text-gray-900">진행 피드</h3>
+      <p class="mt-1 text-sm text-gray-500">상태 변경과 고객용 업데이트를 함께 시간순으로 관리합니다.</p>
+    </div>
 
-  <% if progresses.any? %>
-    <div class="px-6 py-5">
-      <div class="flow-root">
-        <ul role="list" class="-mb-8">
-          <% progresses.each_with_index do |progress, index| %>
-            <li>
-              <div class="relative pb-8">
-                <% unless index == progresses.size - 1 %>
-                  <span class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
-                <% end %>
-                <div class="relative flex space-x-3">
-                  <div>
-                    <span class="flex h-8 w-8 items-center justify-center rounded-full ring-8 ring-white <%= progress_dot_color(progress.to_status) %>">
-                      <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
-                      </svg>
+    <% progresses = service_order.service_progresses.reverse_chronological %>
+
+    <% if progresses.any? %>
+      <div class="px-6 py-5 space-y-4">
+        <% progresses.each do |progress| %>
+          <article class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= progress_entry_badge_class(progress) %>">
+                    <%= progress.manual_update? ? "고객 업데이트" : "상태 변경" %>
+                  </span>
+                  <% if progress.review_state_label.present? %>
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= progress_review_badge_class(progress.review_state) %>">
+                      <%= progress.review_state_label %>
                     </span>
-                  </div>
-                  <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1">
-                    <div>
-                      <p class="text-sm text-gray-900">
-                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= progress_badge_class(progress.from_status) %>"><%= progress.from_status_label %></span>
-                        <svg class="inline-block w-4 h-4 text-gray-400 mx-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                        </svg>
-                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= progress_badge_class(progress.to_status) %>"><%= progress.to_status_label %></span>
-                      </p>
-                      <% if progress.note.present? %>
-                        <p class="mt-1 text-sm text-gray-500"><%= progress.note %></p>
-                      <% end %>
-                    </div>
-                    <div class="whitespace-nowrap text-right text-sm text-gray-500">
-                      <time datetime="<%= progress.changed_at.iso8601 %>"><%= progress.changed_at.strftime("%Y-%m-%d %H:%M") %></time>
-                    </div>
-                  </div>
+                  <% end %>
+                  <% unless progress.customer_visible? %>
+                    <span class="inline-flex items-center rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700">비공개</span>
+                  <% end %>
                 </div>
+
+                <h4 class="mt-3 text-sm font-semibold text-gray-900"><%= progress.display_title %></h4>
+
+                <% if progress.status_transition? %>
+                  <p class="mt-2 text-xs text-gray-500">
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= progress_badge_class(progress.from_status) %>"><%= progress.from_status_label %></span>
+                    <svg class="mx-1 inline-block h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= progress_badge_class(progress.to_status) %>"><%= progress.to_status_label %></span>
+                  </p>
+                <% else %>
+                  <p class="mt-2 text-xs text-gray-500">
+                    현재 상태
+                    <span class="ml-1 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= progress_badge_class(progress.to_status) %>"><%= progress.to_status_label %></span>
+                  </p>
+                <% end %>
+
+                <% if progress.note.present? %>
+                  <p class="mt-3 text-sm text-gray-600"><%= progress.note %></p>
+                <% end %>
+
+                <% if progress.work_summary.present? || progress.cost_summary.present? %>
+                  <dl class="mt-3 grid gap-3 md:grid-cols-2">
+                    <% if progress.work_summary.present? %>
+                      <div class="rounded-lg bg-white px-3 py-3">
+                        <dt class="text-xs font-medium text-gray-500">작업 범위</dt>
+                        <dd class="mt-1 text-sm text-gray-700"><%= progress.work_summary %></dd>
+                      </div>
+                    <% end %>
+                    <% if progress.cost_summary.present? %>
+                      <div class="rounded-lg bg-white px-3 py-3">
+                        <dt class="text-xs font-medium text-gray-500">비용 안내</dt>
+                        <dd class="mt-1 text-sm text-gray-700"><%= progress.cost_summary %></dd>
+                      </div>
+                    <% end %>
+                  </dl>
+                <% end %>
               </div>
-            </li>
-          <% end %>
-        </ul>
+
+              <div class="shrink-0 text-sm text-gray-500">
+                <time datetime="<%= progress.changed_at.iso8601 %>"><%= progress.changed_at.strftime("%Y-%m-%d %H:%M") %></time>
+              </div>
+            </div>
+          </article>
+        <% end %>
       </div>
-    </div>
-  <% else %>
-    <div class="px-6 py-12 text-center">
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <h3 class="mt-2 text-sm font-semibold text-gray-900">진행 기록 없음</h3>
-      <p class="mt-1 text-sm text-gray-500">상태가 변경되면 자동으로 기록됩니다.</p>
-    </div>
-  <% end %>
+    <% else %>
+      <div class="px-6 py-12 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-semibold text-gray-900">진행 기록 없음</h3>
+        <p class="mt-1 text-sm text-gray-500">상태가 변경되거나 고객 업데이트가 추가되면 이곳에 표시됩니다.</p>
+      </div>
+    <% end %>
+  </div>
 </div>

@@ -1,0 +1,37 @@
+<% compact = local_assigns.fetch(:compact, false) %>
+<% linked_wrapper_classes = "block rounded-2xl border border-gray-100 bg-white px-4 py-4 shadow-sm transition hover:border-blue-200 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" %>
+<% static_wrapper_classes = "rounded-2xl border border-gray-100 bg-white px-4 py-4 shadow-sm" %>
+
+<% content = capture do %>
+  <div class="flex items-start justify-between gap-4">
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700"><%= update[:badge_label] %></span>
+        <% if update[:review_label].present? %>
+          <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800"><%= update[:review_label] %></span>
+        <% end %>
+        <% if update[:bicycle].present? %>
+          <span class="text-xs text-gray-400"><%= update[:bicycle].brand %> <%= update[:bicycle].model_label %></span>
+        <% end %>
+      </div>
+
+      <h3 class="mt-3 text-sm font-semibold text-gray-900"><%= update[:title] %></h3>
+
+      <% if update[:body].present? %>
+        <p class="mt-2 text-sm leading-6 text-gray-600 <%= 'line-clamp-2' if compact %>"><%= update[:body] %></p>
+      <% end %>
+    </div>
+
+    <p class="shrink-0 text-xs text-gray-400"><%= portal_date(update[:occurred_at]) %></p>
+  </div>
+<% end %>
+
+<% if update[:link].present? %>
+  <%= link_to update[:link], class: linked_wrapper_classes, data: { testid: "portal-update-item", linked: "true" } do %>
+    <%= content %>
+  <% end %>
+<% else %>
+  <article class="<%= static_wrapper_classes %>" data-testid="portal-update-item" data-linked="false">
+    <%= content %>
+  </article>
+<% end %>
