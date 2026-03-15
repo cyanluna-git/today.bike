@@ -152,6 +152,14 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "header nav"
   end
 
+  test "navigation pill keeps labels on one line" do
+    get root_path
+
+    assert_match "overflow-x-auto whitespace-nowrap", response.body
+    assert_match "shrink-0 items-center", response.body
+    assert_match "hidden whitespace-nowrap sm:inline", response.body
+  end
+
   test "navigation has logo linking to root" do
     get root_path
     assert_select "header a[href='#{root_path}']", text: /Today\.bike/
