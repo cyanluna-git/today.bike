@@ -43,7 +43,7 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 # Authentication [https://github.com/heartcombo/devise]
-gem "devise", "~> 4.9"
+gem "devise", "~> 5.0"
 
 # Pagination [https://github.com/ddnexus/pagy]
 gem "pagy", "~> 9.0"
