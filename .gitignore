@@ -59,3 +59,8 @@ kanban-board/
 # Config secrets
 .codex/
 .claude/kanban.json
+
+# Server infrastructure docs (contain real IPs, OCIDs, SSH info)
+docs/oracle_server_info.md
+docs/current_deploy_runbook.md
+docs/manual_setup_guide.md
