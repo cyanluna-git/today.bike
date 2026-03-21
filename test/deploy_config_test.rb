@@ -20,9 +20,9 @@ class DeployConfigTest < ActiveSupport::TestCase
       "proxy.ssl must be true for Let's Encrypt auto-cert"
   end
 
-  test "proxy host is today.bike" do
-    assert_equal "today.bike", DEPLOY_YML.dig("proxy", "host"),
-      "proxy.host must be 'today.bike'"
+  test "proxy host is todaybike.cyanluna.com" do
+    assert_equal "todaybike.cyanluna.com", DEPLOY_YML.dig("proxy", "host"),
+      "proxy.host must be 'todaybike.cyanluna.com'"
   end
 
   # --- Registry ---

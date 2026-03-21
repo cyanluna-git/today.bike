@@ -1,4 +1,6 @@
 class QrCodeService
+  APP_BASE_URL = ENV.fetch("APP_BASE_URL", "https://todaybike.cyanluna.com").freeze
+
   def self.generate_svg(url, size: 4)
     qrcode = RQRCode::QRCode.new(url)
     qrcode.as_svg(
@@ -27,6 +29,6 @@ class QrCodeService
   end
 
   def self.passport_url(token)
-    "https://today.bike/passport/#{token}"
+    "#{APP_BASE_URL}/passport/#{token}"
   end
 end

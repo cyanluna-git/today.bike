@@ -14,9 +14,11 @@
 ## Current Production Reality
 
 - production server: Oracle Cloud VM (`217.142.238.243`)
+- production URL: `https://todaybike.cyanluna.com`
 - deploy path: `bin/deploy`
 - registry: `ghcr.io/cyanluna-git/today-bike:latest`
 - persistent app state: Docker volume mounted at `/rails/storage`
+- edge stack: host `nginx` reverse proxy on `80/443` -> Docker container on `127.0.0.1:3000`
 
 Canonical deploy runbook:
 
@@ -69,7 +71,7 @@ bundle exec rails test test/controllers/portal/bicycles_controller_test.rb
 
 ## Deploy
 
-`bin/deploy` builds the current local working tree, pushes the image to GHCR, pulls it on the Oracle VM, restarts the `today-bike` container, and verifies HTTP `200`.
+`bin/deploy` builds the current local working tree, pushes the image to GHCR, pulls it on the Oracle VM, restarts the `today-bike` container behind host `nginx`, reloads nginx, and verifies HTTP `200`.
 
 Required before deploy:
 
@@ -89,3 +91,4 @@ bin/deploy
 
 - `config/deploy.yml` exists for Kamal, but it is not the currently used production deploy path.
 - Production Active Storage is still local-volume based unless separately reconfigured.
+- Public requests should use `https://todaybike.cyanluna.com`; direct IP access is not the intended production entrypoint.

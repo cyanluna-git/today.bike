@@ -7,6 +7,9 @@ IMAGE="today-bike:latest"
 REGISTRY="ghcr.io/cyanluna-git"
 REMOTE_IMAGE="$REGISTRY/today-bike:latest"
 MASTER_KEY_FILE="config/master.key"
+APP_HOST="todaybike.cyanluna.com"
+APP_PROTOCOL="https"
+APP_PORT="3000"
 
 # Colors
 RED='\033[0;31m'
@@ -50,20 +53,28 @@ ssh "$SERVER" "docker stop $APP 2>/dev/null; docker rm $APP 2>/dev/null; true"
 ssh "$SERVER" "docker run -d \
   --name $APP \
   --restart unless-stopped \
-  -p 80:80 \
+  -p 127.0.0.1:${APP_PORT}:80 \
   -v ${APP}_storage:/rails/storage \
   -e RAILS_MASTER_KEY=$MASTER_KEY \
   -e RAILS_SERVE_STATIC_FILES=true \
   -e SOLID_QUEUE_IN_PUMA=true \
+  -e APP_HOST=$APP_HOST \
+  -e APP_PROTOCOL=$APP_PROTOCOL \
+  -e APP_BASE_URL=${APP_PROTOCOL}://$APP_HOST \
   $REMOTE_IMAGE" > /dev/null
 ok "Container started"
 
-# 6. Health check (wait for Puma boot)
+# 6. Ensure nginx is serving the configured host
+step "Reloading nginx..."
+ssh "$SERVER" "sudo systemctl reload nginx || sudo systemctl restart nginx"
+ok "Nginx reloaded"
+
+# 7. Health check through nginx (wait for Puma boot)
 step "Health check..."
 for i in $(seq 1 10); do
-  STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://217.142.238.243/" 2>/dev/null || echo "000")
+  STATUS=$(ssh "$SERVER" "curl -s -o /dev/null -w '%{http_code}' -H 'Host: $APP_HOST' http://127.0.0.1/" 2>/dev/null || echo "000")
   if [ "$STATUS" = "200" ]; then
-    ok "Server responding HTTP 200"
+    ok "Nginx reverse proxy responding HTTP 200"
     echo -e "\n${GREEN}Deploy complete!${NC}"
     exit 0
   fi

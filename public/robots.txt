@@ -9,4 +9,4 @@ Disallow: /portal/
 Disallow: /rails/
 
 # Sitemap
-Sitemap: https://today.bike/sitemap.xml
+Sitemap: https://todaybike.cyanluna.com/sitemap.xml

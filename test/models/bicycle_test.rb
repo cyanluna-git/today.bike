@@ -329,7 +329,7 @@ class BicycleTest < ActiveSupport::TestCase
 
   test "passport_url returns correct URL" do
     @bicycle.save!
-    assert_equal "https://today.bike/passport/#{@bicycle.passport_token}", @bicycle.passport_url
+    assert_equal "https://todaybike.cyanluna.com/passport/#{@bicycle.passport_token}", @bicycle.passport_url
   end
 
   test "passport_url returns nil without token" do
