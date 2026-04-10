@@ -1,0 +1,14 @@
+vendor/bundle/
+vendor/ruby/
+log/
+tmp/
+storage/
+.bundle/
+coverage/
+node_modules/
+public/assets/
+public/packs/
+*.log
+.env
+.DS_Store
+*.sqlite3
